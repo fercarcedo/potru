@@ -1,0 +1,27 @@
+{
+  "name": "potru",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent explanatory viewer of the GPON to XGSPON renewal of the ASTURCON public FTTH network (pliego CON 06/2025)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "extract": "node tools/extract-legacy.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.2.6",
+    "@fontsource/ibm-plex-sans": "5.2.6",
+    "astro": "7.2.2",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/three": "0.185.0",
+    "typescript": "^6.0.3"
+  }
+}

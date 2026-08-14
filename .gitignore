@@ -1,0 +1,22 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# original sources: the pliego (54 MB) and the legacy HTML (5.3 MB) are not
+# versioned; tools/extract-legacy.mjs takes their path. See docs/FUENTES.md.
+*.pdf
+asturcon-xgspon*.html
+
+# logs and environment
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.production
+
+# system
+.DS_Store
