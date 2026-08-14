@@ -1,0 +1,1517 @@
+{
+  "nodes": [
+    {
+      "id": "muros",
+      "name": "Muros de Nalón",
+      "area": "Occidental",
+      "color": "#41e3d2",
+      "address": "Avenida de Galicia s/n · 33118 Muros de Nalón",
+      "enclosure": "Contenedor prefabricado de 9 m² (6 m² útiles), 2,40 m de altura libre. 2 m² de planta libre.",
+      "olts": [
+        [
+          "MUR/1D",
+          "Ericsson BLM 1500",
+          22,
+          32,
+          339
+        ]
+      ],
+      "weekFrom": 13,
+      "weekTo": 17,
+      "extra": "Nodo piloto: primer nodo de la Fase 2 y cabecera CWDM del área Occidental (canales hacia Luarca, Navia, Tapia, Castropol y Hospital de Jarrio). Su migración valida el procedimiento para el resto.",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Muros de Nalón",
+        "Soto del Barco",
+        "San Esteban de Pravia"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/muros-ubicacion.jpg",
+          "w": 760,
+          "h": 528
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/muros-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/muros-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/muros-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/muros-fondo.jpg",
+          "w": 720,
+          "h": 499
+        }
+      ]
+    },
+    {
+      "id": "luarca",
+      "name": "Luarca",
+      "area": "Occidental",
+      "color": "#41e3d2",
+      "address": "La Pateta s/n · 33700 Villar (Valdés)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "LUA/1C",
+          "Ericsson BLM 1500",
+          26,
+          40,
+          449
+        ]
+      ],
+      "weekFrom": 15,
+      "weekTo": 19,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Luarca"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/luarca-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/luarca-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/luarca-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/luarca-dcha.jpg",
+          "w": 720,
+          "h": 497
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/luarca-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "navia",
+      "name": "Navia",
+      "area": "Occidental",
+      "color": "#41e3d2",
+      "address": "c/ Manuel Suárez s/n · 33710 Navia",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "NVI/1C",
+          "Ericsson BLM 1500",
+          35,
+          44,
+          561
+        ]
+      ],
+      "weekFrom": 17,
+      "weekTo": 21,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Navia",
+        "Puerto de Vega",
+        "Polígono de Coaña"
+      ],
+      "townsNote": "Puerto de Vega se conecta segregando los tubos 4–8 del cable de 64 ff.oo. Castropol–Cudillero.",
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/navia-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/navia-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/navia-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/navia-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/navia-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "castropol",
+      "name": "Castropol",
+      "area": "Occidental",
+      "color": "#41e3d2",
+      "address": "c/ La Fuente s/n · 33760 Castropol",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "CAS/1C",
+          "Ericsson BLM 1500",
+          34,
+          48,
+          323
+        ]
+      ],
+      "weekFrom": 19,
+      "weekTo": 23,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Castropol",
+        "Barres",
+        "Figueras",
+        "Piantón",
+        "Vegadeo"
+      ],
+      "townsNote": "Figueras cuelga del cable de 64 ff.oo. Castropol–Cudillero (tubos 4–8) y Vegadeo del cable de 96 ff.oo. Castropol–Vegadeo.",
+      "ponGroups": {
+        "groups": [
+          [
+            "Figueras",
+            "Piantón"
+          ],
+          [
+            "Vegadeo",
+            "Barres"
+          ]
+        ],
+        "note": "La red de acceso de Figueras incluye la de Piantón; la de Vegadeo incluye la de Barres: comparten los mismos árboles ópticos pasivos."
+      },
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/castropol-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/castropol-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/castropol-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/castropol-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/castropol-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "tapia",
+      "name": "Tapia de Casariego",
+      "area": "Occidental",
+      "color": "#41e3d2",
+      "address": "c/ De Mántaras s/n · Tapia de Casariego",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "TAP/1C",
+          "Ericsson BLM 1500",
+          41,
+          48,
+          272
+        ]
+      ],
+      "weekFrom": 21,
+      "weekTo": 24,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Tapia de Casariego",
+        "La Caridad (El Franco)"
+      ],
+      "townsNote": "La Caridad se conecta segregando los tubos 4–8 del cable de 64 ff.oo. Castropol–Cudillero.",
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/tapia-ubicacion.jpg",
+          "w": 760,
+          "h": 519
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/tapia-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/tapia-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/tapia-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/tapia-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "tineo",
+      "name": "Tineo",
+      "area": "Suroccidental",
+      "color": "#7fa7ff",
+      "address": "c/ Julio Fernández Lamuño · Tineo",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "TIN/2A",
+          "Alcatel 7342",
+          21,
+          22,
+          285
+        ]
+      ],
+      "weekFrom": 23,
+      "weekTo": 26,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Tineo",
+        "Polígono de La Curiscada"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/tineo-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/tineo-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/tineo-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/tineo-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/tineo-dcha-2.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "cangas",
+      "name": "Cangas del Narcea",
+      "area": "Suroccidental",
+      "color": "#7fa7ff",
+      "address": "c/ Parque del Molín s/n · 33800 Cangas del Narcea",
+      "enclosure": "Único nodo de la red con espliteado 1:32 (el resto, 1:64).",
+      "olts": [
+        [
+          "CAN/1A",
+          "Alcatel 7342",
+          32,
+          32,
+          214
+        ],
+        [
+          "CAN/4A",
+          "Alcatel 7342",
+          25,
+          26,
+          135
+        ]
+      ],
+      "weekFrom": 25,
+      "weekTo": 29,
+      "extra": "Dos OLT Alcatel en el mismo nodo. Su relación de splitter 1:32 condiciona el dimensionado de puertos de la nueva OLT.",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Cangas del Narcea"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/cangas-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/cangas-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/cangas-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/cangas-dcha-2.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/cangas-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "mieres",
+      "name": "Mieres",
+      "area": "Cuenca del Caudal",
+      "color": "#ffb454",
+      "address": "Avenida del Camino nº 6 · Nuevo Santullano · 33600 Mieres",
+      "enclosure": "Nodo estratégico: sede del enrutador 7750 de Mieres y colector de las cuencas del Caudal, Aller y Nalón por fibra directa.",
+      "olts": [
+        [
+          "MIE/2A",
+          "Alcatel 7342",
+          32,
+          32,
+          355
+        ],
+        [
+          "MIE/2B",
+          "Alcatel 7342",
+          32,
+          32,
+          344
+        ],
+        [
+          "MIE/7A",
+          "Alcatel 7342",
+          29,
+          30,
+          345
+        ],
+        [
+          "MIE/7B",
+          "Alcatel 7342",
+          14,
+          14,
+          87
+        ]
+      ],
+      "weekFrom": 27,
+      "weekTo": 35,
+      "extra": "Aquí se instala en Fase 1 uno de los dos enrutadores nuevos del contrato (PF-2), interconectado con el PAO de Gijón para repartir la carga de las nuevas OLT.",
+      "actions": [
+        "PF-1",
+        "PF-2",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Figaredo",
+        "Rioturbio",
+        "Santa Cruz de Mieres",
+        "Turón",
+        "Ujo"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/mieres-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/mieres-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/mieres-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/mieres-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/mieres-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "polalena",
+      "name": "Pola de Lena",
+      "area": "Cuenca del Caudal",
+      "color": "#ffb454",
+      "address": "c/ Cava Baja nº 2 · 33630 Pola de Lena",
+      "enclosure": "Nodo primario con dos OLT Alcatel.",
+      "olts": [
+        [
+          "PLE/1A",
+          "Alcatel 7342",
+          32,
+          32,
+          206
+        ],
+        [
+          "PLE/5A",
+          "Alcatel 7342",
+          22,
+          22,
+          221
+        ]
+      ],
+      "weekFrom": 30,
+      "weekTo": 37,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Pola de Lena",
+        "Villallana"
+      ],
+      "townsNote": "Villallana se conecta por el cable de 32 ff.oo. Mieres–Pola de Lena.",
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/polalena-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/polalena-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/polalena-izq.jpg",
+          "w": 720,
+          "h": 501
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/polalena-dcha.jpg",
+          "w": 720,
+          "h": 501
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/polalena-dcha-2.jpg",
+          "w": 720,
+          "h": 501
+        }
+      ]
+    },
+    {
+      "id": "morcin",
+      "name": "Santa Eulalia de Morcín",
+      "area": "Cuenca del Caudal",
+      "color": "#ffb454",
+      "address": "Carretera de Busloñe s/n · 33162 Santa Eulalia de Morcín",
+      "enclosure": "Nodo primario compacto (3 tarjetas).",
+      "olts": [
+        [
+          "SEU/1A",
+          "Alcatel 7342",
+          6,
+          6,
+          204
+        ]
+      ],
+      "weekFrom": 32,
+      "weekTo": 38,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Santa Eulalia de Morcín"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/morcin-ubicacion.jpg",
+          "w": 760,
+          "h": 525
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/morcin-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/morcin-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/morcin-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/morcin-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "moreda",
+      "name": "Moreda",
+      "area": "Cuenca del Aller",
+      "color": "#ff8fb2",
+      "address": "Plaza de la Iglesia s/n · 33670 Moreda",
+      "enclosure": "Nodo primario con dos OLT Alcatel.",
+      "olts": [
+        [
+          "MOR/1A",
+          "Alcatel 7342",
+          20,
+          20,
+          312
+        ],
+        [
+          "MOR/1C",
+          "Alcatel 7342",
+          11,
+          12,
+          156
+        ]
+      ],
+      "weekFrom": 34,
+      "weekTo": 40,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Caborana",
+        "Moreda",
+        "Oyanco",
+        "Villanueva"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/moreda-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/moreda-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/moreda-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/moreda-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/moreda-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "cabanaquinta",
+      "name": "Cabañaquinta",
+      "area": "Cuenca del Aller",
+      "color": "#ff8fb2",
+      "address": "Calle Barraca Jto. s/n · 33686 Serrapio-Cabañaquinta (Aller)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "CAQ/1A",
+          "Alcatel 7342",
+          11,
+          12,
+          220
+        ]
+      ],
+      "weekFrom": 36,
+      "weekTo": 41,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Cabañaquinta",
+        "Corigos"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/cabanaquinta-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/cabanaquinta-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/cabanaquinta-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/cabanaquinta-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/cabanaquinta-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "felechosa",
+      "name": "Felechosa",
+      "area": "Cuenca del Aller",
+      "color": "#ff8fb2",
+      "address": "Calle El Pino Jto. s/n · 33687 El Pino-Felechosa (Aller)",
+      "enclosure": "Nodo primario compacto (3 tarjetas).",
+      "olts": [
+        [
+          "FEL/1A",
+          "Alcatel 7342",
+          5,
+          6,
+          113
+        ]
+      ],
+      "weekFrom": 38,
+      "weekTo": 42,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Felechosa"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/felechosa-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/felechosa-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/felechosa-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/felechosa-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/felechosa-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "blimea",
+      "name": "Blimea",
+      "area": "Cuenca del Nalón",
+      "color": "#c9a0ff",
+      "address": "Calle Celso Solís nº 1 · 33960 Blimea",
+      "enclosure": "El nodo más denso de la red: 8 OLT Alcatel en producción.",
+      "olts": [
+        [
+          "BLI/1A",
+          "Alcatel 7342",
+          32,
+          32,
+          215
+        ],
+        [
+          "BLI/1B",
+          "Alcatel 7342",
+          6,
+          5,
+          25
+        ],
+        [
+          "BLI/2B",
+          "Alcatel 7342",
+          32,
+          32,
+          191
+        ],
+        [
+          "BLI/7B",
+          "Alcatel 7342",
+          20,
+          20,
+          101
+        ],
+        [
+          "BLI/8A",
+          "Alcatel 7342",
+          48,
+          48,
+          246
+        ],
+        [
+          "BLI/8B",
+          "Alcatel 7342",
+          40,
+          40,
+          194
+        ],
+        [
+          "BLI/9A",
+          "Alcatel 7342",
+          56,
+          56,
+          244
+        ],
+        [
+          "BLI/9B",
+          "Alcatel 7342",
+          12,
+          11,
+          31
+        ]
+      ],
+      "weekFrom": 40,
+      "weekTo": 47,
+      "extra": "La consolidación de 8 OLT antiguas en una sola plataforma dual es uno de los mayores retos de dimensionado del contrato.",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Barredos",
+        "Blimea",
+        "El Entrego",
+        "Pola de Laviana",
+        "Sotrondio"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/blimea-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/blimea-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/blimea-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/blimea-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/blimea-dcha-2.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "langreo",
+      "name": "Langreo",
+      "area": "Cuenca del Nalón",
+      "color": "#c9a0ff",
+      "address": "Calle Siderurgia s/n Bajo 1 · 33930 Polígono Valnalón (Langreo)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "LAN/1A",
+          "Alcatel 7342",
+          6,
+          6,
+          109
+        ]
+      ],
+      "weekFrom": 43,
+      "weekTo": 48,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Tuilla (a 3,6 km del nodo)"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/langreo-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/langreo-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/langreo-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/langreo-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/langreo-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "arriondas",
+      "name": "Arriondas",
+      "area": "Suroriental",
+      "color": "#9df08a",
+      "address": "Santianes del Terrón s/n · 33540 Cuadroveña-Arriondas (Parres)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "ARR/1C",
+          "Ericsson BLM 1500",
+          12,
+          16,
+          181
+        ]
+      ],
+      "weekFrom": 45,
+      "weekTo": 49,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Arriondas"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/arriondas-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/arriondas-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/arriondas-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/arriondas-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/arriondas-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "infiesto",
+      "name": "Infiesto",
+      "area": "Suroriental",
+      "color": "#9df08a",
+      "address": "c/ Marqués de Vista Alegre s/n · 33530 Infiesto (Piloña)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "INF/1C",
+          "Ericsson BLM 1500",
+          22,
+          40,
+          416
+        ]
+      ],
+      "weekFrom": 47,
+      "weekTo": 51,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Infiesto",
+        "Santa Eulalia de Cabranes",
+        "Sevares",
+        "Villamayor"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/infiesto-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/infiesto-planta.jpg",
+          "w": 720,
+          "h": 499
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/infiesto-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/infiesto-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/infiesto-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "nava",
+      "name": "Nava",
+      "area": "Suroriental",
+      "color": "#9df08a",
+      "address": "c/ Emilio Ballesteros s/n · 33520 Nava",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "NAV/1C",
+          "Ericsson BLM 1500",
+          16,
+          16,
+          219
+        ]
+      ],
+      "weekFrom": 48,
+      "weekTo": 52,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Nava"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/nava-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/nava-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/nava-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/nava-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/nava-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "llanes",
+      "name": "Llanes",
+      "area": "Oriental",
+      "color": "#ffd76b",
+      "address": "c/ Román Romano s/n · 33500 Llanes",
+      "enclosure": "Nodo primario con dos OLT Alcatel (GLT2A + GLT4A).",
+      "olts": [
+        [
+          "LLA/1B",
+          "Alcatel 7342",
+          19,
+          20,
+          378
+        ],
+        [
+          "LLA/4A",
+          "Alcatel 7342",
+          30,
+          32,
+          668
+        ]
+      ],
+      "weekFrom": 51,
+      "weekTo": 57,
+      "extra": "",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Llanes",
+        "Barro",
+        "Celorio",
+        "Porrúa",
+        "Posada de Llanes"
+      ],
+      "townsNote": "Barro, Celorio, Porrúa y Posada comparten redes FTTH entre sí.",
+      "ponGroups": {
+        "groups": [
+          [
+            "Barro",
+            "Posada de Llanes"
+          ],
+          [
+            "Celorio",
+            "Porrúa"
+          ]
+        ],
+        "note": "Posada comparte parcialmente sus árboles con Barro, Celorio y Porrúa: cuatro poblaciones entrelazadas sobre las mismas PON."
+      },
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/llanes-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/llanes-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/llanes-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/llanes-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/llanes-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    },
+    {
+      "id": "colombres",
+      "name": "Colombres",
+      "area": "Oriental",
+      "color": "#ffd76b",
+      "address": "c/ Bajo Badalán s/n · 33590 Colombres (Ribadedeva)",
+      "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
+      "olts": [
+        [
+          "COL/1A",
+          "Ericsson BLM 1500",
+          5,
+          16,
+          74
+        ]
+      ],
+      "weekFrom": 54,
+      "weekTo": 58,
+      "extra": "Último nodo de la Fase 2: su migración cierra la renovación de la red en la semana 58.",
+      "actions": [
+        "PF-1",
+        "PV-1",
+        "PV-2"
+      ],
+      "towns": [
+        "Colombres"
+      ],
+      "gallery": [
+        {
+          "label": "Ubicación",
+          "key": "ubicacion",
+          "src": "planos/colombres-ubicacion.jpg",
+          "w": 760,
+          "h": 526
+        },
+        {
+          "label": "Plano de planta",
+          "key": "planta",
+          "src": "planos/colombres-planta.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado izquierdo",
+          "key": "izq",
+          "src": "planos/colombres-izq.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado derecho",
+          "key": "dcha",
+          "src": "planos/colombres-dcha.jpg",
+          "w": 720,
+          "h": 498
+        },
+        {
+          "label": "Alzado fondo",
+          "key": "fondo",
+          "src": "planos/colombres-fondo.jpg",
+          "w": 720,
+          "h": 498
+        }
+      ]
+    }
+  ],
+  "pao": {
+    "id": "pao",
+    "name": "Gijón · PAO",
+    "area": "Interconexión",
+    "color": "#41e3d2",
+    "address": "Alto Pumarín s/n · Roces (Gijón) · Av. de Oviedo 26, 33211 Gijón",
+    "enclosure": "Punto de acceso de operadores. Enrutador Alcatel 7750SR-7 al 100% de ocupación, pasarelas POTS V5.2, jaulas de operadores y dos OLT de maqueta (Alcatel 7342 y Ericsson BLM 1500).",
+    "olts": [],
+    "weekFrom": 1,
+    "weekTo": 12,
+    "extra": "En la Fase 1 (semanas 1–12) se instala aquí uno de los dos enrutadores nuevos (PF-2), conectado al 7750 existente. No hay migración de usuarios: es la puerta de la red hacia los operadores.",
+    "actions": [
+      "PF-2"
+    ],
+    "towns": [],
+    "gallery": [
+      {
+        "label": "Ubicación",
+        "key": "ubicacion",
+        "src": "planos/pao-ubicacion.jpg",
+        "w": 760,
+        "h": 526
+      },
+      {
+        "label": "Plano de planta",
+        "key": "planta",
+        "src": "planos/pao-planta.jpg",
+        "w": 720,
+        "h": 498
+      },
+      {
+        "label": "Alzado izquierdo",
+        "key": "izq",
+        "src": "planos/pao-izq.jpg",
+        "w": 720,
+        "h": 513
+      },
+      {
+        "label": "Alzado izquierdo",
+        "key": "izq",
+        "src": "planos/pao-izq-2.jpg",
+        "w": 720,
+        "h": 501
+      },
+      {
+        "label": "Alzado derecho",
+        "key": "dcha",
+        "src": "planos/pao-dcha.jpg",
+        "w": 720,
+        "h": 466
+      }
+    ]
+  }
+}
