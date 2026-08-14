@@ -133,6 +133,17 @@ const total = ontCount(n);
     )
   }
 
+  {
+    n.gallery.length > 1 && (
+      <button class="tour-btn" id="detailWalk" data-walk={n.id} style="margin-top:6px">
+        🚶 Recorrer el interior en 3D{' '}
+        <span style="color:var(--muted);font-size:.66rem">
+          · simulación generada a partir de planta y alzados
+        </span>
+      </button>
+    )
+  }
+
   <section class="block">
     <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
     <div class="act-links">
