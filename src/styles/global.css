@@ -259,3 +259,22 @@ footer .disclaimer{margin-top:0;max-width:none}
    the legacy used <button>, which did not need these two rules. */
 .node-grid a.ncard{display:block;text-decoration:none}
 
+/* ---------- Potru: node record on its own page (/nodos/<id>) ----------
+   Reuses the modal's visual language, laid out as a section. */
+.node-detail h1{font-size:clamp(1.6rem,4vw,2.3rem);display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-weight:700}
+.node-detail .mtag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;padding:3px 10px;border-radius:5px}
+.node-detail .addr{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--muted);margin:10px 0 16px}
+.node-detail p.env{font-size:.95rem;color:var(--muted);margin-bottom:16px;max-width:70ch}
+.node-detail p.extra{font-size:.92rem;color:var(--txt);background:var(--xgs-soft);border-left:3px solid var(--xgs);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:20px;max-width:70ch}
+.node-detail .olt-wrap{overflow-x:auto;max-width:820px}
+.node-detail section.block{margin-top:26px}
+.back-link{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--muted);text-decoration:none;margin-bottom:22px}
+.back-link:hover{color:var(--xgs)}
+.detail-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px}
+.detail-gallery figure{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.detail-gallery img{width:100%;display:block;background:#fff}
+.detail-gallery figcaption{background:var(--panel);border-top:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;padding:8px 11px}
+.pon-group{border:1.5px dashed #c9a44e;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:6px;background:rgba(255,215,107,.05)}
+.pon-group .p{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:.76rem}
+.pon-group .lnk{color:#c9a44e}
+.pon-group .tag{color:#c9a44e;font-size:.64rem;font-family:'IBM Plex Mono',monospace;margin-left:4px}

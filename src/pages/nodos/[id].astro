@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NodeDetail from '../../components/NodeDetail.astro';
+import { ALL_NODES, ontCount, type NetworkNode } from '../../lib/data';
+
+export function getStaticPaths() {
+  return ALL_NODES.map((node) => ({ params: { id: node.id }, props: { node } }));
+}
+
+interface Props {
+  node: NetworkNode;
+}
+
+const { node } = Astro.props;
+const desc =
+  node.id === 'pao'
+    ? `${node.name}: punto de acceso de operadores de la red ASTURCON. ${node.enclosure}`
+    : `Nodo ${node.name} (área ${node.area}): ${node.olts.length} OLT y ${ontCount(node)} ONT en servicio, migración prevista en las semanas ${node.weekFrom}–${node.weekTo} de la Fase 2 del pliego CON 06/2025.`;
+---
+
+<Layout title={`${node.name} · Potru · renovación GPON → XGSPON`} description={desc}>
+  <section style="padding-top:44px">
+    <div class="wrap">
+      <NodeDetail node={node} />
+    </div>
+  </section>
+</Layout>
