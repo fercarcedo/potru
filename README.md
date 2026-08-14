@@ -1,1 +1,89 @@
-# potru
+# Potru
+
+Visor divulgativo de la renovación tecnológica **GPON → XGSPON** de la red pública FTTH
+**ASTURCON**, tal y como la describe el Pliego de Condiciones Técnicas del expediente
+**CON 06/2025** de GIT, publicado en la Plataforma de Contratación del Sector Público.
+
+> ⓘ **Proyecto independiente**, no afiliado a GIT ni al Principado de Asturias ·
+> fuente: pliego público CON 06/2025
+
+*Potru* es «potro» en asturiano: la siguiente generación del Asturcón.
+
+## Qué hay dentro
+
+- **Diagrama end-to-end** ONT → splitters → OLT → troncal → PAO, conmutable entre la red
+  actual y la renovada, con cada elemento explicado.
+- **Mapa** de las 7 áreas, 20 nodos primarios, 9 secundarios pasivos y las poblaciones
+  servidas, con las troncales propias y alquiladas diferenciadas.
+- **Paseo guiado** de 9 paradas que encuadra el mapa y abre el detalle de los cables:
+  secciones circulares con los tubos en norma TIA-598, espectro CWDM por longitud de onda,
+  ocupación canal a canal y comparativa 1 G / 10 G.
+- **Ficha de cada nodo**, en modal y en página propia (`/nodos/<id>`): planos de ubicación,
+  planta y alzados del pliego, equipamiento OLT, ONT en servicio, semanas de migración,
+  poblaciones y árboles PON compartidos.
+- **Gantt** de la Fase 2, semanas 13–58, coloreado por área.
+- **Visor 3D** que recrea el interior de cada sala interpretando planta y alzados.
+
+## Regla de oro
+
+**Todos los datos salen del pliego.** Nada se inventa. Cuando algo es interpretación o
+representación ilustrativa y no un dato literal, se dice en la propia interfaz
+(«ilustrativo», «sin desglose en el pliego», «recreación interpretada»). El visor 3D lleva
+su aviso en la cabecera: no es una fotografía ni un modelo real del nodo.
+
+## Desarrollo
+
+```sh
+npm install
+npm run dev      # servidor de desarrollo
+npm run build    # sitio estático en dist/
+npm run preview  # sirve dist/ tal y como quedará publicado
+npm run check    # astro check (tipos y plantillas)
+```
+
+Requiere Node 24 (ver `.nvmrc`).
+
+### Arquitectura
+
+Astro estático, sin JavaScript de servidor. Se construye **en build** todo lo determinista:
+secciones estáticas, tarjetas de nodo, enlaces de actuaciones, gantt, los 9 paneles de
+cable y las 21 páginas de ficha. Sólo son islas de cliente el diagrama con su toggle, el
+mapa y el paseo, el modal y el visor 3D, que además descarga `three` bajo demanda.
+
+```
+src/data/nodes.json     los 20 nodos + el PAO, sin base64
+src/lib/graphics.ts     generadores SVG puros (CWDM, secciones, ocupación, PAO, gantt)
+src/lib/detalles.ts     los 9 paneles del paseo, compuestos en build
+src/scripts/            islas: diagrama, mapa, paseo, modal, visor 3D
+public/planos/          los 105 planos del pliego, como ficheros
+tools/extract-legacy.mjs regenera dataset y planos desde el build legado
+```
+
+### Regenerar los datos
+
+El sitio nació como un único `asturcon-xgspon.html` autocontenido de 5,3 MB, generado por
+una cadena de scripts Python. Ese fichero no se versiona (es en su mayor parte base64
+duplicado de los planos que ya están en `public/planos/`); el extractor lo toma por ruta:
+
+```sh
+node tools/extract-legacy.mjs /ruta/a/asturcon-xgspon.html
+```
+
+Ver [`docs/FUENTES.md`](docs/FUENTES.md).
+
+## Despliegue
+
+GitHub Pages como sitio de proyecto: `https://fercarcedo.github.io/potru/`. El workflow
+`.github/workflows/deploy.yml` construye y publica en cada push a `main`. Como el sitio
+cuelga de `/potru/`, todo enlace o recurso propio pasa por `import.meta.env.BASE_URL`.
+
+## Licencia
+
+El **código** de este repositorio se publica bajo licencia [MIT](LICENSE).
+
+**Quedan excluidos de esa licencia** los planos, ilustraciones y datos extraídos del pliego
+de condiciones técnicas —en particular todo el contenido de `public/planos/` y el conjunto
+de datos de `src/data/nodes.json`—, cuya autoría corresponde a **GIT · Gestión de
+Infraestructuras Públicas de Telecomunicaciones del Principado de Asturias S.A.U., M.P.**
+Se reproducen aquí por su carácter de documentación pública de contratación, con fines
+divulgativos y con atribución a su origen.
