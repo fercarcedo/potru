@@ -1,0 +1,74 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Visor divulgativo de la renovación GPON → XGSPON de la red pública FTTH ASTURCON, según el pliego CON 06/2025 de GIT. Proyecto independiente.',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const nav = [
+  ['#viz', 'Red en vivo'],
+  ['#mapa', 'Mapa'],
+  ['#nodos', 'Nodos'],
+  ['#arquitectura', 'Arquitectura'],
+  ['#actuaciones', 'Actuaciones'],
+  ['#fases', 'Fases'],
+];
+/** On node pages the anchors have to point back at the home page. */
+const anchorPrefix = Astro.url.pathname === base ? '' : base;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body>
+    <nav>
+      <div class="wrap">
+        <div class="brand">
+          <b>POTRU</b> · CON 06/2025
+          <span
+            style="color:#41e3d2;font-size:.66rem;border:1px solid #1c2c44;border-radius:4px;padding:2px 6px;margin-left:8px"
+            >v13 · PAO FOTO</span
+          >
+        </div>
+        <ul>
+          {nav.map(([href, label]) => <li><a href={`${anchorPrefix}${href}`}>{label}</a></li>)}
+        </ul>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer>
+      <div class="wrap">
+        <span class="disclaimer"
+          ><span class="i">ⓘ</span><span
+            ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias ·
+            fuente: pliego público CON 06/2025</span
+          ></span
+        >
+        <span
+          >Fuente: Pliego de Condiciones Técnicas · EXPTE CON 06/2025 · aprobado 22-12-2025 ·
+          Datos, planos y calendario extraídos del propio pliego</span
+        >
+        <span class="mono"
+          >GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de
+          Asturias S.A.U., M.P.</span
+        >
+      </div>
+    </footer>
+  </body>
+</html>

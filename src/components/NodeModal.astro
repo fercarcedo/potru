@@ -1,0 +1,37 @@
+---
+// Shell of the node record modal. src/scripts/modal.ts fills it from
+// nodes.json; the /nodos/<id> pages serve the same material statically for
+// anyone arriving by direct link or without JavaScript.
+---
+
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="mimg">
+      <span class="interior-badge" id="mBadge" style="display:none"
+        >VISTA INTERIOR · PLANOS DEL PLIEGO</span
+      >
+      <img id="mImg" alt="Plano del nodo" />
+      <div class="gal-tabs" id="mTabs"></div>
+      <button class="close" id="mClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="mbody">
+      <h3 id="mTitle"></h3>
+      <div class="addr" id="mAddr"></div>
+      <p class="env" id="mEnv"></p>
+      <div id="mPobl" style="display:none;margin-bottom:18px"></div>
+      <p class="extra" id="mExtra" style="display:none"></p>
+      <div class="olt-wrap"><table class="olt-table" id="mOlt"></table></div>
+      <div class="mig-strip" id="mMig"></div>
+      <button class="tour-btn" id="mWalk" style="margin-bottom:18px;width:100%"
+        >🚶 Recorrer el interior en 3D <span style="color:var(--muted);font-size:.66rem"
+          >· simulación generada a partir de planta y alzados</span
+        ></button
+      >
+      <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
+      <div class="act-links" id="mActs"></div>
+      <a class="mono" id="mPerma" href="#" style="display:block;margin-top:16px;font-size:.72rem"
+        >↗ Abrir la ficha completa</a
+      >
+    </div>
+  </div>
+</div>

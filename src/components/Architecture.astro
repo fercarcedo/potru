@@ -1,0 +1,69 @@
+---
+const steps: [string, string, string][] = [
+  [
+    'Usuario',
+    'ONT',
+    'Terminal activo en el domicilio. Conecta los servicios del operador a la fibra de acometida.',
+  ],
+  [
+    'Red de acceso',
+    'Splitters 1:16 → 1:4',
+    'Red pasiva primaria y secundaria. División óptica final 1×4×16 = 64 usuarios/fibra (Cangas del Narcea: 1:32). 806 redes PON.',
+  ],
+  [
+    'Activo',
+    'Nodo primario · OLT',
+    '20 nodos con OLT Alcatel 7342 (R4.8.13) o Ericsson BLM 1500 (R8.4.0), inyección CATV, energía CC, baterías y transmisión.',
+  ],
+  [
+    'Pasivo',
+    'Nodo secundario',
+    'Sin electrónica: repartidores ópticos colgados de un primario por fibra. El pliego general cita 5, pero las fichas por área detallan 9: Vegadeo, La Caridad y Soto del Barco (O.), Cabranes y Villamayor (SE.) y El Entrego, Sotrondio, Barredos y Pola de Laviana (Nalón).',
+  ],
+  [
+    'Transporte',
+    'Redes troncales',
+    'Fibra propia de gran capacidad o fibra alquilada con CWDM Transmode (5800 / 8133 / 8140) hacia el PAO.',
+  ],
+  [
+    'Interconexión',
+    'PAO Gijón',
+    'Enrutador Alcatel 7750SR-7 al 100% de ocupación. Jaulas de operadores, pasarelas POTS V5.2 y equipos auxiliares.',
+  ],
+];
+---
+
+<section
+  id="arquitectura"
+  style="background:linear-gradient(180deg,transparent,rgba(255,180,84,.03),transparent)"
+>
+  <div class="wrap">
+    <div class="eyebrow warm">Situación de partida</div>
+    <h2>Arquitectura actual de la red ASTURCON</h2>
+    <p class="lead">
+      Red FTTH pública, neutra y mayorista, operada por GIT desde 2004 para llevar banda ancha donde
+      la iniciativa privada no despliega. Los operadores minoristas prestan sus servicios (HSI,
+      TVoIP, VoD, VoIP, CATV en RF y telefonía POTS) sobre una misma ONT, con conectividad
+      transparente hasta el PAO.
+    </p>
+    <div class="arch-flow">
+      {
+        steps.map(([k, h, p]) => (
+          <div class="arch-step">
+            <span class="k">{k}</span>
+            <h4>{h}</h4>
+            <p>{p}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="ont-bars">
+      <h3 style="font-size:1.05rem;margin-bottom:6px">Parque de ONT en producción</h3>
+      <p style="font-size:.85rem;color:var(--muted)">
+        La heterogeneidad y antigüedad del parque motiva el suministro de hasta 7.000 ONT GPON
+        nuevas en la parte variable del contrato.
+      </p>
+      <div id="ontBars" style="margin-top:16px"></div>
+    </div>
+  </div>
+</section>

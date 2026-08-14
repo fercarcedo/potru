@@ -1,0 +1,94 @@
+---
+import AffectedNodes from './AffectedNodes.astro';
+---
+
+<section id="actuaciones">
+  <div class="wrap">
+    <div class="eyebrow">Objeto del contrato</div>
+    <h2>Actuaciones previstas</h2>
+    <p class="lead">
+      Parte fija llave en mano de alcance cerrado + parte variable activada según necesidades. Cada
+      actuación indica los nodos a los que afecta: pulsa un nombre para abrir su ficha.
+    </p>
+
+    <h3 style="margin:34px 0 14px;font-size:1.1rem">Parte fija</h3>
+    <div class="grid g3">
+      <div class="card" id="act-pf1">
+        <h3><span class="pill fix">PF-1</span> Renovación de los 20 nodos</h3>
+        <ul>
+          <li>20 nuevos equipos OLT con tecnología dual GPON / XGSPON, autónomos de la red actual</li>
+          <li>Arquitectura y diseño operacional a propuesta del licitador</li>
+          <li>Sistema integral de gestión de elementos + asesoramiento técnico</li>
+        </ul>
+        <AffectedNodes aff="all" />
+      </div>
+      <div class="card" id="act-pf2">
+        <h3><span class="pill fix">PF-2</span> Elementos auxiliares</h3>
+        <ul>
+          <li>Nodo de pruebas completo (maqueta) en oficinas GIT de Oviedo para tests y formación</li>
+          <li>
+            2 enrutadores nuevos: uno en el PAO de Gijón y otro en el nodo de Mieres, interconectados
+            con el 7750 actual
+          </li>
+        </ul>
+        <AffectedNodes aff="pao,mieres" />
+      </div>
+      <div class="card" id="act-pf3">
+        <h3><span class="pill fix">PF-3</span> Repuestos</h3>
+        <ul>
+          <li>
+            Suministro de material de repuesto para mantener el equipamiento durante toda la vida del
+            contrato
+          </li>
+        </ul>
+        <AffectedNodes aff="all" />
+      </div>
+    </div>
+
+    <h3 style="margin:34px 0 14px;font-size:1.1rem">Parte variable</h3>
+    <div class="grid g3">
+      <div class="card" id="act-pv1">
+        <h3><span class="pill var">PV-1</span> Hasta 3.000 ONT GPON</h3>
+        <p>
+          Para migrar usuarios cuyas ONT no tienen capacidad suficiente (p. ej. Alcatel I-221E-A,
+          limitada a 100 Mb/s). Se entregan nodo a nodo, en el momento de su migración.
+        </p>
+        <AffectedNodes aff="all" />
+      </div>
+      <div class="card" id="act-pv2">
+        <h3><span class="pill var">PV-2</span> Hasta 4.000 ONT GPON</h3>
+        <p>
+          Para sustituir ONT incompatibles con el nuevo equipamiento, según el calendario de
+          migración de cada nodo.
+        </p>
+        <AffectedNodes aff="all" />
+      </div>
+      <div class="card" id="act-pv3">
+        <h3><span class="pill var">PV-3</span> Hasta 100 ONT XGSPON</h3>
+        <p>Primeros terminales de 10 Gb/s simétricos compatibles con la nueva plataforma.</p>
+      </div>
+      <div class="card" id="act-pv4">
+        <h3><span class="pill var">PV-4</span> Hasta 5 nodos nuevos</h3>
+        <p>
+          Expansión de la red a nuevas zonas de cobertura: número, dimensionado y ubicación según
+          necesidades.
+        </p>
+      </div>
+      <div class="card" id="act-pv5">
+        <h3><span class="pill var">PV-5</span> Ampliación de capacidad</h3>
+        <p>
+          Crecimiento del equipamiento instalado en la parte fija para absorber ampliaciones de la
+          red renovada.
+        </p>
+        <AffectedNodes aff="all" />
+      </div>
+      <div class="card" id="act-pv67">
+        <h3><span class="pill var">PV-6 · PV-7</span> Licencias y reparaciones</h3>
+        <p>
+          Licencias de uso si la solución las requiere, y servicio de reparación/sustitución de
+          elementos averiados.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

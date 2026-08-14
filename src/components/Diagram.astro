@@ -1,0 +1,38 @@
+---
+// The end-to-end schematic is drawn by the src/scripts/diagram.ts island: its
+// contents change with the GPON ↔ XGSPON toggle and it carries animated pulses.
+---
+
+<section id="viz">
+  <div class="wrap">
+    <div class="eyebrow">Visualización inmersiva</div>
+    <h2>Del salón del usuario al PAO de Gijón</h2>
+    <p class="lead">
+      Cadena completa de la red: ONT → red de acceso pasiva (splitters 1:16 y 1:4) → nodo primario
+      con OLT → red troncal → punto de acceso de operadores. Cambia entre la red actual y la
+      renovada, y pulsa cada elemento para conocer su papel.
+    </p>
+    <div class="mode-toggle" role="tablist" aria-label="Estado de la red">
+      <button id="btnGpon" class="active-gpon" role="tab" aria-selected="true"
+        >◉ RED ACTUAL · GPON</button
+      >
+      <button id="btnXgs" role="tab" aria-selected="false">◎ RED RENOVADA · GPON/XGSPON</button>
+    </div>
+    <div class="diagram-shell">
+      <svg id="netDiagram" viewBox="0 0 1160 430" role="img" aria-label="Esquema de la red ASTURCON"
+      ></svg>
+      <div class="diag-caption">
+        <span><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gb/s ↓</span
+        >
+        <span><span class="dot" style="background:var(--xgs)"></span> Portadora XGSPON · 10 Gb/s ↓</span
+        >
+        <span><span class="dot" style="background:#5a6f8d"></span> Elemento pasivo (no cambia)</span>
+        <span class="mono" style="margin-left:auto">▶ pulsos = tráfico descendente</span>
+      </div>
+    </div>
+    <div class="info-box" id="infoBox">
+      <b>Explora el esquema.</b> Haz clic sobre la ONT, los splitters, el nodo OLT, la troncal o el PAO
+      para ver qué son y cómo les afecta la renovación.
+    </div>
+  </div>
+</section>

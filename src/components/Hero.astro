@@ -1,0 +1,44 @@
+---
+const stats: [string, string, boolean?][] = [
+  ['52', 'poblaciones con cobertura'],
+  ['60.051', 'puntos serviciables'],
+  ['+8.400', 'usuarios activos'],
+  ['20', 'nodos primarios a renovar'],
+  ['806', 'redes PON en producción'],
+  ['10 Gb/s', 'enlace mínimo por nueva OLT', true],
+];
+---
+
+<header class="hero">
+  <svg id="heroFiber" preserveAspectRatio="none" viewBox="0 0 1400 600" aria-hidden="true"></svg>
+  <div class="wrap" style="position:relative">
+    <span class="tag">PLIEGO DE CONDICIONES TÉCNICAS · EXPTE CON 06/2025 · GITPA</span>
+    <h1>
+      La luz de Asturias cambia de longitud de onda:<br /><span class="from">GPON</span> → <span
+        class="to">XGSPON</span
+      >
+    </h1>
+    <p class="sub">
+      Renovación completa del equipamiento electrónico FTTH de la red pública ASTURCON: 20 nodos
+      primarios pasan de OLT Alcatel 7342 y Ericsson BLM 1500 a una nueva generación dual
+      GPON/XGSPON, con nuevos enrutadores, nuevo sistema de gestión y migración ordenada de todos
+      los usuarios.
+    </p>
+    <p class="disclaimer">
+      <span class="i">ⓘ</span><span
+        ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias · fuente:
+        pliego público CON 06/2025</span
+      >
+    </p>
+    <div class="stats">
+      {
+        stats.map(([n, l, hl]) => (
+          <div class={hl ? 'stat hl' : 'stat'}>
+            <div class="n">{n}</div>
+            <div class="l">{l}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</header>

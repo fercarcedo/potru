@@ -1,0 +1,66 @@
+---
+import { ALL_NODES, asset, ontCount } from '../lib/data';
+
+const base = import.meta.env.BASE_URL;
+/** The 46 weeks of phase 2 are measured against the contract's 58. */
+const TOTAL_WEEKS = 58;
+---
+
+<section id="nodos" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow">Ficha por nodo</div>
+    <h2>Los 20 nodos, uno a uno</h2>
+    <p class="lead">
+      Cada ficha reúne los datos del pliego: plano de ubicación oficial de GIT, equipamiento OLT en
+      producción, ONT en servicio y semanas previstas de renovación (planificación inicial, referida
+      a la firma del contrato). La barra inferior de cada tarjeta sitúa su ventana dentro de las 46
+      semanas de la Fase 2.
+    </p>
+    <div class="node-grid" id="nodeGrid">
+      {
+        ALL_NODES.map((n) => {
+          const cover = n.gallery[0]!;
+          const left = (((n.weekFrom - 1) / TOTAL_WEEKS) * 100).toFixed(1);
+          const width = (((n.weekTo - n.weekFrom + 1) / TOTAL_WEEKS) * 100).toFixed(1);
+          const isPao = n.id === 'pao';
+          return (
+            <a class="ncard" href={`${base}nodos/${n.id}`} data-node={n.id}>
+              <img
+                src={asset(cover.src)}
+                alt={`Plano de ${n.name}`}
+                width={cover.w}
+                height={cover.h}
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="body">
+                <h4>
+                  <span class="adot" style={`background:${n.color}`} />
+                  {n.name}
+                </h4>
+                {n.towns.length > 0 && (
+                  <div style="font-size:.7rem;color:var(--muted);margin-top:3px;line-height:1.4">
+                    {n.towns.slice(0, 3).join(' · ')}
+                    {n.towns.length > 3 ? ` · +${n.towns.length - 3}` : ''}
+                  </div>
+                )}
+                <div class="meta">
+                  <span>
+                    {isPao ? 'PAO · Fase 1' : `${n.olts.length} OLT · ${ontCount(n)} ONT`}
+                  </span>
+                  <span>
+                    {n.gallery.length > 1 && <span class="int-flag">⌂ INTERIOR</span>}{' '}
+                    {`sem ${n.weekFrom}–${n.weekTo}`}
+                  </span>
+                </div>
+                <div class="weeks">
+                  <i style={`left:${left}%;width:${width}%;background:${n.color}`} />
+                </div>
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

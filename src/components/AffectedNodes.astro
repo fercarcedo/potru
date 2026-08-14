@@ -1,0 +1,26 @@
+---
+import { NODES, byId } from '../lib/data';
+
+interface Props {
+  /** 'all' = the 20 primary nodes; otherwise a comma-separated list of ids */
+  aff: string;
+}
+
+const { aff } = Astro.props;
+const ids = aff === 'all' ? NODES.map((n) => n.id) : aff.split(',');
+const base = import.meta.env.BASE_URL;
+---
+
+<div class="affected" data-aff={aff}>
+  <span style="color:#5a6f8d">Nodos afectados:</span>{' '}
+  {
+    ids.map((id, i) => (
+      <>
+        {i > 0 && ' · '}
+        <a href={`${base}nodos/${id}`} data-node={id}>
+          {byId[id]!.name}
+        </a>
+      </>
+    ))
+  }
+</div>

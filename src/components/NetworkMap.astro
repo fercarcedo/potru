@@ -1,0 +1,64 @@
+---
+import { DETAILS } from '../lib/details';
+
+// The map is drawn by the src/scripts/map.ts island, which the tour
+// (src/scripts/tour.ts) builds on. The 9 "see inside the cables" panels do
+// arrive rendered from the build: the island only reveals the current one.
+---
+
+<section id="mapa" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow">Territorio</div>
+    <h2>7 áreas geográficas · 20 nodos primarios · 9 secundarios pasivos</h2>
+    <p class="lead">
+      La red está presente en 24 de los 78 concejos asturianos. Los círculos sólidos son nodos
+      primarios (con OLT a renovar); los huecos, nodos secundarios: emplazamientos sin electrónica,
+      solo con repartidores ópticos pasivos colgados de un primario por fibra — la renovación no
+      actúa en ellos. Los puntos pequeños son las poblaciones servidas desde cada nodo. Pulsa
+      cualquier nodo para su ficha o inicia el paseo guiado.
+    </p>
+    <div class="tour-bar">
+      <button class="tour-btn" id="tourStart">▶ Iniciar paseo por la red</button>
+      <button class="tour-btn ghost" id="townsToggle">◉ Poblaciones servidas: visibles</button>
+      <div class="tr-leg">
+        <span
+          ><span class="tr-line"></span> Fibra propia (p. ej. Cudillero–Vegadeo, Autovía Minera)</span
+        >
+        <span
+          ><span class="tr-line rent"></span> Fibra alquilada + CWDM (p. ej. Cudillero–Gijón,
+          suroriente)</span
+        >
+      </div>
+    </div>
+    <div class="map-shell" style="margin-top:30px">
+      <svg
+        id="astMap"
+        viewBox="0 0 1160 470"
+        role="img"
+        aria-label="Mapa esquemático de nodos ASTURCON"></svg>
+      <div class="tooltip" id="mapTip"></div>
+      <div class="area-legend" id="areaLegend"></div>
+    </div>
+    <div class="tour-panel" id="tourPanel">
+      <div class="tour-step" id="tpStep"></div>
+      <h4 id="tpTitle"></h4>
+      <p id="tpText"></p>
+      <button class="tour-btn ghost" id="tpDetBtn" style="margin-top:12px"
+        >■■ Ver los cables por dentro</button
+      >
+      <div
+        id="tpDet"
+        style="display:none;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.7;color:var(--muted);overflow-x:auto"
+      >
+        {DETAILS.map((panel, i) => <div data-det={i} hidden set:html={panel} />)}
+      </div>
+      <div class="tour-nav">
+        <button class="tour-btn ghost" id="tpPrev">◀ Anterior</button>
+        <button class="tour-btn" id="tpNext">Siguiente ▶</button>
+        <button class="tour-btn" id="tpEnter" style="display:none">⌂ Entrar en el nodo</button>
+        <button class="tour-btn ghost" id="tpExit" style="margin-left:auto">✕ Salir del paseo</button
+        >
+      </div>
+    </div>
+  </div>
+</section>
