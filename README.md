@@ -53,20 +53,20 @@ mapa y el paseo, el modal y el visor 3D, que además descarga `three` bajo deman
 ```
 src/data/nodes.json     los 20 nodos + el PAO, sin base64
 src/lib/graphics.ts     generadores SVG puros (CWDM, secciones, ocupación, PAO, gantt)
-src/lib/detalles.ts     los 9 paneles del paseo, compuestos en build
+src/lib/details.ts      los 9 paneles del paseo, compuestos en build
 src/scripts/            islas: diagrama, mapa, paseo, modal, visor 3D
 public/planos/          los 105 planos del pliego, como ficheros
-tools/extract-legacy.mjs regenera dataset y planos desde el build legado
 ```
 
-### Regenerar los datos
+### Los datos
 
-El sitio nació como un único `asturcon-xgspon.html` autocontenido de 5,3 MB, generado por
-una cadena de scripts Python. Ese fichero no se versiona (es en su mayor parte base64
-duplicado de los planos que ya están en `public/planos/`); el extractor lo toma por ruta:
+`src/data/nodes.json` y `public/planos/` son la fuente de verdad: se editan aquí, a mano y
+contra el pliego. Nacieron de un extractor de un solo uso que leyó el build legado; ese
+extractor ya no está en el árbol —cumplió su función y volver a ejecutarlo hoy machacaría
+cualquier corrección posterior—, pero sigue recuperable en el commit `dd651e1`:
 
 ```sh
-node tools/extract-legacy.mjs /ruta/a/asturcon-xgspon.html
+git show dd651e1:tools/extract-legacy.mjs
 ```
 
 Ver [`docs/FUENTES.md`](docs/FUENTES.md).

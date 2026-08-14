@@ -43,24 +43,24 @@ Antes de esta migración el sitio era un solo `asturcon-xgspon.html` de 5,3 MB (
 `patch_v*.py`) que embebía los 105 planos en base64 dentro de un objeto `DATA`.
 
 Ese HTML tampoco se versiona: sería 5,3 MB de base64 duplicado de lo que ya vive en
-`public/planos/`. Para regenerar el dataset y las imágenes desde él:
+`public/planos/`.
 
-```sh
-node tools/extract-legacy.mjs "/ruta/a/asturcon-xgspon.html"
-node tools/extract-legacy.mjs "/ruta/a/asturcon-xgspon.html" --no-images  # sólo el JSON
-```
-
-El extractor localiza `const DATA = {`, empareja llaves hasta el cierre y lo interpreta
-como JSON. **Nunca lo trata como texto plano**: el pipeline de parches dejó secuencias
-`\uXXXX` literales dentro de los strings JS, y sólo se resuelven bien al parsear.
-
-Escribe:
+De él salieron, mediante un extractor de un solo uso (`tools/extract-legacy.mjs`,
+recuperable con `git show dd651e1:tools/extract-legacy.mjs`):
 
 - `src/data/nodes.json` — los 20 nodos primarios y el PAO, con cada plano convertido en una
   entrada de galería (ruta relativa + tamaño intrínseco leído del marcador SOF del JPEG).
-- `public/planos/*.jpg` — las 105 imágenes, byte a byte como venían. No se recodifican ni
-  se redimensionan: son material de origen del pliego. Cuando un nodo repite vista (Tineo
+- `public/planos/*.jpg` — las 105 imágenes, byte a byte como venían. No se recodificaron ni
+  se redimensionaron: son material de origen del pliego. Cuando un nodo repite vista (Tineo
   tiene dos «Alzado derecho») el segundo fichero lleva sufijo `-2`.
+
+El extractor localizaba `const DATA = {`, emparejaba llaves hasta el cierre y lo
+interpretaba como JSON. **Nunca lo trataba como texto plano**: el pipeline de parches dejó
+secuencias `\uXXXX` literales dentro de los strings JS, y sólo se resuelven bien al parsear.
+
+**Ya no está en el árbol y no debe reejecutarse a ciegas**: borraba `public/planos/` entero
+y reescribía el JSON, así que hoy destruiría cualquier corrección hecha desde entonces. La
+fuente de verdad son el JSON y las imágenes versionados; se editan a mano contra el pliego.
 
 ## Atribución y licencia
 

@@ -9,8 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
-    "extract": "node tools/extract-legacy.mjs"
+    "check": "astro check"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",
