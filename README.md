@@ -22,7 +22,9 @@ Visor divulgativo de la renovación tecnológica **GPON → XGSPON** de la red p
   planta y alzados del pliego, equipamiento OLT, ONT en servicio, semanas de migración,
   poblaciones y árboles PON compartidos.
 - **Gantt** de la Fase 2, semanas 13–58, coloreado por área.
-- **Visor 3D** que recrea el interior de cada sala interpretando planta y alzados.
+- **Visor 3D a escala** de cada sala: recinto, puerta y armarios colocados según el plano de
+  planta, y cada OLT con sus tarjetas y sus puertos GPON reales (activos encendidos). Se recorre
+  con WASD, se mira arrastrando y se acerca con la rueda o pellizcando.
 
 ## Regla de oro
 
@@ -51,7 +53,8 @@ cable y las 21 páginas de ficha. Sólo son islas de cliente el diagrama con su 
 mapa y el paseo, el modal y el visor 3D, que además descarga `three` bajo demanda.
 
 ```
-src/data/nodes.json     los 20 nodos + el PAO, sin base64
+src/data/nodes.json     los 20 nodos + el PAO, con tarjetas y puertos por OLT
+src/data/rooms.json     planta de cada sala: recinto, puerta y armarios, en metros
 src/lib/graphics.ts     generadores SVG puros (CWDM, secciones, ocupación, PAO, gantt)
 src/lib/details.ts      los 9 paneles del paseo, compuestos en build
 src/scripts/            islas: diagrama, mapa, paseo, modal, visor 3D
@@ -60,8 +63,10 @@ public/planos/          los 105 planos del pliego, como ficheros
 
 ### Los datos
 
-`src/data/nodes.json` y `public/planos/` son la fuente de verdad: se editan aquí, a mano y
-contra el pliego. Nacieron de un extractor de un solo uso que leyó el build legado; ese
+`src/data/nodes.json`, `src/data/rooms.json` y `public/planos/` son la fuente de verdad: se
+editan aquí, a mano y contra el pliego. `nodes.json` incluye, por cada OLT, las tarjetas y los
+puertos GPON que da su tabla de equipamiento; `rooms.json` transcribe en metros el plano de
+planta de cada nodo, y es lo que dibuja el visor 3D. Nacieron de un extractor de un solo uso que leyó el build legado; ese
 extractor ya no está en el árbol —cumplió su función y volver a ejecutarlo hoy machacaría
 cualquier corrección posterior—, pero sigue recuperable en el commit `dd651e1`:
 
@@ -82,8 +87,8 @@ cuelga de `/potru/`, todo enlace o recurso propio pasa por `import.meta.env.BASE
 El **código** de este repositorio se publica bajo licencia [MIT](LICENSE).
 
 **Quedan excluidos de esa licencia** los planos, ilustraciones y datos extraídos del pliego
-de condiciones técnicas —en particular todo el contenido de `public/planos/` y el conjunto
-de datos de `src/data/nodes.json`—, cuya autoría corresponde a **GIT · Gestión de
+de condiciones técnicas —en particular todo el contenido de `public/planos/` y los conjuntos
+de datos de `src/data/nodes.json` y `src/data/rooms.json`—, cuya autoría corresponde a **GIT · Gestión de
 Infraestructuras Públicas de Telecomunicaciones del Principado de Asturias S.A.U., M.P.**
 Se reproducen aquí por su carácter de documentación pública de contratación, con fines
 divulgativos y con atribución a su origen.

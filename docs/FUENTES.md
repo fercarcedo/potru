@@ -25,16 +25,31 @@ licitación en PLACSP.
   de fases y semanas por nodo**, **descripción de troncales y sistemas CWDM**,
   **envolventes de cada nodo** y **poblaciones servidas**: pliego, apartados generales y
   fichas por área.
+- **Tarjetas y puertos por OLT**: la columna TARJETAS de cada tabla de equipamiento, más la
+  prosa que la acompaña («equipado con 16 tarjetas de 2 puertos GPON GLT2A»). De ahí salen
+  `cards`, `cardModel` y `portsPerCard` en `src/data/nodes.json`. Los modelos de tarjeta son
+  GLT2A y GLT2B (2 puertos), GLT4A (4 puertos) y las de 8 puertos del Ericsson BLM 1500, que el
+  pliego no nombra.
 - **Planos** de ubicación, planta y alzados de los 20 nodos y del PAO
   (`public/planos/*.jpg`, 105 imágenes): anexos gráficos del pliego.
+- **Distribución de cada sala** (`src/data/rooms.json`): transcrita en metros del plano de planta
+  de cada nodo — contorno del recinto, hueco de puerta y cada armario con su ancho, su fondo y su
+  rótulo. Los planos de Blimea, Mieres y Tineo se leyeron del PDF a 400 ppp, porque en los JPEG
+  de `public/planos/` los rótulos de bastidor son ilegibles. Se modela sólo el recinto de
+  ASTURCON: lo colindante ajeno (centro de transformación de Hidrocantábrico, sala SCC-BO,
+  pasillos) queda como muro ciego.
 - **Discrepancias documentadas en la propia interfaz**: el pliego general cita 5 nodos
   secundarios, pero las fichas por área detallan 9 (Vegadeo, La Caridad y Soto del Barco en
   el Occidente; Cabranes y Villamayor en el Suroriente; El Entrego, Sotrondio, Barredos y
   Pola de Laviana en el Nalón). El sitio muestra 9 y explica la diferencia.
+- **Incoherencias del propio pliego**, transcritas tal cual y anotadas en el dato: NVI/1C dice
+  «7 tarjetas de 8 puertos» pero su tabla da 44 puertos totales; BLI/1B y BLI/9B registran más
+  puertos activos que totales (6/5 y 12/11); y la prosa de MUR/1D dice «48 tarjetas» donde su
+  tabla dice 4 (4 × 8 = 32 puertos, que es lo que cuadra).
 - **Lo que NO es literal** se marca como tal donde aparece: el reparto de tubos de la
   troncal de la Autovía Minera es ilustrativo (la segregación hacia el Nalón sí es literal),
-  los tubos 1–15 del TROMIENSCFO128 figuran sin desglose, y todo el visor 3D es una
-  recreación interpretada a partir de planta y alzados, nunca una fotografía.
+  los tubos 1–15 del TROMIENSCFO128 figuran sin desglose, y en el visor 3D los acabados, los colores y el
+  aspecto de los equipos son interpretación: el plano da huellas y rótulos, no fotografías.
 
 ## El build legado
 
