@@ -8,13 +8,17 @@
       "address": "Avenida de Galicia s/n · 33118 Muros de Nalón",
       "enclosure": "Contenedor prefabricado de 9 m² (6 m² útiles), 2,40 m de altura libre. 2 m² de planta libre.",
       "olts": [
-        [
-          "MUR/1D",
-          "Ericsson BLM 1500",
-          22,
-          32,
-          339
-        ]
+        {
+          "code": "MUR/1D",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 4,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 22,
+          "portsTotal": 32,
+          "onts": 339,
+          "note": "La tarjeta PON instalada en la ranura 10 es de pruebas."
+        }
       ],
       "weekFrom": 13,
       "weekTo": 17,
@@ -75,13 +79,16 @@
       "address": "La Pateta s/n · 33700 Villar (Valdés)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "LUA/1C",
-          "Ericsson BLM 1500",
-          26,
-          40,
-          449
-        ]
+        {
+          "code": "LUA/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 5,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 26,
+          "portsTotal": 40,
+          "onts": 449
+        }
       ],
       "weekFrom": 15,
       "weekTo": 19,
@@ -140,13 +147,17 @@
       "address": "c/ Manuel Suárez s/n · 33710 Navia",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "NVI/1C",
-          "Ericsson BLM 1500",
-          35,
-          44,
-          561
-        ]
+        {
+          "code": "NVI/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 7,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 35,
+          "portsTotal": 44,
+          "onts": 561,
+          "note": "El pliego describe 7 tarjetas de 8 puertos pero su tabla da 44 puertos totales; se respeta la tabla."
+        }
       ],
       "weekFrom": 17,
       "weekTo": 21,
@@ -208,13 +219,16 @@
       "address": "c/ La Fuente s/n · 33760 Castropol",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "CAS/1C",
-          "Ericsson BLM 1500",
-          34,
-          48,
-          323
-        ]
+        {
+          "code": "CAS/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 6,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 34,
+          "portsTotal": 48,
+          "onts": 323
+        }
       ],
       "weekFrom": 19,
       "weekTo": 23,
@@ -291,13 +305,16 @@
       "address": "c/ De Mántaras s/n · Tapia de Casariego",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "TAP/1C",
-          "Ericsson BLM 1500",
-          41,
-          48,
-          272
-        ]
+        {
+          "code": "TAP/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 6,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 41,
+          "portsTotal": 48,
+          "onts": 272
+        }
       ],
       "weekFrom": 21,
       "weekTo": 24,
@@ -358,13 +375,16 @@
       "address": "c/ Julio Fernández Lamuño · Tineo",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "TIN/2A",
-          "Alcatel 7342",
-          21,
-          22,
-          285
-        ]
+        {
+          "code": "TIN/2A",
+          "vendor": "Alcatel 7342",
+          "cards": 11,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 21,
+          "portsTotal": 22,
+          "onts": 285
+        }
       ],
       "weekFrom": 23,
       "weekTo": 26,
@@ -424,20 +444,26 @@
       "address": "c/ Parque del Molín s/n · 33800 Cangas del Narcea",
       "enclosure": "Único nodo de la red con espliteado 1:32 (el resto, 1:64).",
       "olts": [
-        [
-          "CAN/1A",
-          "Alcatel 7342",
-          32,
-          32,
-          214
-        ],
-        [
-          "CAN/4A",
-          "Alcatel 7342",
-          25,
-          26,
-          135
-        ]
+        {
+          "code": "CAN/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 214
+        },
+        {
+          "code": "CAN/4A",
+          "vendor": "Alcatel 7342",
+          "cards": 13,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 25,
+          "portsTotal": 26,
+          "onts": 135
+        }
       ],
       "weekFrom": 25,
       "weekTo": 29,
@@ -496,34 +522,46 @@
       "address": "Avenida del Camino nº 6 · Nuevo Santullano · 33600 Mieres",
       "enclosure": "Nodo estratégico: sede del enrutador 7750 de Mieres y colector de las cuencas del Caudal, Aller y Nalón por fibra directa.",
       "olts": [
-        [
-          "MIE/2A",
-          "Alcatel 7342",
-          32,
-          32,
-          355
-        ],
-        [
-          "MIE/2B",
-          "Alcatel 7342",
-          32,
-          32,
-          344
-        ],
-        [
-          "MIE/7A",
-          "Alcatel 7342",
-          29,
-          30,
-          345
-        ],
-        [
-          "MIE/7B",
-          "Alcatel 7342",
-          14,
-          14,
-          87
-        ]
+        {
+          "code": "MIE/2A",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 355
+        },
+        {
+          "code": "MIE/2B",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 344
+        },
+        {
+          "code": "MIE/7A",
+          "vendor": "Alcatel 7342",
+          "cards": 15,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 29,
+          "portsTotal": 30,
+          "onts": 345
+        },
+        {
+          "code": "MIE/7B",
+          "vendor": "Alcatel 7342",
+          "cards": 7,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 14,
+          "portsTotal": 14,
+          "onts": 87
+        }
       ],
       "weekFrom": 27,
       "weekTo": 35,
@@ -587,20 +625,26 @@
       "address": "c/ Cava Baja nº 2 · 33630 Pola de Lena",
       "enclosure": "Nodo primario con dos OLT Alcatel.",
       "olts": [
-        [
-          "PLE/1A",
-          "Alcatel 7342",
-          32,
-          32,
-          206
-        ],
-        [
-          "PLE/5A",
-          "Alcatel 7342",
-          22,
-          22,
-          221
-        ]
+        {
+          "code": "PLE/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 206
+        },
+        {
+          "code": "PLE/5A",
+          "vendor": "Alcatel 7342",
+          "cards": 11,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 22,
+          "portsTotal": 22,
+          "onts": 221
+        }
       ],
       "weekFrom": 30,
       "weekTo": 37,
@@ -661,13 +705,16 @@
       "address": "Carretera de Busloñe s/n · 33162 Santa Eulalia de Morcín",
       "enclosure": "Nodo primario compacto (3 tarjetas).",
       "olts": [
-        [
-          "SEU/1A",
-          "Alcatel 7342",
-          6,
-          6,
-          204
-        ]
+        {
+          "code": "SEU/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 3,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 6,
+          "portsTotal": 6,
+          "onts": 204
+        }
       ],
       "weekFrom": 32,
       "weekTo": 38,
@@ -726,20 +773,26 @@
       "address": "Plaza de la Iglesia s/n · 33670 Moreda",
       "enclosure": "Nodo primario con dos OLT Alcatel.",
       "olts": [
-        [
-          "MOR/1A",
-          "Alcatel 7342",
-          20,
-          20,
-          312
-        ],
-        [
-          "MOR/1C",
-          "Alcatel 7342",
-          11,
-          12,
-          156
-        ]
+        {
+          "code": "MOR/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 10,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 20,
+          "portsTotal": 20,
+          "onts": 312
+        },
+        {
+          "code": "MOR/1C",
+          "vendor": "Alcatel 7342",
+          "cards": 6,
+          "cardModel": "GLT2A y GLT2B",
+          "portsPerCard": 2,
+          "portsActive": 11,
+          "portsTotal": 12,
+          "onts": 156
+        }
       ],
       "weekFrom": 34,
       "weekTo": 40,
@@ -801,13 +854,16 @@
       "address": "Calle Barraca Jto. s/n · 33686 Serrapio-Cabañaquinta (Aller)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "CAQ/1A",
-          "Alcatel 7342",
-          11,
-          12,
-          220
-        ]
+        {
+          "code": "CAQ/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 6,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 11,
+          "portsTotal": 12,
+          "onts": 220
+        }
       ],
       "weekFrom": 36,
       "weekTo": 41,
@@ -867,13 +923,16 @@
       "address": "Calle El Pino Jto. s/n · 33687 El Pino-Felechosa (Aller)",
       "enclosure": "Nodo primario compacto (3 tarjetas).",
       "olts": [
-        [
-          "FEL/1A",
-          "Alcatel 7342",
-          5,
-          6,
-          113
-        ]
+        {
+          "code": "FEL/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 3,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 5,
+          "portsTotal": 6,
+          "onts": 113
+        }
       ],
       "weekFrom": 38,
       "weekTo": 42,
@@ -932,62 +991,88 @@
       "address": "Calle Celso Solís nº 1 · 33960 Blimea",
       "enclosure": "El nodo más denso de la red: 8 OLT Alcatel en producción.",
       "olts": [
-        [
-          "BLI/1A",
-          "Alcatel 7342",
-          32,
-          32,
-          215
-        ],
-        [
-          "BLI/1B",
-          "Alcatel 7342",
-          6,
-          5,
-          25
-        ],
-        [
-          "BLI/2B",
-          "Alcatel 7342",
-          32,
-          32,
-          191
-        ],
-        [
-          "BLI/7B",
-          "Alcatel 7342",
-          20,
-          20,
-          101
-        ],
-        [
-          "BLI/8A",
-          "Alcatel 7342",
-          48,
-          48,
-          246
-        ],
-        [
-          "BLI/8B",
-          "Alcatel 7342",
-          40,
-          40,
-          194
-        ],
-        [
-          "BLI/9A",
-          "Alcatel 7342",
-          56,
-          56,
-          244
-        ],
-        [
-          "BLI/9B",
-          "Alcatel 7342",
-          12,
-          11,
-          31
-        ]
+        {
+          "code": "BLI/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 215
+        },
+        {
+          "code": "BLI/1B",
+          "vendor": "Alcatel 7342",
+          "cards": 3,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 6,
+          "portsTotal": 5,
+          "onts": 25,
+          "note": "El pliego registra más puertos activos (6) que totales (5); se transcribe tal cual."
+        },
+        {
+          "code": "BLI/2B",
+          "vendor": "Alcatel 7342",
+          "cards": 16,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 32,
+          "portsTotal": 32,
+          "onts": 191
+        },
+        {
+          "code": "BLI/7B",
+          "vendor": "Alcatel 7342",
+          "cards": 10,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 20,
+          "portsTotal": 20,
+          "onts": 101
+        },
+        {
+          "code": "BLI/8A",
+          "vendor": "Alcatel 7342",
+          "cards": 12,
+          "cardModel": "GLT4A",
+          "portsPerCard": 4,
+          "portsActive": 48,
+          "portsTotal": 48,
+          "onts": 246
+        },
+        {
+          "code": "BLI/8B",
+          "vendor": "Alcatel 7342",
+          "cards": 10,
+          "cardModel": "GLT4A",
+          "portsPerCard": 4,
+          "portsActive": 40,
+          "portsTotal": 40,
+          "onts": 194
+        },
+        {
+          "code": "BLI/9A",
+          "vendor": "Alcatel 7342",
+          "cards": 14,
+          "cardModel": "GLT4A",
+          "portsPerCard": 4,
+          "portsActive": 56,
+          "portsTotal": 56,
+          "onts": 244
+        },
+        {
+          "code": "BLI/9B",
+          "vendor": "Alcatel 7342",
+          "cards": 3,
+          "cardModel": "GLT4A",
+          "portsPerCard": 4,
+          "portsActive": 12,
+          "portsTotal": 11,
+          "onts": 31,
+          "note": "El pliego registra más puertos activos (12) que totales (11); se transcribe tal cual."
+        }
       ],
       "weekFrom": 40,
       "weekTo": 47,
@@ -1050,13 +1135,16 @@
       "address": "Calle Siderurgia s/n Bajo 1 · 33930 Polígono Valnalón (Langreo)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "LAN/1A",
-          "Alcatel 7342",
-          6,
-          6,
-          109
-        ]
+        {
+          "code": "LAN/1A",
+          "vendor": "Alcatel 7342",
+          "cards": 3,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 6,
+          "portsTotal": 6,
+          "onts": 109
+        }
       ],
       "weekFrom": 43,
       "weekTo": 48,
@@ -1115,13 +1203,16 @@
       "address": "Santianes del Terrón s/n · 33540 Cuadroveña-Arriondas (Parres)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "ARR/1C",
-          "Ericsson BLM 1500",
-          12,
-          16,
-          181
-        ]
+        {
+          "code": "ARR/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 2,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 12,
+          "portsTotal": 16,
+          "onts": 181
+        }
       ],
       "weekFrom": 45,
       "weekTo": 49,
@@ -1180,13 +1271,16 @@
       "address": "c/ Marqués de Vista Alegre s/n · 33530 Infiesto (Piloña)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "INF/1C",
-          "Ericsson BLM 1500",
-          22,
-          40,
-          416
-        ]
+        {
+          "code": "INF/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 5,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 22,
+          "portsTotal": 40,
+          "onts": 416
+        }
       ],
       "weekFrom": 47,
       "weekTo": 51,
@@ -1248,13 +1342,16 @@
       "address": "c/ Emilio Ballesteros s/n · 33520 Nava",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "NAV/1C",
-          "Ericsson BLM 1500",
-          16,
-          16,
-          219
-        ]
+        {
+          "code": "NAV/1C",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 2,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 16,
+          "portsTotal": 16,
+          "onts": 219
+        }
       ],
       "weekFrom": 48,
       "weekTo": 52,
@@ -1313,20 +1410,26 @@
       "address": "c/ Román Romano s/n · 33500 Llanes",
       "enclosure": "Nodo primario con dos OLT Alcatel (GLT2A + GLT4A).",
       "olts": [
-        [
-          "LLA/1B",
-          "Alcatel 7342",
-          19,
-          20,
-          378
-        ],
-        [
-          "LLA/4A",
-          "Alcatel 7342",
-          30,
-          32,
-          668
-        ]
+        {
+          "code": "LLA/1B",
+          "vendor": "Alcatel 7342",
+          "cards": 10,
+          "cardModel": "GLT2A",
+          "portsPerCard": 2,
+          "portsActive": 19,
+          "portsTotal": 20,
+          "onts": 378
+        },
+        {
+          "code": "LLA/4A",
+          "vendor": "Alcatel 7342",
+          "cards": 8,
+          "cardModel": "GLT4A",
+          "portsPerCard": 4,
+          "portsActive": 30,
+          "portsTotal": 32,
+          "onts": 668
+        }
       ],
       "weekFrom": 51,
       "weekTo": 57,
@@ -1403,13 +1506,16 @@
       "address": "c/ Bajo Badalán s/n · 33590 Colombres (Ribadedeva)",
       "enclosure": "Nodo primario con OLT, CATV, energía CC y climatización.",
       "olts": [
-        [
-          "COL/1A",
-          "Ericsson BLM 1500",
-          5,
-          16,
-          74
-        ]
+        {
+          "code": "COL/1A",
+          "vendor": "Ericsson BLM 1500",
+          "cards": 2,
+          "cardModel": null,
+          "portsPerCard": 8,
+          "portsActive": 5,
+          "portsTotal": 16,
+          "onts": 74
+        }
       ],
       "weekFrom": 54,
       "weekTo": 58,

@@ -1,7 +1,22 @@
 import raw from '../data/nodes.json';
 
-/** [code, vendor, cards, ports, ONTs in service] */
-export type Olt = [string, string, number, number, number];
+export interface Olt {
+  /** identifier used in the pliego, e.g. MUR/1D */
+  code: string;
+  vendor: string;
+  /** line cards fitted, from the TARJETAS column of the node's table */
+  cards: number;
+  /** GLT2A, "GLT2A y GLT2B", GLT4A… null for the Ericsson cards, which the pliego does not name */
+  cardModel: string | null;
+  /** GPON ports per line card: 2 for GLT2A/B, 4 for GLT4A, 8 for the BLM 1500 cards */
+  portsPerCard: number;
+  portsActive: number;
+  portsTotal: number;
+  /** ONTs in service through this OLT */
+  onts: number;
+  /** anything the pliego says about this OLT that the numbers alone do not carry */
+  note?: string;
+}
 
 export interface GalleryItem {
   /** caption exactly as it appears in the pliego ("Alzado izquierdo", …) */
@@ -80,7 +95,16 @@ export const AREAS: { name: string; color: string }[] = (() => {
 })();
 
 /** Total ONTs in service on a node, across all its OLTs. */
-export const ontCount = (n: NetworkNode): number => n.olts.reduce((a, o) => a + o[4], 0);
+export const ontCount = (n: NetworkNode): number => n.olts.reduce((a, o) => a + o.onts, 0);
+
+/** Total line cards fitted across a node's OLTs. */
+export const cardCount = (n: NetworkNode): number => n.olts.reduce((a, o) => a + o.cards, 0);
+
+/** "16 × GLT2A (2 puertos)" / "4 tarjetas de 8 puertos" — how a card set reads in the UI. */
+export const cardLabel = (o: Olt): string =>
+  o.cardModel
+    ? `${o.cards} × ${o.cardModel} (${o.portsPerCard} puertos)`
+    : `${o.cards} tarjetas de ${o.portsPerCard} puertos`;
 
 /** Prepends the site base ('/potru/') to a relative path from the JSON. */
 export const asset = (path: string): string => import.meta.env.BASE_URL + path;

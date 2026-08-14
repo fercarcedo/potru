@@ -2,7 +2,7 @@
  * Node record modal. Same material as /nodos/<id>, without leaving the home
  * page. The plan gallery comes from nodes.json (real paths now, no base64).
  */
-import { ACTION_DESC, asset, byId } from '../lib/data';
+import { ACTION_DESC, asset, byId, cardLabel } from '../lib/data';
 import { openWalk } from './walk';
 
 const base=import.meta.env.BASE_URL;
@@ -47,10 +47,10 @@ export function openNode(id: string, view=0){
   } else pb.style.display='none';
   const t=document.getElementById('mOlt')!;
   if(n.olts.length){
-    let tot=0,rows=n.olts.map(o=>{tot+=o[4];return `<tr><td class="mono">${o[0]}</td><td>${o[1]}</td><td class="mono">${o[2]} / ${o[3]}</td><td class="mono">${o[4]}</td></tr>`}).join('');
+    let tot=0,rows=n.olts.map(o=>{tot+=o.onts;return `<tr><td class="mono">${o.code}</td><td>${o.vendor}</td><td class="mono" title="${o.note??''}">${cardLabel(o)}</td><td class="mono">${o.portsActive} / ${o.portsTotal}</td><td class="mono">${o.onts}</td></tr>`}).join('');
     t.style.display='table';
-    t.innerHTML=`<tr><th>OLT</th><th>Equipo actual</th><th>Puertos GPON act./tot.</th><th>ONT</th></tr>${rows}
-      ${n.olts.length>1?`<tr class="total"><td colspan="3">Total del nodo</td><td class="mono">${tot}</td></tr>`:''}`;
+    t.innerHTML=`<tr><th>OLT</th><th>Equipo actual</th><th>Tarjetas</th><th>Puertos GPON act./tot.</th><th>ONT</th></tr>${rows}
+      ${n.olts.length>1?`<tr class="total"><td colspan="4">Total del nodo</td><td class="mono">${tot}</td></tr>`:''}`;
   } else t.style.display='none';
   const mig=document.getElementById('mMig')!;
   if(n.id==='pao'){
@@ -60,7 +60,7 @@ export function openNode(id: string, view=0){
     mig.innerHTML=`<div class="box"><b>Semana ${n.weekFrom}</b><span>replanteo e inicio</span></div>
       <div class="box"><b>Semana ${n.weekTo}</b><span>fin de migración</span></div>
       <div class="box"><b>${dur} semanas</b><span>ventana total</span></div>
-      <div class="box"><b>${n.olts.reduce((a,o)=>a+o[4],0)} ONT</b><span>a migrar</span></div>`;
+      <div class="box"><b>${n.olts.reduce((a,o)=>a+o.onts,0)} ONT</b><span>a migrar</span></div>`;
   }
   const wbtn=document.getElementById('mWalk')!;
   wbtn.style.display=n.gallery.length>1?'block':'none';

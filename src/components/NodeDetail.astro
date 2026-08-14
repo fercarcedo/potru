@@ -1,5 +1,5 @@
 ---
-import { ACTION_DESC, asset, ontCount, type NetworkNode } from '../lib/data';
+import { ACTION_DESC, asset, cardLabel, ontCount, type NetworkNode } from '../lib/data';
 
 interface Props {
   node: NetworkNode;
@@ -71,22 +71,24 @@ const total = ontCount(n);
             <tr>
               <th>OLT</th>
               <th>Equipo actual</th>
+              <th>Tarjetas</th>
               <th>Puertos GPON act./tot.</th>
               <th>ONT</th>
             </tr>
             {n.olts.map((o) => (
               <tr>
-                <td class="mono">{o[0]}</td>
-                <td>{o[1]}</td>
+                <td class="mono">{o.code}</td>
+                <td>{o.vendor}</td>
+                <td class="mono" title={o.note}>{cardLabel(o)}</td>
                 <td class="mono">
-                  {o[2]} / {o[3]}
+                  {o.portsActive} / {o.portsTotal}
                 </td>
-                <td class="mono">{o[4]}</td>
+                <td class="mono">{o.onts}</td>
               </tr>
             ))}
             {n.olts.length > 1 && (
               <tr class="total">
-                <td colspan="3">Total del nodo</td>
+                <td colspan="4">Total del nodo</td>
                 <td class="mono">{total}</td>
               </tr>
             )}
