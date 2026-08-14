@@ -1,0 +1,2336 @@
+{
+  "muros": {
+    "source": "planos/muros-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.2,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas y tierra",
+        "y": 1.2
+      },
+      {
+        "x": 0.8,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.0,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.6,
+        "z": 1.49,
+        "w": 0.65,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Splitter + vídeo"
+      },
+      {
+        "x": 1.25,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.35,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transmode 5800 + 8133"
+      },
+      {
+        "x": 3.25,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "luarca": {
+    "source": "planos/luarca-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.69,
+        0
+      ],
+      [
+        4.69,
+        1.91
+      ],
+      [
+        0,
+        1.91
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.55,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 1.06,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.66,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Splitter + vídeo · CWDM Transmode"
+      },
+      {
+        "x": 2.46,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.0,
+        "z": 1.56,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 2.8,
+        "z": 1.56,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 3.4,
+        "z": 1.56,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "navia": {
+    "source": "planos/navia-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.1,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.0,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.85,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Splitter + vídeo · Transmode"
+      },
+      {
+        "x": 1.65,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.25,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "castropol": {
+    "source": "planos/castropol-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.1,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.1,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.1,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Splitter + vídeo · Transmode"
+      },
+      {
+        "x": 1.9,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.5,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "tapia": {
+    "source": "planos/tapia-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.1,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.0,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.0,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Splitter + vídeo · Transmode"
+      },
+      {
+        "x": 1.8,
+        "z": 1.49,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.4,
+        "z": 1.49,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "morcin": {
+    "source": "planos/morcin-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 1.5,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.732,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.6,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON y vídeo",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.2,
+        "z": 1.74,
+        "w": 0.65,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "DWDM y splitter"
+      },
+      {
+        "x": 3.45,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "moreda": {
+    "source": "planos/moreda-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.6,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O. + TX Cube"
+      },
+      {
+        "x": 1.4,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.24,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON",
+        "olts": [
+          0,
+          1
+        ]
+      },
+      {
+        "x": 0.84,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "DWDM"
+      },
+      {
+        "x": 2.34,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Bastidor de fuerza y baterías"
+      },
+      {
+        "x": 3.54,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "Dist. C.A."
+      }
+    ]
+  },
+  "cabanaquinta": {
+    "source": "planos/cabanaquinta-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.9,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 2.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.59,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON y vídeo",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.19,
+        "z": 1.74,
+        "w": 0.65,
+        "d": 0.35,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "DWDM y splitter"
+      },
+      {
+        "x": 2.29,
+        "z": 1.49,
+        "w": 0.9,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.54,
+        "z": 1.74,
+        "w": 0.6,
+        "d": 0.35,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "felechosa": {
+    "source": "planos/felechosa-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.6,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O. · Transporte Cube"
+      },
+      {
+        "x": 1.4,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "empty",
+        "label": "Rectificadores antiguos (reserva)"
+      },
+      {
+        "x": 3.3,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.6,
+        "z": 1.75,
+        "w": 0.6,
+        "d": 0.34,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON y vídeo",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 2.3,
+        "z": 1.75,
+        "w": 0.6,
+        "d": 0.34,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 3.4,
+        "z": 1.75,
+        "w": 0.6,
+        "d": 0.34,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "langreo": {
+    "source": "planos/langreo-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.4,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor Cogent"
+      },
+      {
+        "x": 1.4,
+        "z": 0.0,
+        "w": 0.9,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor Cogent"
+      },
+      {
+        "x": 3.24,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.0,
+        "z": 1.76,
+        "w": 0.6,
+        "d": 0.33,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.6,
+        "z": 1.76,
+        "w": 0.65,
+        "d": 0.33,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "DWDM"
+      },
+      {
+        "x": 1.25,
+        "z": 1.76,
+        "w": 0.62,
+        "d": 0.33,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Bastidor de fuerza y baterías"
+      },
+      {
+        "x": 2.34,
+        "z": 1.76,
+        "w": 0.8,
+        "d": 0.33,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.37,
+        "z": 1.76,
+        "w": 0.6,
+        "d": 0.33,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "Dist. C.A."
+      }
+    ]
+  },
+  "arriondas": {
+    "source": "planos/arriondas-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.17,
+        0
+      ],
+      [
+        4.17,
+        1.89
+      ],
+      [
+        0,
+        1.89
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.55,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.78,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 2.54,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.2,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.0,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM"
+      },
+      {
+        "x": 1.8,
+        "z": 1.29,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.6,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte Transmode"
+      },
+      {
+        "x": 3.4,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "infiesto": {
+    "source": "planos/infiesto-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.25,
+        0
+      ],
+      [
+        4.25,
+        1.89
+      ],
+      [
+        0,
+        1.89
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.55,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.1,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.1,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.0,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM"
+      },
+      {
+        "x": 1.7,
+        "z": 1.29,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.65,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte Transmode"
+      },
+      {
+        "x": 3.35,
+        "z": 1.29,
+        "w": 0.55,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "nava": {
+    "source": "planos/nava-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.25,
+        0
+      ],
+      [
+        4.25,
+        1.89
+      ],
+      [
+        0,
+        1.89
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.55,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.1,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.15,
+        "z": 1.29,
+        "w": 0.61,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.96,
+        "z": 1.29,
+        "w": 0.65,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM"
+      },
+      {
+        "x": 1.71,
+        "z": 1.29,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.66,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte Transmode"
+      },
+      {
+        "x": 3.36,
+        "z": 1.29,
+        "w": 0.55,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "llanes": {
+    "source": "planos/llanes-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        2.09
+      ],
+      [
+        0,
+        2.09
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.6,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 1.1,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 1.92,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte DWDM"
+      },
+      {
+        "x": 2.92,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 0.1,
+        "z": 1.79,
+        "w": 0.6,
+        "d": 0.3,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON (2 pt) + vídeo",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.7,
+        "z": 1.79,
+        "w": 0.7,
+        "d": 0.3,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "DWDM y splitter"
+      },
+      {
+        "x": 1.7,
+        "z": 1.79,
+        "w": 0.8,
+        "d": 0.3,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.8,
+        "z": 1.79,
+        "w": 0.6,
+        "d": 0.3,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON (4 pt)",
+        "olts": [
+          1
+        ]
+      },
+      {
+        "x": 3.54,
+        "z": 1.79,
+        "w": 0.6,
+        "d": 0.3,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "colombres": {
+    "source": "planos/colombres-planta.jpg",
+    "h": 2.4,
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.14,
+        0
+      ],
+      [
+        4.14,
+        1.89
+      ],
+      [
+        0,
+        1.89
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 1,
+        "at": 0.55,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.4,
+        "z": 0.0,
+        "w": 0.4,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas de entorno",
+        "y": 1.2
+      },
+      {
+        "x": 1.1,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 0.0,
+        "z": 1.29,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT BLM 1500 · CATV",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 0.6,
+        "z": 1.29,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM · Transporte Transmode"
+      },
+      {
+        "x": 1.4,
+        "z": 1.29,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 3.0,
+        "z": 1.29,
+        "w": 0.45,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "tineo": {
+    "source": "planos/tineo-planta.jpg",
+    "h": 3.0,
+    "note": "Bajo comercial en L. Sólo se modela la zona de equipos; el plano incluye además el resto del local.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        9.3,
+        0
+      ],
+      [
+        9.3,
+        4.61
+      ],
+      [
+        5.1,
+        4.61
+      ],
+      [
+        5.1,
+        3.0
+      ],
+      [
+        0,
+        3.0
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 5,
+        "at": 1.1,
+        "width": 1.4
+      }
+    ],
+    "bays": [
+      {
+        "x": 2.6,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.2,
+        "kind": "battery",
+        "label": "Bancada 2ª rama de baterías"
+      },
+      {
+        "x": 3.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.7,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores AEG"
+      },
+      {
+        "x": 4.7,
+        "z": 0.0,
+        "w": 0.7,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "empty",
+        "label": "Bastidor vacío (antiguas baterías Gijón)"
+      },
+      {
+        "x": 5.6,
+        "z": 1.7,
+        "w": 0.9,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Router + vídeo"
+      },
+      {
+        "x": 6.55,
+        "z": 2.3,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM"
+      },
+      {
+        "x": 7.15,
+        "z": 2.3,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 8.1,
+        "z": 2.3,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "OLT (2º bastidor)"
+      },
+      {
+        "x": 8.75,
+        "z": 2.3,
+        "w": 0.55,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "empty",
+        "label": "Bastidor vacío (antiguas baterías Tineo)"
+      },
+      {
+        "x": 5.6,
+        "z": 3.6,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 6.4,
+        "z": 3.6,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte Transmode"
+      },
+      {
+        "x": 7.3,
+        "z": 3.4,
+        "w": 2.0,
+        "d": 1.2,
+        "h": 0.6,
+        "kind": "ac",
+        "label": "Climatización"
+      },
+      {
+        "x": 2.0,
+        "z": 2.4,
+        "w": 0.52,
+        "d": 0.5,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "Cuadro A.A."
+      },
+      {
+        "x": 2.6,
+        "z": 2.4,
+        "w": 0.4,
+        "d": 0.5,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      }
+    ]
+  },
+  "cangas": {
+    "source": "planos/cangas-planta.jpg",
+    "h": 2.5,
+    "note": "Caseta con chaflán en la esquina y viga vista; la escalera de bajada al sótano queda fuera del recinto modelado.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        3.4,
+        0
+      ],
+      [
+        3.4,
+        2.38
+      ],
+      [
+        2.9,
+        3.45
+      ],
+      [
+        0.8,
+        3.45
+      ],
+      [
+        0,
+        2.6
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 4,
+        "at": 0.6,
+        "width": 0.8
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.9,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transporte Transmode"
+      },
+      {
+        "x": 1.7,
+        "z": 0.0,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.8,
+        "z": 0.7,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores y baterías"
+      },
+      {
+        "x": 2.8,
+        "z": 1.5,
+        "w": 0.5,
+        "d": 0.5,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      },
+      {
+        "x": 1.1,
+        "z": 1.75,
+        "w": 0.75,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT + vídeo",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.95,
+        "z": 1.75,
+        "w": 0.55,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "WDM"
+      },
+      {
+        "x": 1.1,
+        "z": 2.55,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT",
+        "olts": [
+          1
+        ]
+      },
+      {
+        "x": 2.8,
+        "z": 2.3,
+        "w": 0.45,
+        "d": 0.4,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "PLC / alarmas"
+      }
+    ]
+  },
+  "polalena": {
+    "source": "planos/polalena-planta.jpg",
+    "h": 2.85,
+    "note": "Planta de edificio de viviendas. Entrada por puerta doble de 1,4 m.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        4.3,
+        0
+      ],
+      [
+        4.3,
+        5.2
+      ],
+      [
+        0,
+        5.2
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 3,
+        "at": 0.6,
+        "width": 1.4
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.3,
+        "z": 1.3,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores"
+      },
+      {
+        "x": 1.16,
+        "z": 2.2,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON",
+        "olts": [
+          0
+        ]
+      },
+      {
+        "x": 1.76,
+        "z": 2.2,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "GPON",
+        "olts": [
+          1
+        ]
+      },
+      {
+        "x": 2.36,
+        "z": 2.2,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "splitter",
+        "label": "Transporte DWDM / splitters"
+      },
+      {
+        "x": 1.16,
+        "z": 3.9,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor óptico"
+      },
+      {
+        "x": 1.96,
+        "z": 3.9,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor óptico"
+      },
+      {
+        "x": 3.3,
+        "z": 3.6,
+        "w": 0.6,
+        "d": 0.7,
+        "h": 0.6,
+        "kind": "ac",
+        "label": "Aire acondicionado"
+      },
+      {
+        "x": 3.2,
+        "z": 4.6,
+        "w": 0.4,
+        "d": 0.4,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "Cuadro eléctrico"
+      }
+    ]
+  },
+  "mieres": {
+    "source": "planos/mieres-planta.jpg",
+    "h": 2.85,
+    "note": "Bajo comercial. El plano rotula dos bastidores OLT: el primero aloja MIE/2A y MIE/2B, el segundo MIE/7A y MIE/7B. Se modela la sala de equipos; el plano abarca además zonas contiguas del local.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        5.24,
+        0
+      ],
+      [
+        5.24,
+        3.64
+      ],
+      [
+        0,
+        3.64
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 3,
+        "at": 1.2,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.0,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.7,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Gestión"
+      },
+      {
+        "x": 0.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 2.86,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores"
+      },
+      {
+        "x": 3.52,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.2,
+        "kind": "battery",
+        "label": "Baterías"
+      },
+      {
+        "x": 4.6,
+        "z": 0.6,
+        "w": 0.64,
+        "d": 0.8,
+        "h": 1.7,
+        "kind": "ups",
+        "label": "UPS"
+      },
+      {
+        "x": 2.0,
+        "z": 0.6,
+        "w": 0.6,
+        "d": 0.4,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 1",
+        "olts": [
+          0,
+          1
+        ]
+      },
+      {
+        "x": 2.0,
+        "z": 1.0,
+        "w": 0.6,
+        "d": 0.4,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 2",
+        "olts": [
+          2,
+          3
+        ]
+      },
+      {
+        "x": 2.6,
+        "z": 1.0,
+        "w": 0.6,
+        "d": 0.4,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidor F.O."
+      },
+      {
+        "x": 1.4,
+        "z": 2.1,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 1"
+      },
+      {
+        "x": 2.0,
+        "z": 2.1,
+        "w": 0.59,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 5"
+      },
+      {
+        "x": 2.59,
+        "z": 2.1,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 4"
+      },
+      {
+        "x": 0.6,
+        "z": 3.04,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Rep. F.O."
+      },
+      {
+        "x": 1.4,
+        "z": 3.04,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Rep. F.O."
+      },
+      {
+        "x": 3.6,
+        "z": 3.04,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "C. GEN"
+      }
+    ]
+  },
+  "blimea": {
+    "source": "planos/blimea-planta.jpg",
+    "h": 2.4,
+    "note": "Bajo con falso suelo practicable. Rejilla de bastidores leída del plano a 400 ppp: OLT 1–8 en dos columnas, con VoLT y el repartidor DWDM. El centro de transformación de Hidrocantábrico y la sala SCC-BO quedan tras muro ciego.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        8.4,
+        0
+      ],
+      [
+        8.4,
+        2.3
+      ],
+      [
+        3.1,
+        2.3
+      ],
+      [
+        3.1,
+        3.6
+      ],
+      [
+        0,
+        3.6
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 5,
+        "at": 1.9,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.54,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Transmode DWDM"
+      },
+      {
+        "x": 3.49,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Cuadro de fuerza"
+      },
+      {
+        "x": 4.09,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.2,
+        "kind": "battery",
+        "label": "Baterías"
+      },
+      {
+        "x": 1.15,
+        "z": 0.4,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 1 · OLT 2",
+        "olts": [
+          0,
+          1
+        ]
+      },
+      {
+        "x": 1.15,
+        "z": 1.025,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 3",
+        "olts": [
+          2
+        ]
+      },
+      {
+        "x": 1.15,
+        "z": 1.65,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "VoLT"
+      },
+      {
+        "x": 1.15,
+        "z": 2.275,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "transport",
+        "label": "Rep. DWDM"
+      },
+      {
+        "x": 1.75,
+        "z": 1.025,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 4",
+        "olts": [
+          3
+        ]
+      },
+      {
+        "x": 1.75,
+        "z": 1.65,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 5 · OLT 6",
+        "olts": [
+          4,
+          5
+        ]
+      },
+      {
+        "x": 1.75,
+        "z": 2.275,
+        "w": 0.6,
+        "d": 0.625,
+        "h": 2.0,
+        "kind": "olt",
+        "label": "OLT 7 · OLT 8",
+        "olts": [
+          6,
+          7
+        ]
+      },
+      {
+        "x": 4.7,
+        "z": 1.3,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "odf",
+        "label": "Repartidores"
+      },
+      {
+        "x": 5.7,
+        "z": 1.3,
+        "w": 0.8,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "catv",
+        "label": "Armario CATV R.F."
+      },
+      {
+        "x": 0.0,
+        "z": 2.6,
+        "w": 0.45,
+        "d": 0.5,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBI"
+      },
+      {
+        "x": 0.0,
+        "z": 1.6,
+        "w": 0.45,
+        "d": 0.5,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas"
+      }
+    ]
+  },
+  "pao": {
+    "source": "planos/pao-planta.jpg",
+    "h": 2.5,
+    "note": "Sala de equipos del PAO con falso suelo de PVC estratificado. Las jaulas son las rotuladas en el plano.",
+    "outline": [
+      [
+        0,
+        0
+      ],
+      [
+        7.37,
+        0
+      ],
+      [
+        7.37,
+        5.89
+      ],
+      [
+        0,
+        5.89
+      ]
+    ],
+    "doors": [
+      {
+        "edge": 2,
+        "at": 3.2,
+        "width": 0.9
+      }
+    ],
+    "bays": [
+      {
+        "x": 0.0,
+        "z": 0.3,
+        "w": 1.53,
+        "d": 2.3,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 5 · Telecable"
+      },
+      {
+        "x": 1.63,
+        "z": 0.3,
+        "w": 1.4,
+        "d": 2.3,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 6 · Cogent"
+      },
+      {
+        "x": 3.13,
+        "z": 0.3,
+        "w": 1.4,
+        "d": 2.3,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 1 · GIT (maqueta)"
+      },
+      {
+        "x": 0.0,
+        "z": 3.3,
+        "w": 1.1,
+        "d": 2.2,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 4 · disponible"
+      },
+      {
+        "x": 1.2,
+        "z": 3.3,
+        "w": 1.6,
+        "d": 2.2,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 3 · Conectastur"
+      },
+      {
+        "x": 2.9,
+        "z": 3.3,
+        "w": 1.18,
+        "d": 2.2,
+        "h": 2.2,
+        "kind": "cage",
+        "label": "Jaula 2 · Adamo"
+      },
+      {
+        "x": 4.7,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 1.6,
+        "kind": "power",
+        "label": "Rectificadores + baterías"
+      },
+      {
+        "x": 5.36,
+        "z": 0.0,
+        "w": 0.6,
+        "d": 0.6,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Armario de alarmas"
+      },
+      {
+        "x": 6.02,
+        "z": 0.0,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 5"
+      },
+      {
+        "x": 4.7,
+        "z": 1.1,
+        "w": 0.7,
+        "d": 0.9,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 3"
+      },
+      {
+        "x": 6.3,
+        "z": 1.0,
+        "w": 0.9,
+        "d": 0.8,
+        "h": 0.6,
+        "kind": "ac",
+        "label": "AirData 1"
+      },
+      {
+        "x": 6.3,
+        "z": 3.4,
+        "w": 0.9,
+        "d": 0.8,
+        "h": 0.6,
+        "kind": "ac",
+        "label": "AirData 2"
+      },
+      {
+        "x": 6.2,
+        "z": 2.5,
+        "w": 0.5,
+        "d": 0.6,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 4"
+      },
+      {
+        "x": 4.7,
+        "z": 3.1,
+        "w": 0.6,
+        "d": 0.9,
+        "h": 2.0,
+        "kind": "rack",
+        "label": "Bastidor 1"
+      },
+      {
+        "x": 5.6,
+        "z": 5.2,
+        "w": 0.6,
+        "d": 0.5,
+        "h": 1.0,
+        "kind": "cgbt",
+        "label": "CGBT"
+      },
+      {
+        "x": 4.7,
+        "z": 4.6,
+        "w": 0.8,
+        "d": 0.4,
+        "h": 0.7,
+        "kind": "cabinet",
+        "label": "Seccionador · climatización · detección de inundación"
+      }
+    ]
+  }
+}
