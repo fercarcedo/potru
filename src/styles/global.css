@@ -39,7 +39,7 @@ nav a:focus-visible{outline:2px solid var(--xgs);outline-offset:3px}
    760px, so navigation vanished in between. The rule is dropped and the
    @media(max-width:760px) sliding block takes over. */
 .hero{position:relative;padding:110px 0 90px;overflow:hidden}
-.hero h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:800;line-height:1.04;max-width:16ch}
+.hero h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:800;line-height:1.04;max-width:20ch}
 .hero h1 .from{color:var(--gpon)}.hero h1 .to{color:var(--xgs)}
 .hero p.sub{margin-top:22px;color:var(--muted);max-width:62ch;font-size:1.06rem}
 .hero .tag{display:inline-block;margin-top:8px;margin-bottom:26px;font-family:'IBM Plex Mono',monospace;font-size:.74rem;letter-spacing:.18em;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:6px 14px}
@@ -278,3 +278,6 @@ footer .disclaimer{margin-top:0;max-width:none}
 .pon-group .p{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:.76rem}
 .pon-group .lnk{color:#c9a44e}
 .pon-group .tag{color:#c9a44e;font-size:.64rem;font-family:'IBM Plex Mono',monospace;margin-left:4px}
+
+/* ---------- Potru: segunda línea del hero (la tecnología, bajo el caudal) ---------- */
+.hero h1 .tech{display:inline-block;margin-top:.12em;font-size:.5em;letter-spacing:0}
