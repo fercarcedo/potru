@@ -277,7 +277,9 @@ footer .disclaimer{margin-top:0;max-width:none}
 .back-link:hover{color:var(--xgs)}
 .detail-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px}
 .detail-gallery figure{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
-.detail-gallery img{width:100%;display:block;background:#fff}
+/* height:auto es imprescindible: los <img> llevan los atributos width/height
+   intrínsecos, y sin esto el alto del atributo gana y la imagen sale aplastada */
+.detail-gallery img{width:100%;height:auto;display:block;background:#fff}
 .detail-gallery figcaption{background:var(--panel);border-top:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;padding:8px 11px}
 .pon-group{border:1.5px dashed #c9a44e;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:6px;background:rgba(255,215,107,.05)}
 .pon-group .p{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:.76rem}
