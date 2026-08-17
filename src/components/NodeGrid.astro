@@ -19,7 +19,8 @@ const TOTAL_WEEKS = 58;
     <div class="node-grid" id="nodeGrid">
       {
         ALL_NODES.map((n) => {
-          const cover = n.gallery[0]!;
+          /* the card is 230px wide: it gets the thumbnail, not the full plan */
+          const cover = n.gallery[0]!.thumb ?? n.gallery[0]!;
           const left = (((n.weekFrom - 1) / TOTAL_WEEKS) * 100).toFixed(1);
           const width = (((n.weekTo - n.weekFrom + 1) / TOTAL_WEEKS) * 100).toFixed(1);
           const isPao = n.id === 'pao';

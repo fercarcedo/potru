@@ -31,7 +31,18 @@ licitación en PLACSP.
   GLT2A y GLT2B (2 puertos), GLT4A (4 puertos) y las de 8 puertos del Ericsson BLM 1500, que el
   pliego no nombra.
 - **Planos** de ubicación, planta y alzados de los 20 nodos y del PAO
-  (`public/planos/*.jpg`, 105 imágenes): anexos gráficos del pliego.
+  (`public/planos/*.jpg`, 105 imágenes): anexos gráficos del pliego, extraídos con
+  `pdfimages -j` del PDF, que los lleva incrustados como JPEG. Se copian tal cual, sin
+  recodificar: son los píxeles originales del documento (1891 × 1310 la mayoría de los
+  planos; el build legado los servía reducidos a 720 px de ancho). Cada imagen se emparejó
+  con su original comparando el contenido, no el título, y se comprobó después contra el
+  índice de ilustraciones del pliego.
+- **Dos excepciones recompuestas**: en las hojas de ubicación de Muros de Nalón y Tapia de
+  Casariego la fotografía aérea del nodo no forma parte del JPEG de fondo, sino que va
+  superpuesta como objeto aparte en el PDF. En esas dos se compone la foto sobre su hueco,
+  que si no aparece en blanco. En el resto de nodos la foto ya viene dentro de la imagen.
+- **Miniaturas** `*-ubicacion-thumb.jpg` (480 px): sólo para las tarjetas del índice de
+  nodos, que se ven a 230 px. Las fichas y el modal usan siempre la imagen completa.
 - **Distribución de cada sala** (`src/data/rooms.json`): transcrita en metros del plano de planta
   de cada nodo — contorno del recinto, hueco de puerta y cada armario con su ancho, su fondo y su
   rótulo. Los planos de Blimea, Mieres y Tineo se leyeron del PDF a 400 ppp, porque en los JPEG
@@ -65,9 +76,10 @@ recuperable con `git show dd651e1:tools/extract-legacy.mjs`):
 
 - `src/data/nodes.json` — los 20 nodos primarios y el PAO, con cada plano convertido en una
   entrada de galería (ruta relativa + tamaño intrínseco leído del marcador SOF del JPEG).
-- `public/planos/*.jpg` — las 105 imágenes, byte a byte como venían. No se recodificaron ni
-  se redimensionaron: son material de origen del pliego. Cuando un nodo repite vista (Tineo
-  tiene dos «Alzado derecho») el segundo fichero lleva sufijo `-2`.
+- `public/planos/*.jpg` — las 105 imágenes. Cuando un nodo repite vista (Tineo tiene dos
+  «Alzado derecho») el segundo fichero lleva sufijo `-2`. **Estas imágenes ya no son las que
+  salieron del legado**: se sustituyeron por los originales incrustados en el PDF, de mucha
+  más resolución (ver arriba).
 
 El extractor localizaba `const DATA = {`, emparejaba llaves hasta el cierre y lo
 interpretaba como JSON. **Nunca lo trataba como texto plano**: el pipeline de parches dejó

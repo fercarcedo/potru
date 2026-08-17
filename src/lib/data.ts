@@ -27,6 +27,8 @@ export interface GalleryItem {
   src: string;
   w: number;
   h: number;
+  /** small variant for the node grid; only the cover image carries one */
+  thumb?: { src: string; w: number; h: number };
 }
 
 export interface PonGroups {

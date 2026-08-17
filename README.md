@@ -58,7 +58,7 @@ src/data/rooms.json     planta de cada sala: recinto, puerta y armarios, en metr
 src/lib/graphics.ts     generadores SVG puros (CWDM, secciones, ocupación, PAO, gantt)
 src/lib/details.ts      los 9 paneles del paseo, compuestos en build
 src/scripts/            islas: diagrama, mapa, paseo, modal, visor 3D
-public/planos/          los 105 planos del pliego, como ficheros
+public/planos/          los 105 planos del pliego a resolución original + miniaturas
 ```
 
 ### Los datos

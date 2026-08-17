@@ -38,36 +38,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/muros-ubicacion.jpg",
-          "w": 760,
-          "h": 528
+          "w": 967,
+          "h": 672,
+          "thumb": {
+            "src": "planos/muros-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 334
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/muros-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1810,
+          "h": 1254
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/muros-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1806,
+          "h": 1250
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/muros-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1826,
+          "h": 1265
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/muros-fondo.jpg",
-          "w": 720,
-          "h": 499
+          "w": 1698,
+          "h": 1177
         }
       ]
     },
@@ -106,36 +111,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/luarca-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1282,
+          "h": 888,
+          "thumb": {
+            "src": "planos/luarca-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/luarca-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1827,
+          "h": 1266
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/luarca-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1733,
+          "h": 1201
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/luarca-dcha.jpg",
-          "w": 720,
-          "h": 497
+          "w": 1773,
+          "h": 1226
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/luarca-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1701,
+          "h": 1178
         }
       ]
     },
@@ -178,36 +188,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/navia-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/navia-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/navia-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/navia-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/navia-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/navia-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -264,36 +279,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/castropol-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/castropol-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/castropol-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/castropol-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/castropol-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/castropol-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -334,36 +354,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/tapia-ubicacion.jpg",
-          "w": 760,
-          "h": 519
+          "w": 1308,
+          "h": 894,
+          "thumb": {
+            "src": "planos/tapia-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 328
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/tapia-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/tapia-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/tapia-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/tapia-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -403,36 +428,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/tineo-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1216,
+          "h": 842,
+          "thumb": {
+            "src": "planos/tineo-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/tineo-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/tineo-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/tineo-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/tineo-dcha-2.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -481,36 +511,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/cangas-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1323,
+          "h": 916,
+          "thumb": {
+            "src": "planos/cangas-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/cangas-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/cangas-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/cangas-dcha-2.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/cangas-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -584,36 +619,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/mieres-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/mieres-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/mieres-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/mieres-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/mieres-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/mieres-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -664,36 +704,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/polalena-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1172,
+          "h": 812,
+          "thumb": {
+            "src": "planos/polalena-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 333
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/polalena-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/polalena-izq.jpg",
-          "w": 720,
-          "h": 501
+          "w": 1789,
+          "h": 1247
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/polalena-dcha.jpg",
-          "w": 720,
-          "h": 501
+          "w": 1783,
+          "h": 1242
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/polalena-dcha-2.jpg",
-          "w": 720,
-          "h": 501
+          "w": 1806,
+          "h": 1258
         }
       ]
     },
@@ -732,36 +777,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/morcin-ubicacion.jpg",
-          "w": 760,
-          "h": 525
+          "w": 1198,
+          "h": 829,
+          "thumb": {
+            "src": "planos/morcin-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/morcin-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/morcin-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/morcin-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/morcin-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -813,36 +863,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/moreda-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/moreda-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/moreda-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/moreda-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/moreda-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/moreda-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -882,36 +937,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/cabanaquinta-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/cabanaquinta-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/cabanaquinta-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/cabanaquinta-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/cabanaquinta-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/cabanaquinta-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -950,36 +1010,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/felechosa-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1219,
+          "h": 844,
+          "thumb": {
+            "src": "planos/felechosa-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/felechosa-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/felechosa-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/felechosa-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/felechosa-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1094,36 +1159,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/blimea-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/blimea-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/blimea-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/blimea-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/blimea-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/blimea-dcha-2.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1162,36 +1232,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/langreo-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1197,
+          "h": 829,
+          "thumb": {
+            "src": "planos/langreo-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/langreo-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/langreo-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/langreo-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/langreo-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1230,36 +1305,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/arriondas-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/arriondas-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/arriondas-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/arriondas-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/arriondas-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/arriondas-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1301,36 +1381,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/infiesto-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1154,
+          "h": 799,
+          "thumb": {
+            "src": "planos/infiesto-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/infiesto-planta.jpg",
-          "w": 720,
-          "h": 499
+          "w": 1891,
+          "h": 1311
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/infiesto-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/infiesto-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/infiesto-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1369,36 +1454,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/nava-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1195,
+          "h": 828,
+          "thumb": {
+            "src": "planos/nava-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 333
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/nava-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/nava-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/nava-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/nava-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1465,36 +1555,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/llanes-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1207,
+          "h": 836,
+          "thumb": {
+            "src": "planos/llanes-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/llanes-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/llanes-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/llanes-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/llanes-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     },
@@ -1533,36 +1628,41 @@
           "label": "Ubicación",
           "key": "ubicacion",
           "src": "planos/colombres-ubicacion.jpg",
-          "w": 760,
-          "h": 526
+          "w": 1259,
+          "h": 872,
+          "thumb": {
+            "src": "planos/colombres-ubicacion-thumb.jpg",
+            "w": 480,
+            "h": 332
+          }
         },
         {
           "label": "Plano de planta",
           "key": "planta",
           "src": "planos/colombres-planta.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado izquierdo",
           "key": "izq",
           "src": "planos/colombres-izq.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado derecho",
           "key": "dcha",
           "src": "planos/colombres-dcha.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         },
         {
           "label": "Alzado fondo",
           "key": "fondo",
           "src": "planos/colombres-fondo.jpg",
-          "w": 720,
-          "h": 498
+          "w": 1891,
+          "h": 1310
         }
       ]
     }
@@ -1587,36 +1687,41 @@
         "label": "Ubicación",
         "key": "ubicacion",
         "src": "planos/pao-ubicacion.jpg",
-        "w": 760,
-        "h": 526
+        "w": 1259,
+        "h": 872,
+        "thumb": {
+          "src": "planos/pao-ubicacion-thumb.jpg",
+          "w": 480,
+          "h": 332
+        }
       },
       {
         "label": "Plano de planta",
         "key": "planta",
         "src": "planos/pao-planta.jpg",
-        "w": 720,
-        "h": 498
+        "w": 1891,
+        "h": 1310
       },
       {
         "label": "Alzado izquierdo",
         "key": "izq",
         "src": "planos/pao-izq.jpg",
-        "w": 720,
-        "h": 513
+        "w": 1684,
+        "h": 1200
       },
       {
         "label": "Alzado izquierdo",
         "key": "izq",
         "src": "planos/pao-izq-2.jpg",
-        "w": 720,
-        "h": 501
+        "w": 1735,
+        "h": 1209
       },
       {
         "label": "Alzado derecho",
         "key": "dcha",
         "src": "planos/pao-dcha.jpg",
-        "w": 720,
-        "h": 466
+        "w": 1783,
+        "h": 1154
       }
     ]
   }
