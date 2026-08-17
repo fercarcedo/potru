@@ -287,7 +287,7 @@ export function buildRoom(n: NetworkNode) {
         oldChassis.push(sub);
         chassis(o, sub, bay.w, 0.35 + i * slot + slot / 2, Math.min(slot - 0.12, 0.5), front);
       });
-      /* the renewed view puts one dual GPON/XGSPON chassis in the same footprint */
+      /* the renewed view puts one dual GPON/XGS-PON chassis in the same footprint */
       const nu = new THREE.Group();
       g.add(nu);
       nu.visible = false;

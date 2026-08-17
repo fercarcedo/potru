@@ -1,7 +1,7 @@
 /**
  * Bars for the installed base of ONTs in production. They animate on scroll in.
  */
-  const data: [string,string,number,boolean][]=[['Alcatel I-221E-A','no admite >100 Mb/s',43.03,true],
+  const data: [string,string,number,boolean][]=[['Alcatel I-221E-A','no admite >100 Mbps',43.03,true],
     ['Ericsson T063G / T067G','',29.48,false],
     ['Nokia G-241W-A','',17.23,false],
     ['PTI ONT7-4GE-2FXS','con / sin puerto RF',9.63,false],

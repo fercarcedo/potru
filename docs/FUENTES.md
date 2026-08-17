@@ -9,7 +9,7 @@ Todo el contenido de Potru procede de un único documento público:
 | Documento | Pliego de Condiciones Técnicas |
 | Expediente | **CON 06/2025** |
 | Órgano | GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de Asturias S.A.U., M.P. |
-| Objeto | Renovación del equipamiento electrónico FTTH de la red ASTURCON: GPON → XGSPON |
+| Objeto | Renovación del equipamiento electrónico FTTH de la Red Asturcón: GPON → XGS-PON |
 | Aprobación | 22-12-2025 |
 | Extensión | 460 páginas |
 | Publicación | Plataforma de Contratación del Sector Público (PLACSP) |
@@ -35,8 +35,8 @@ licitación en PLACSP.
 - **Distribución de cada sala** (`src/data/rooms.json`): transcrita en metros del plano de planta
   de cada nodo — contorno del recinto, hueco de puerta y cada armario con su ancho, su fondo y su
   rótulo. Los planos de Blimea, Mieres y Tineo se leyeron del PDF a 400 ppp, porque en los JPEG
-  de `public/planos/` los rótulos de bastidor son ilegibles. Se modela sólo el recinto de
-  ASTURCON: lo colindante ajeno (centro de transformación de Hidrocantábrico, sala SCC-BO,
+  de `public/planos/` los rótulos de bastidor son ilegibles. Se modela sólo el recinto de la
+  Red Asturcón: lo colindante ajeno (centro de transformación de Hidrocantábrico, sala SCC-BO,
   pasillos) queda como muro ciego.
 - **Discrepancias documentadas en la propia interfaz**: el pliego general cita 5 nodos
   secundarios, pero las fichas por área detallan 9 (Vegadeo, La Caridad y Soto del Barco en

@@ -115,7 +115,7 @@ const NS = 'http://www.w3.org/2000/svg';
       tip.style.left=Math.min(ev.clientX-r.left+14,r.width-260)+'px';
       tip.style.top=(ev.clientY-r.top-10)+'px';
       const ont=n.olts.reduce((a,o)=>a+o.onts,0);
-      const ho=['mieres','langreo'].includes(n.id)?`<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura ASTURCON aqu\u00ed son sus n\u00facleos perif\u00e9ricos.</span>`:'';
+      const ho=['mieres','langreo'].includes(n.id)?`<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturc\u00f3n aqu\u00ed son sus n\u00facleos perif\u00e9ricos.</span>`:'';
       const pl=n.towns&&n.towns.length>1?`<br><span style="color:#b8c6d8">Sirve a: ${n.towns.slice(0,3).join(', ')}${n.towns.length>3?'…':''}</span>`:'';
       tip.innerHTML=`<b>${n.name}</b><br>${n.olts.length} OLT · ${ont} ONT · migración sem. ${n.weekFrom}–${n.weekTo}${pl}${ho}<br><span style="color:${n.color}">Área ${n.area}</span> · <u>pulsa para la ficha</u>`;
     });

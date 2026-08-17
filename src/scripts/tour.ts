@@ -18,7 +18,7 @@ import { openNode } from './modal';
   const STEPS: Step[]=[
    {vb:[440,20,420,240],hl:[],node:'pao',
     t:'Gijón / PAO — la puerta de la red',
-    x:'Todo el tráfico de la red ASTURCON entra y sale por este punto: el enrutador Alcatel 7750SR-7, hoy al 100% de ocupación, conecta los 20 nodos con las jaulas de los operadores. La renovación instala aquí un enrutador nuevo (PF-2) junto al actual. Puedes entrar y ver el plano de planta y los alzados reales de la sala.'},
+    x:'Todo el tráfico de la Red Asturcón entra y sale por este punto: el enrutador Alcatel 7750SR-7, hoy al 100% de ocupación, conecta los 20 nodos con las jaulas de los operadores. La renovación instala aquí un enrutador nuevo (PF-2) junto al actual. Puedes entrar y ver el plano de planta y los alzados reales de la sala.'},
    {vb:[430,60,320,230],hl:['minera'],node:'mieres',
     t:'Troncal de la Autovía Minera · fibra propia',
     x:'De Gijón a Mieres, la troncal propia de la red transita por las canalizaciones de la Autovía AS-I "Mieres–Gijón", con segregación de fibras hacia la Cuenca del Nalón. En Mieres — cabecera de las tres cuencas — se instala el segundo enrutador nuevo del contrato. Entra para ver sus 4 OLT Alcatel en los alzados.'},
@@ -41,8 +41,8 @@ import { openNode } from './modal';
     t:'Oriente · Llanes y Colombres, con redundancia',
     x:'El extremo oriental llega por fibra alquilada Gijón–Llanes y Llanes–Colombres. Fíjate en la línea punteada azulada: desde Llanes, las tramas de las OLT del oriente (y también las del suroriente) vuelven al PAO por una segunda ruta de fibra redundada — si la principal cae, el tráfico sobrevive. Llanes suma 1.046 ONT en dos OLT — entra a ver la sala.'},
    {vb:HOME,hl:['occ','occrent','minera','lena','nalon','morcin','aller','surocc','suror','orient','redund'],node:null,
-    t:'La red completa, lista para los 10 Gb/s',
-    x:'Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gb/s extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha.'}
+    t:'La red completa, lista para los 10 Gbps',
+    x:'Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gbps extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha.'}
   ];
   const tpDetBtn=document.getElementById('tpDetBtn')!,tpDet=document.getElementById('tpDet')!;
   tpDetBtn.onclick=()=>{

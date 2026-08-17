@@ -1,7 +1,7 @@
 # Potru
 
-Visor divulgativo de la renovación tecnológica **GPON → XGSPON** de la red pública FTTH
-**ASTURCON**, tal y como la describe el Pliego de Condiciones Técnicas del expediente
+Visor divulgativo de la renovación tecnológica **GPON → XGS-PON** de la **Red Asturcón**,
+la red pública FTTH de Asturias, tal y como la describe el Pliego de Condiciones Técnicas del expediente
 **CON 06/2025** de GIT, publicado en la Plataforma de Contratación del Sector Público.
 
 > ⓘ **Proyecto independiente**, no afiliado a GIT ni al Principado de Asturias ·

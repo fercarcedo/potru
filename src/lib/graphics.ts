@@ -287,7 +287,7 @@ export function mkPAO(): string {
   g += `<line x1="124" y1="${yd + 13}" x2="470" y2="${yd + 13}" stroke="#f2d024" stroke-width="18" opacity=".12"/>`;
   g += `<text x="486" y="${yd + 18}" fill="#8da0b8" font-size="13.5">fibras DIRECTAS al 7750 de Mieres · sin CWDM</text>`;
   g += `<rect x="10" y="${yd + 34}" width="760" height="30" rx="8" fill="rgba(255,180,84,.12)" stroke="rgba(255,180,84,.5)"/>`;
-  g += `<text x="24" y="${yd + 54}" fill="#ffb454" font-size="13">⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gb libre en toda la máquina</text>`;
+  g += `<text x="24" y="${yd + 54}" fill="#ffb454" font-size="13">⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gbps libre en toda la máquina</text>`;
   g += '</svg>';
   return g;
 }

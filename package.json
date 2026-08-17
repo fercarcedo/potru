@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Independent explanatory viewer of the GPON to XGSPON renewal of the ASTURCON public FTTH network (pliego CON 06/2025)",
+  "description": "Independent explanatory viewer of the GPON to XGS-PON renewal of the Red Asturcón public FTTH network (pliego CON 06/2025)",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",

@@ -15,11 +15,11 @@ interface Props {
 const { node } = Astro.props;
 const desc =
   node.id === 'pao'
-    ? `${node.name}: punto de acceso de operadores de la red ASTURCON. ${node.enclosure}`
+    ? `${node.name}: punto de acceso de operadores de la Red Asturcón. ${node.enclosure}`
     : `Nodo ${node.name} (área ${node.area}): ${node.olts.length} OLT y ${ontCount(node)} ONT en servicio, migración prevista en las semanas ${node.weekFrom}–${node.weekTo} de la Fase 2 del pliego CON 06/2025.`;
 ---
 
-<Layout title={`${node.name} · Potru · renovación GPON → XGSPON`} description={desc}>
+<Layout title={`${node.name} · Potru · renovación GPON → XGS-PON`} description={desc}>
   <section style="padding-top:44px">
     <div class="wrap">
       <NodeDetail node={node} />

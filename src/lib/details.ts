@@ -78,7 +78,7 @@ export const DETAILS: string[] = [
 
   /* 6 south-east */
   `${occRow('CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes', 8, 8, CW8)}
-    <div style="color:#8da0b8;margin-top:6px">Transmode 5800 4×1 Gb/s sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
+    <div style="color:#8da0b8;margin-top:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
 
   /* 7 east */
   `${occRow('CWDM 8133 · Gijón–Llanes–Colombres', 8, 8, CW8)}
@@ -88,8 +88,8 @@ export const DETAILS: string[] = [
 
   /* 8 closing */
   `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <span style="color:#e8eef6;min-width:150px">Enlace por OLT hoy</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#ffb454" stroke-width="2"/></svg><span style="color:#c99a54">1 Gb/s</span></div>
+    <span style="color:#e8eef6;min-width:150px">Enlace por OLT hoy</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#ffb454" stroke-width="2"/></svg><span style="color:#c99a54">1 Gbps</span></div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-    <span style="color:#e8eef6;min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs)">≥ 10 Gb/s extremo a extremo</span></div>
+    <span style="color:#e8eef6;min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs)">≥ 10 Gbps extremo a extremo</span></div>
     <div style="color:#8da0b8;margin-top:10px">Prioridad a portadores directos vacantes; CWDM o equipos nuevos del adjudicatario donde no los haya · los nodos cabecera pueden encadenar su área</div>`,
 ];

@@ -74,7 +74,7 @@ export const byId: Record<string, NetworkNode> = Object.fromEntries(
 export type ActionDesc = ['fix' | 'var', string, string];
 
 export const ACTION_DESC: Record<string, ActionDesc> = {
-  'PF-1': ['fix', 'Sustitución de su OLT por equipo dual GPON/XGSPON', '#act-pf1'],
+  'PF-1': ['fix', 'Sustitución de su OLT por equipo dual GPON/XGS-PON', '#act-pf1'],
   'PF-2': ['fix', 'Instalación de enrutador nuevo (Fase 1)', '#act-pf2'],
   'PF-3': ['fix', 'Repuestos de mantenimiento', '#act-pf3'],
   'PV-1': ['var', 'ONT nuevas para usuarios con ONT sin capacidad', '#act-pv1'],

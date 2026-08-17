@@ -1,6 +1,6 @@
 /**
  * End-to-end schematic ONT → splitters → OLT → trunk → PAO, with the
- * GPON ↔ XGSPON toggle and its downstream traffic pulses.
+ * GPON ↔ XGS-PON toggle and its downstream traffic pulses.
  *
  * Drawn on the client rather than at build time: it changes completely when the
  * mode is toggled and its pulses are <animateMotion>, so rebuilding it is both
@@ -10,16 +10,16 @@ const ND=document.getElementById('netDiagram')!,NS='http://www.w3.org/2000/svg';
 const infoBox=document.getElementById('infoBox')!;
 let mode: 'gpon' | 'xgs' = 'gpon';
 const INFO: Record<string, Record<'gpon'|'xgs', string>>={
- ont:{gpon:'<b>ONT (terminal de usuario).</b> Parque heterogéneo: Alcatel I-221E-A (43%, limitada a 100 Mb/s), Nokia G-241W-A / G-240G-E, Ericsson T063G/T067G y PTI ONT7-4GE-2FXS con/sin puerto RF. Sirve HSI, TVoIP, VoD, VoIP, CATV y POTS.',
-  xgs:'<b>ONT tras la renovación.</b> Se mantienen las compatibles; hasta 7.000 ONT GPON nuevas sustituyen las obsoletas o incompatibles (PV-1 y PV-2) y hasta 100 ONT XGSPON (PV-3) estrenan los 10 Gb/s simétricos.'},
+ ont:{gpon:'<b>ONT (terminal de usuario).</b> Parque heterogéneo: Alcatel I-221E-A (43%, limitada a 100 Mbps), Nokia G-241W-A / G-240G-E, Ericsson T063G/T067G y PTI ONT7-4GE-2FXS con/sin puerto RF. Sirve HSI, TVoIP, VoD, VoIP, CATV y POTS.',
+  xgs:'<b>ONT tras la renovación.</b> Se mantienen las compatibles; hasta 7.000 ONT GPON nuevas sustituyen las obsoletas o incompatibles (PV-1 y PV-2) y hasta 100 ONT XGS-PON (PV-3) estrenan los 10 Gbps simétricos.'},
  split:{gpon:'<b>Red de acceso pasiva.</b> Splitters en cascada: 1:16 en red secundaria y 1:4 en primaria → 64 usuarios por fibra (Cangas del Narcea, 1:32). 806 redes PON con acometidas, RFU, postes y arquetas.',
-  xgs:'<b>La red pasiva no se toca.</b> GPON y XGSPON comparten la misma fibra y los mismos splitters usando longitudes de onda distintas: toda la obra civil y óptica pasiva se reutiliza.'},
- olt:{gpon:'<b>Nodo primario · OLT actual.</b> 20 nodos con Alcatel 7342 (SW R4.8.13) o Ericsson BLM 1500 (SW R8.4.0), inyección CATV, energía CC, baterías, transmisión y climatización. Enlaces de subida de 1 Gb/s.',
-  xgs:'<b>Nodo primario renovado (PF-1).</b> Nueva OLT dual GPON/XGSPON por nodo, autónoma de la red antigua durante la migración. Puertos dimensionados según las PON existentes. Enlace mínimo de 10 Gb/s extremo a extremo.'},
+  xgs:'<b>La red pasiva no se toca.</b> GPON y XGS-PON comparten la misma fibra y los mismos splitters usando longitudes de onda distintas: toda la obra civil y óptica pasiva se reutiliza.'},
+ olt:{gpon:'<b>Nodo primario · OLT actual.</b> 20 nodos con Alcatel 7342 (SW R4.8.13) o Ericsson BLM 1500 (SW R8.4.0), inyección CATV, energía CC, baterías, transmisión y climatización. Enlaces de subida de 1 Gbps.',
+  xgs:'<b>Nodo primario renovado (PF-1).</b> Nueva OLT dual GPON/XGS-PON por nodo, autónoma de la red antigua durante la migración. Puertos dimensionados según las PON existentes. Enlace mínimo de 10 Gbps extremo a extremo.'},
  troncal:{gpon:'<b>Redes troncales.</b> Fibra propia de gran capacidad (p. ej. troncal Occidental de 64 fibras sobre la vía ADIF Ferrol–Gijón) o fibra alquilada con CWDM Transmode 5800/8133/8140, varios sin canales vacantes.',
   xgs:'<b>Transporte renovado.</b> Se priorizan portadores ópticos directos vacantes; donde no existan, CWDM o nuevos equipos de transporte del adjudicatario. Los nodos cabecera pueden encadenar al resto de su área.'},
  pao:{gpon:'<b>PAO Gijón.</b> Enrutador Alcatel 7750SR-7 al 100% de ocupación (sin capacidad para más tarjetas), pasarelas POTS V5.2 y jaulas de operadores. Único punto de interconexión.',
-  xgs:'<b>Interconexión renovada (PF-2).</b> Dos enrutadores nuevos: uno en el PAO de Gijón junto al 7750 actual y otro en Mieres, aprovechando la fibra existente entre ambos. Reciben los enlaces 10 Gb/s de las nuevas OLT.'},
+  xgs:'<b>Interconexión renovada (PF-2).</b> Dos enrutadores nuevos: uno en el PAO de Gijón junto al 7750 actual y otro en Mieres, aprovechando la fibra existente entre ambos. Reciben los enlaces 10 Gbps de las nuevas OLT.'},
  oss:{gpon:'<b>OSS actuales.</b> Gestores por fabricante: Nokia AMS, Entriview, 5620 SAM, Transmode TNM, GENView, Cimplicity; consola de alarmas IBM Tivoli NetCool y ticketing Remedy.',
   xgs:'<b>Gestión unificada.</b> Nuevos gestores de elementos (OLT, energía, baterías y transporte) integrados con los OSS de GIT, adaptados en Fase 1. Un solo sistema integral sustituye el mosaico heredado.'}
 };
@@ -41,7 +41,7 @@ function buildDiagram(){
   const gOnt=el('g',{class:'node-el','data-key':'ont'});
   el('rect',{x:70,y:Y-32,width:100,height:64,rx:8,fill:'#0e1a2e',stroke:c,'stroke-width':1.5},gOnt);
   el('text',{x:120,y:Y-4,fill:txt,'font-size':13,'text-anchor':'middle','font-weight':600},gOnt).textContent='ONT';
-  el('text',{x:120,y:Y+16,fill:mut,'font-size':9,'text-anchor':'middle'},gOnt).textContent=mode==='gpon'?'6 modelos · 4 fabricantes':'GPON + XGSPON';
+  el('text',{x:120,y:Y+16,fill:mut,'font-size':9,'text-anchor':'middle'},gOnt).textContent=mode==='gpon'?'6 modelos · 4 fabricantes':'GPON + XGS-PON';
   el('text',{x:120,y:Y+52,fill:mut,'font-size':10,'text-anchor':'middle'},gOnt).textContent='domicilio del usuario';
   const gS16=el('g',{class:'node-el','data-key':'split'});
   el('path',{d:`M285,${Y-26} L315,${Y} L285,${Y+26} Z`,fill:'#12233c',stroke:passive,'stroke-width':1.5},gS16);
@@ -54,8 +54,8 @@ function buildDiagram(){
   el('rect',{x:610,y:Y-58,width:90,height:116,rx:8,fill:'#0e1a2e',stroke:c,'stroke-width':2},gOlt);
   for(let i=0;i<4;i++)el('rect',{x:622,y:Y-46+i*24,width:66,height:14,rx:3,fill:i<2?c:(mode==='xgs'?'#1d5c55':'#5a4526'),opacity:i<2?.85:.5},gOlt);
   el('text',{x:655,y:Y-70,fill:txt,'font-size':13,'text-anchor':'middle','font-weight':600},gOlt).textContent='NODO · OLT';
-  el('text',{x:655,y:Y+80,fill:mut,'font-size':9.5,'text-anchor':'middle'},gOlt).textContent=mode==='gpon'?'Alcatel 7342 / Ericsson BLM':'OLT dual GPON/XGSPON';
-  el('text',{x:655,y:Y+95,fill:c,'font-size':9,'text-anchor':'middle'},gOlt).textContent=mode==='gpon'?'×20 nodos · enlaces 1 Gb/s':'×20 nodos · ≥10 Gb/s';
+  el('text',{x:655,y:Y+80,fill:mut,'font-size':9.5,'text-anchor':'middle'},gOlt).textContent=mode==='gpon'?'Alcatel 7342 / Ericsson BLM':'OLT dual GPON/XGS-PON';
+  el('text',{x:655,y:Y+95,fill:c,'font-size':9,'text-anchor':'middle'},gOlt).textContent=mode==='gpon'?'×20 nodos · enlaces 1 Gbps':'×20 nodos · ≥10 Gbps';
   const gT=el('g',{class:'node-el','data-key':'troncal'});
   el('rect',{x:760,y:Y-16,width:96,height:32,rx:16,fill:'#12233c',stroke:passive,'stroke-width':1.5},gT);
   el('text',{x:808,y:Y+4,fill:txt,'font-size':10.5,'text-anchor':'middle'},gT).textContent='TRONCAL';
@@ -98,8 +98,8 @@ function setMode(m: 'gpon' | 'xgs'){
   bG.setAttribute('aria-selected',String(m==='gpon'));bX.setAttribute('aria-selected',String(m==='xgs'));
   buildDiagram();
   infoBox.innerHTML=m==='gpon'
-    ?'<b>Red actual (GPON).</b> Dos plataformas OLT distintas, seis gestores, enlaces de 1 Gb/s y un enrutador saturado. Pulsa los elementos para el detalle.'
-    :'<b>Red renovada (GPON/XGSPON).</b> 20 OLT duales, dos enrutadores nuevos, enlaces ≥10 Gb/s y gestión unificada, reutilizando toda la fibra y los splitters. Pulsa los elementos para el detalle.';
+    ?'<b>Red actual (GPON).</b> Dos plataformas OLT distintas, seis gestores, enlaces de 1 Gbps y un enrutador saturado. Pulsa los elementos para el detalle.'
+    :'<b>Red renovada (GPON/XGS-PON).</b> 20 OLT duales, dos enrutadores nuevos, enlaces ≥10 Gbps y gestión unificada, reutilizando toda la fibra y los splitters. Pulsa los elementos para el detalle.';
   infoBox.style.borderLeftColor=m==='gpon'?'var(--gpon)':'var(--xgs)';
 }
 bG.onclick=()=>setMode('gpon');bX.onclick=()=>setMode('xgs');
