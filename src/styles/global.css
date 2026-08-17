@@ -198,8 +198,13 @@ body{font-size:16.5px}
   #astMap{min-width:840px}
 }
 @media(max-width:760px){
-  nav ul{display:flex;overflow-x:auto;gap:16px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  /* align-items:flex-start del .wrap encogía el <ul> a su contenido, así que
+     overflow-x no tenía nada que recortar y la lista se salía de la pantalla */
+  nav ul{display:flex;width:100%;overflow-x:auto;gap:16px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   nav ul::-webkit-scrollbar{display:none}
+  /* sin esto los <li> encogen y parten el rótulo: «Red en vivo» caía en tres líneas */
+  nav li{flex:none}
+  nav li a{white-space:nowrap}
   nav .wrap{height:auto;flex-direction:column;align-items:flex-start;gap:4px;padding-top:10px;padding-bottom:10px}
   section{padding:56px 0}
   .hero{padding:64px 0 56px}
