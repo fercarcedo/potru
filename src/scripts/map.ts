@@ -17,6 +17,12 @@ import { openNode } from './modal';
 
 const NS = 'http://www.w3.org/2000/svg';
 
+/** Remembers which dot a label belongs to, so the placement pass at the end of
+ *  this module can look for a free spot around it. */
+const anchor = (el: any, x: number, y: number, r: number) => {
+  el.dataset.ax = x; el.dataset.ay = y; el.dataset.ar = r;
+};
+
   export const svg=document.getElementById('astMap')!,tip=document.getElementById('mapTip')!,shell=svg.parentElement!;
   const POS={muros:[385,120],luarca:[300,115],navia:[235,105],castropol:[120,120],tapia:[175,95],
     tineo:[300,220],cangas:[255,295],mieres:[560,245],polalena:[545,362],morcin:[502,288],
@@ -80,7 +86,7 @@ const NS = 'http://www.w3.org/2000/svg';
     const t=document.createElementNS(NS,'text');
     t.setAttribute('x',x);t.setAttribute('y',y+16);t.setAttribute('fill','#8da0b8');
     t.setAttribute('font-size',7.5);t.setAttribute('text-anchor','middle');
-    t.setAttribute('class','lbl-move');
+    t.setAttribute('class','lbl-sec');anchor(t,x,y,4.5);
     t.textContent=name;g.appendChild(t);
     g.addEventListener('mousemove',ev=>{
       const r=shell.getBoundingClientRect();
@@ -111,12 +117,9 @@ const NS = 'http://www.w3.org/2000/svg';
     const ao=document.createElementNS(NS,'animate');ao.setAttribute('attributeName','opacity');ao.setAttribute('values','.6;0');ao.setAttribute('dur','2.6s');ao.setAttribute('repeatCount','indefinite');
     halo.appendChild(an);halo.appendChild(ao);g.appendChild(halo);
     const lbl=document.createElementNS(NS,'text');
-    /* Navia sits close enough to Tapia that their names touched; it drops a
-       little so both stay legible */
-    const LBL_DY: Record<string, number> = { navia: 9 };
-    lbl.setAttribute('x',x);lbl.setAttribute('y',y+22+(LBL_DY[n.id]||0));lbl.setAttribute('fill','#8da0b8');
+    lbl.setAttribute('x',x);lbl.setAttribute('y',y+22);lbl.setAttribute('fill','#8da0b8');
     lbl.setAttribute('font-size',9.5);lbl.setAttribute('text-anchor','middle');
-    lbl.setAttribute('class','lbl-fixed');
+    lbl.setAttribute('class','lbl-node');anchor(lbl,x,y,HOSTONLY.includes(n.id)?11:7);
     lbl.textContent=n.name+(['mieres','langreo'].includes(n.id)?' *':'');g.appendChild(lbl);
     g.addEventListener('mousemove',ev=>{
       const r=shell.getBoundingClientRect();
@@ -191,7 +194,7 @@ const NS = 'http://www.w3.org/2000/svg';
       const t=document.createElementNS(NS,'text');
       t.setAttribute('x',x);t.setAttribute('y',y-5);t.setAttribute('fill','#6f8199');
       t.setAttribute('font-size',7);t.setAttribute('text-anchor','middle');
-      t.setAttribute('class','lbl-move');
+      t.setAttribute('class','lbl-town');anchor(t,x,y,2.4);
       t.textContent=name;townsLayer.appendChild(t);
     });
   });
@@ -297,27 +300,94 @@ const NS = 'http://www.w3.org/2000/svg';
     e.preventDefault();
   }, true);
 
-  /* ---- declutter: nudge the small labels off the node names ----
-     The legacy map had 13 pairs of overlapping labels — «Pol. de Coaña» sat on
-     top of «Navia» and «Tapia de Casariego», and so on. Node names hold their
-     place; town and secondary-node labels are moved to the first nearby spot
-     that is clear. */
+  /* ---- label placement ------------------------------------------------
+     Every name is written next to its dot, and the dots are where the pliego
+     puts them, so the defaults collide: «Pol. de Coaña» landed on «Navia»,
+     «Tapia de Casariego» ran through Navia's marker, «Oyanco» sat on Moreda.
+     This pass keeps each label as drawn if that spot is clear and otherwise
+     walks a ring of positions around its own dot, anchoring the text away from
+     the dot when it goes to the side. Markers and the fixed captions count as
+     obstacles too, not just other labels. Node names are placed first, so the
+     small print yields to them, and a label that ends up far from its dot gets
+     a leader line. */
   {
-    const grow = (r: DOMRect | any, m = 0.5) =>
+    const PAD = 1.6;
+    const box = (r: any, m = PAD) =>
       ({ x: r.x - m, y: r.y - m, w: r.width + m * 2, h: r.height + m * 2 });
     const hits = (a: any, b: any) =>
       a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
-    const fixed = [...svg.querySelectorAll('.lbl-fixed')].map((e: any) => grow(e.getBBox()));
-    const placed: any[] = [];
-    const OFFSETS: [number, number][] =
-      [[0, 0], [0, 11], [0, -11], [14, 8], [-14, 8], [0, 19], [20, 0], [-20, 0], [0, -19]];
-    for (const el of [...svg.querySelectorAll('.lbl-move')] as any[]) {
-      const x0 = +el.getAttribute('x'), y0 = +el.getAttribute('y');
-      for (const [dx, dy] of OFFSETS) {
-        el.setAttribute('x', x0 + dx); el.setAttribute('y', y0 + dy);
-        const box = grow(el.getBBox());
-        if (![...fixed, ...placed].some((o) => hits(box, o))) break;
-      }
-      placed.push(grow(el.getBBox()));
+    const area = (a: any, b: any) =>
+      Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+      Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+
+    /* markers, the PAO square and the fixed captions are all immovable */
+    const obstacles: any[] = [];
+    for (const c of [...svg.querySelectorAll('circle')] as any[]) {
+      const r = +c.getAttribute('r');
+      if (r < 2 || c.querySelector('animate')) continue;   /* not the pulse halo */
+      const cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
+      obstacles.push({ x: cx - r, y: cy - r, w: r * 2, h: r * 2 });
     }
+    for (const t of [...svg.querySelectorAll('text')] as any[])
+      if (!t.getAttribute('class')?.startsWith('lbl-')) obstacles.push(box(t.getBBox()));
+    for (const q of [...svg.querySelectorAll('rect')] as any[])
+      obstacles.push(box({ x: +q.getAttribute('x'), y: +q.getAttribute('y'),
+        width: +q.getAttribute('width'), height: +q.getAttribute('height') }, 3));
+
+    /** Ring of spots around a dot of radius r, nearest first. `end`/`start`
+     *  push the text away from the dot instead of straddling it. */
+    const spots = (r: number): [number, number, string][] => [
+      [0, r + 15, 'middle'], [0, -(r + 7), 'middle'],
+      [r + 5, 4, 'start'], [-(r + 5), 4, 'end'],
+      [r + 3, r + 12, 'start'], [-(r + 3), r + 12, 'end'],
+      [r + 3, -(r + 5), 'start'], [-(r + 3), -(r + 5), 'end'],
+      [0, r + 25, 'middle'], [0, -(r + 17), 'middle'],
+      [r + 14, 4, 'start'], [-(r + 14), 4, 'end'],
+      [r + 12, r + 20, 'start'], [-(r + 12), r + 20, 'end'],
+      [r + 12, -(r + 13), 'start'], [-(r + 12), -(r + 13), 'end'],
+      [0, r + 35, 'middle'], [0, -(r + 27), 'middle'],
+    ];
+
+    const leaders = document.createElementNS(NS, 'g');
+    svg.appendChild(leaders);
+
+    for (const cls of ['.lbl-node', '.lbl-sec', '.lbl-town'])
+      for (const el of [...svg.querySelectorAll(cls)] as any[]) {
+        const ax = +el.dataset.ax, ay = +el.dataset.ay, ar = +el.dataset.ar;
+        /* a label may of course sit against its own dot */
+        const others = obstacles.filter(
+          (o) => !(ax > o.x && ax < o.x + o.w && ay > o.y && ay < o.y + o.h));
+        const home: [number, number, string] =
+          [+el.getAttribute('x') - ax, +el.getAttribute('y') - ay,
+           el.getAttribute('text-anchor')];
+        let best: any = null;
+        for (const [dx, dy, anc] of [home, ...spots(ar)]) {
+          el.setAttribute('x', ax + dx); el.setAttribute('y', ay + dy);
+          el.setAttribute('text-anchor', anc);
+          const b = box(el.getBBox());
+          const cost = others.reduce((a, o) => a + area(b, o), 0);
+          if (!cost) { best = null; break; }      /* clear: keep this spot */
+          if (!best || cost < best.cost) best = { dx, dy, anc, cost };
+        }
+        if (best) {                               /* nothing was clear: least bad */
+          el.setAttribute('x', ax + best.dx); el.setAttribute('y', ay + best.dy);
+          el.setAttribute('text-anchor', best.anc);
+        }
+        const b = el.getBBox();
+        obstacles.push(box(b));
+        /* moved well away from its dot? point back at it */
+        /* the closest point of the label box to the dot */
+        const px = Math.max(b.x, Math.min(ax, b.x + b.width));
+        const py = Math.max(b.y, Math.min(ay, b.y + b.height));
+        const gap = Math.hypot(px - ax, py - ay);
+        if (gap > 16) {                           /* far enough to look adrift */
+          const k = (ar + 2.5) / gap;
+          const ln = document.createElementNS(NS, 'line');
+          ln.setAttribute('x1', ax + (px - ax) * k); ln.setAttribute('y1', ay + (py - ay) * k);
+          ln.setAttribute('x2', ax + (px - ax) * 0.94); ln.setAttribute('y2', ay + (py - ay) * 0.94);
+          ln.setAttribute('stroke', '#5a6f8d'); ln.setAttribute('stroke-width', '.7');
+          ln.setAttribute('opacity', '.5');
+          leaders.appendChild(ln);
+        }
+      }
   }
