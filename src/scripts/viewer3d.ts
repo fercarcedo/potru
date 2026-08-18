@@ -221,13 +221,209 @@ export function buildRoom(n: NetworkNode) {
   const newChassis: THREE.Object3D[] = [];
   const solids: { x0: number; x1: number; z0: number; z1: number }[] = [];
 
-  function portLed(x: number, y: number, z: number, parent: THREE.Object3D, on: boolean) {
+  /* extra finishes for the equipment detail */
+  const fin = {
+    rail: new THREE.MeshLambertMaterial({ color: 0x1d2126 }),
+    bezel: new THREE.MeshLambertMaterial({ color: 0x33383f }),
+    trayFace: new THREE.MeshLambertMaterial({ color: 0xb9bfc7 }),
+    adapter: new THREE.MeshLambertMaterial({ color: 0x2f8f5b }),
+    adapterBlue: new THREE.MeshLambertMaterial({ color: 0x3763a8 }),
+    fibre: new THREE.MeshLambertMaterial({ color: 0xf2d024 }),
+    fibreRed: new THREE.MeshLambertMaterial({ color: 0xd8503f }),
+    steel: new THREE.MeshLambertMaterial({ color: 0xa9aeb5 }),
+    panel: new THREE.MeshLambertMaterial({ color: 0xd7dbdf }),
+    smoked: new THREE.MeshLambertMaterial({ color: 0x2b3138, transparent: true, opacity: 0.72 }),
+    breaker: new THREE.MeshLambertMaterial({ color: 0xecf0f2 }),
+    toggle: new THREE.MeshLambertMaterial({ color: 0x1b1f24 }),
+    cell: new THREE.MeshLambertMaterial({ color: 0x2b2f36 }),
+    module: new THREE.MeshLambertMaterial({ color: 0x4a525d }),
+    screen: new THREE.MeshBasicMaterial({ color: 0x184a44 }),
+    red: new THREE.MeshLambertMaterial({ color: 0xc0392b }),
+    cellCase: new THREE.MeshLambertMaterial({ color: 0x24272c }),
+    cellTop: new THREE.MeshLambertMaterial({ color: 0x3a3f46 }),
+    cellLabel: new THREE.MeshLambertMaterial({ color: 0xd8dde2 }),
+    copper: new THREE.MeshLambertMaterial({ color: 0xb87333 }),
+    cableBlack: new THREE.MeshLambertMaterial({ color: 0x24262a }),
+    cableBlue: new THREE.MeshLambertMaterial({ color: 0x2f5d9e }),
+  };
+
+  /**
+   * A front-panel indicator. `role` separates the GPON ports an OLT really has
+   * — which must stay countable against the pliego — from the decorative status
+   * lamps on the other equipment.
+   */
+  function portLed(x: number, y: number, z: number, parent: THREE.Object3D, on: boolean,
+                   role: 'gpon-port' | 'status' = 'gpon-port') {
     /* DoubleSide: cabinets against the far wall present their face towards -Z */
     const m = new THREE.Mesh(new THREE.PlaneGeometry(0.016, 0.011),
       new THREE.MeshBasicMaterial({ color: on ? 0x39ff88 : 0x0d1218, side: THREE.DoubleSide }));
     m.position.set(x, y, z);
+    m.name = role;
     parent.add(m);
     if (on) leds.push({ m, base: 0x39ff88, ph: Math.random() * 6 });
+  }
+
+  /** A slack fibre patch cord: a sagging tube through the given points. */
+  function cord(pts: [number, number, number][], parent: THREE.Object3D,
+                m: THREE.Material = fin.fibre, r = 0.0045) {
+    const curve = new THREE.CatmullRomCurve3(pts.map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+    parent.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 16, r, 5, false), m));
+  }
+
+  /** 19" front posts and top/bottom trim, so a cabinet reads as a rack. */
+  function rackFrame(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
+    const zz = fz * 0.98;
+    box(0.045, h - 0.04, 0.05, fin.rail, -w / 2 + 0.03, base + h / 2, zz, g);
+    box(0.045, h - 0.04, 0.05, fin.rail, w / 2 - 0.03, base + h / 2, zz, g);
+    box(w, 0.05, 0.06, fin.bezel, 0, base + h - 0.03, zz, g);
+    box(w, 0.05, 0.06, fin.bezel, 0, base + 0.03, zz, g);
+    /* fan tray under the top cap */
+    box(w - 0.12, 0.06, 0.03, fin.module, 0, base + h - 0.10, zz, g);
+  }
+
+  /**
+   * ROM — Repartidor Óptico Modular: a stack of splice/patch trays, each with a
+   * row of SC/APC adapters, plus the slack fibre looping into a side manager.
+   */
+  function romBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number, front: number) {
+    rackFrame(g, w, h, fz, base);
+    const inner = w - 0.13;
+    const trays = Math.max(4, Math.min(11, Math.floor((h - 0.5) / 0.115)));
+    const y0 = base + 0.32;
+    const mx = -w / 2 + 0.075;            /* vertical cable manager, left side */
+    box(0.055, h - 0.5, 0.05, fin.bezel, mx, base + 0.3 + (h - 0.5) / 2, fz * 0.96, g);
+    for (let i = 0; i < trays; i++) {
+      const y = y0 + i * 0.115;
+      box(inner, 0.10, 0.045, fin.trayFace, 0.03, y, fz * 0.96, g);
+      /* adapter row: SC/APC, alternating green and blue as the trays fill up */
+      const n = 12;
+      for (let j = 0; j < n; j++) {
+        const ax = -inner / 2 + 0.055 + j * ((inner - 0.09) / (n - 1)) + 0.03;
+        box(0.019, 0.036, 0.022, j < 8 ? fin.adapter : fin.adapterBlue, ax, y, fz * 1.02, g);
+      }
+      /* a few cords per tray leave the adapters and sag into the manager */
+      if (i % 2 === 0) {
+        for (const j of [1, 5, 9]) {
+          const ax = -inner / 2 + 0.055 + j * ((inner - 0.09) / (n - 1)) + 0.03;
+          cord([[ax, y, fz * 1.05], [ax - 0.05, y - 0.055, fz * 1.16 * front > 0 ? fz * 1.16 : fz * 1.16],
+                [mx + 0.02, y - 0.03, fz * 1.05], [mx, y - 0.01, fz * 0.98]], g);
+        }
+      }
+    }
+    /* the bundle running down the manager and out of the top of the rack */
+    cord([[mx, base + 0.3, fz * 1.0], [mx, base + h * 0.55, fz * 1.08],
+          [mx, base + h - 0.06, fz * 0.9]], g, fin.fibre, 0.012);
+  }
+
+  /** CGBT — Cuadro General de Baja Tensión: enclosure, window and MCB rows. */
+  function cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) {
+    box(w, h, d, fin.panel, 0, base + h / 2, 0, g);
+    /* door with a smoked inspection window */
+    const wy = base + h * 0.62, wh = Math.min(h * 0.5, 0.42), ww = w - 0.12;
+    box(ww, wh, 0.02, fin.smoked, 0, wy, fz * 1.03, g);
+    box(ww + 0.03, 0.018, 0.03, fin.bezel, 0, wy + wh / 2, fz * 1.02, g);
+    box(ww + 0.03, 0.018, 0.03, fin.bezel, 0, wy - wh / 2, fz * 1.02, g);
+    /* two DIN rails of breakers behind the window */
+    const rows = 2, per = Math.max(6, Math.round(ww / 0.026));
+    for (let r = 0; r < rows; r++) {
+      const ry = wy + (r === 0 ? wh * 0.22 : -wh * 0.22);
+      box(ww - 0.02, 0.006, 0.012, fin.steel, 0, ry - 0.035, fz * 0.99, g);
+      for (let i = 0; i < per; i++) {
+        const bx = -(ww - 0.05) / 2 + i * ((ww - 0.05) / (per - 1));
+        box(0.019, 0.062, 0.02, fin.breaker, bx, ry, fz * 0.99, g);
+        box(0.012, 0.016, 0.021, fin.toggle, bx, ry + (i % 3 ? 0.012 : -0.012), fz * 1.0, g);
+      }
+    }
+    /* handle and the main switch below the window */
+    box(0.022, 0.14, 0.035, fin.bezel, w / 2 - 0.06, base + h * 0.44, fz * 1.05, g);
+    box(0.07, 0.07, 0.025, fin.toggle, -w / 2 + 0.09, base + h * 0.34, fz * 1.03, g);
+    box(0.05, 0.012, 0.026, fin.red, -w / 2 + 0.09, base + h * 0.34, fz * 1.05, g);
+  }
+
+  /**
+   * Optical transport / splitter shelf: horizontal line modules with their own
+   * optical ports, and the fibre leaving the front.
+   */
+  function transportBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
+    rackFrame(g, w, h, fz, base);
+    const inner = w - 0.13;
+    const shelves = Math.max(3, Math.min(6, Math.floor((h - 0.6) / 0.26)));
+    for (let s = 0; s < shelves; s++) {
+      const y = base + 0.45 + s * 0.26;
+      box(inner, 0.19, 0.05, fin.module, 0, y, fz * 0.96, g);
+      /* three plug-in modules per shelf, each with a pair of optical ports */
+      for (let m = 0; m < 3; m++) {
+        const mxp = -inner / 2 + inner * (m + 0.5) / 3;
+        box(inner / 3 - 0.02, 0.16, 0.03, fin.bezel, mxp, y, fz * 1.02, g);
+        box(0.016, 0.016, 0.018, fin.adapterBlue, mxp - 0.02, y + 0.03, fz * 1.06, g);
+        box(0.016, 0.016, 0.018, fin.adapterBlue, mxp + 0.02, y + 0.03, fz * 1.06, g);
+        portLed(mxp, y - 0.045, fz * 1.07, g, (s + m) % 4 !== 3, 'status');
+        if (m === 1) {
+          cord([[mxp - 0.02, y + 0.03, fz * 1.08], [mxp - 0.09, y - 0.05, fz * 1.2],
+                [-w / 2 + 0.07, y - 0.11, fz * 1.05]], g);
+        }
+      }
+    }
+  }
+
+  /** Rectifier / power shelf: plug-in modules with status LEDs. */
+  function powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
+    const inner = w - 0.10;
+    const n = Math.max(3, Math.min(5, Math.floor(h / 0.34)));
+    for (let i = 0; i < n; i++) {
+      const y = base + 0.22 + i * 0.3;
+      for (let m = 0; m < 3; m++) {
+        const mxp = -inner / 2 + inner * (m + 0.5) / 3;
+        box(inner / 3 - 0.015, 0.24, 0.04, fin.module, mxp, y, fz * 0.99, g);
+        box(inner / 3 - 0.07, 0.05, 0.02, fin.bezel, mxp, y + 0.08, fz * 1.03, g);
+        portLed(mxp, y - 0.06, fz * 1.05, g, true, 'status');
+      }
+    }
+  }
+
+  /** Battery bank: rows of cells on shelves. */
+  /**
+   * Battery string: monobloc cells on their shelves, with terminals, the copper
+   * link bars that put them in series, and the red/black leads leaving the rack.
+   */
+  function batteryBay(g: THREE.Object3D, w: number, h: number, d: number, base: number) {
+    const rows = Math.max(1, Math.min(4, Math.round(h / 0.45)));
+    const per = Math.max(2, Math.min(8, Math.round(w / 0.17)));
+    const cellD = d * 0.74;
+    /* stand: four uprights and a shelf per row */
+    for (const sx of [-w / 2 + 0.03, w / 2 - 0.03])
+      for (const sz of [-d / 2 + 0.03, d / 2 - 0.03])
+        box(0.045, h, 0.045, fin.rail, sx, base + h / 2, sz, g);
+    for (let r = 0; r < rows; r++) {
+      const shelfY = base + 0.08 + r * ((h - 0.10) / rows);
+      const cellH = Math.min(0.23, (h - 0.10) / rows - 0.10);
+      box(w - 0.02, 0.025, d - 0.02, fin.steel, 0, shelfY, 0, g);
+      const pitch = w / per;
+      for (let i = 0; i < per; i++) {
+        const cx = -w / 2 + pitch * (i + 0.5);
+        const cw = pitch - 0.016;
+        const cy = shelfY + 0.0125 + cellH / 2;
+        box(cw, cellH, cellD, fin.cellCase, cx, cy, 0, g);
+        /* lighter lid and the rating label on the front */
+        box(cw, 0.018, cellD, fin.cellTop, cx, cy + cellH / 2, 0, g);
+        box(cw * 0.66, cellH * 0.34, 0.005, fin.cellLabel,
+            cx, cy + cellH * 0.06, cellD / 2 + 0.004, g);
+        /* the two posts, and the link bar bridging to the next cell */
+        const ty = cy + cellH / 2 + 0.019;
+        for (const s2 of [-1, 1])
+          box(0.024, 0.026, 0.024, fin.copper, cx + s2 * cw * 0.3, ty, 0, g);
+        if (i < per - 1)
+          box(pitch * 0.55, 0.009, 0.018, fin.copper, cx + pitch * 0.5, ty + 0.015, 0, g);
+      }
+      /* string leads: red from the first post, black from the last */
+      const ty = shelfY + 0.0125 + cellH + 0.019;
+      cord([[-w / 2 + pitch * 0.5 - (pitch - 0.016) * 0.3, ty, 0],
+            [-w / 2 + 0.06, ty + 0.05, cellD * 0.3],
+            [-w / 2 + 0.05, shelfY - 0.02, d / 2 - 0.05]], g, fin.red, 0.009);
+      cord([[w / 2 - pitch * 0.5 + (pitch - 0.016) * 0.3, ty, 0],
+            [w / 2 - 0.06, ty + 0.05, cellD * 0.3],
+            [w / 2 - 0.05, shelfY - 0.02, d / 2 - 0.05]], g, fin.cableBlack, 0.009);
+    }
   }
 
   /**
@@ -237,15 +433,157 @@ export function buildRoom(n: NetworkNode) {
   function chassis(o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number) {
     const body = o.vendor.includes('Alcatel') ? mat.chassisAlcatel : mat.chassisEricsson;
     box(w - 0.08, h, 0.06, body, 0, y, 0.3 * front, g);
+    /* shelf bezel and vendor strip, so the chassis is not a bare slab */
+    box(w - 0.08, 0.022, 0.075, fin.bezel, 0, y + h / 2, 0.3 * front, g);
+    box(w - 0.08, 0.022, 0.075, fin.bezel, 0, y - h / 2, 0.3 * front, g);
     const usable = w - 0.14;
     const step = usable / o.cards;
     let lit = 0;
     for (let c = 0; c < o.cards; c++) {
       const cx = -usable / 2 + step * (c + 0.5);
       box(Math.min(step * 0.7, 0.05), h * 0.78, 0.03, mat.card, cx, y, 0.325 * front, g);
+      /* card ejector latches */
+      box(Math.min(step * 0.7, 0.05), 0.012, 0.014, fin.bezel, cx, y + h * 0.39, 0.34 * front, g);
+      box(Math.min(step * 0.7, 0.05), 0.012, 0.014, fin.bezel, cx, y - h * 0.39, 0.34 * front, g);
       for (let p = 0; p < o.portsPerCard; p++) {
         const py = y + h * 0.32 - (p + 0.5) * (h * 0.62 / o.portsPerCard);
         portLed(cx, py, 0.345 * front, g, lit++ < o.portsActive);
+      }
+    }
+    /* patch cords leaving the lit ports towards the side manager */
+    for (const frac of [0.2, 0.5, 0.8]) {
+      const cx = -usable / 2 + usable * frac;
+      cord([[cx, y, 0.35 * front], [cx - 0.06, y - h * 0.5, 0.46 * front],
+            [-w / 2 + 0.06, y - h * 0.62, 0.34 * front]], g);
+    }
+  }
+
+  /** Wire-mesh cable tray (rejiband): side rails, longitudinal wires and rungs. */
+  function rejiband(x0: number, z0: number, x1: number, z1: number, y: number, wTray = 0.3) {
+    const len = Math.hypot(x1 - x0, z1 - z0);
+    if (len < 0.4) return;
+    const g = new THREE.Group();
+    g.position.set((x0 + x1) / 2, y, (z0 + z1) / 2);
+    g.rotation.y = -Math.atan2(z1 - z0, x1 - x0);
+    scene.add(g);
+    const hh = 0.055;
+    /* the two side rails, each a pair of wires */
+    for (const s of [-1, 1]) {
+      box(len, 0.012, 0.012, fin.steel, 0, hh, s * wTray / 2, g);
+      box(len, 0.012, 0.012, fin.steel, 0, -hh, s * wTray / 2, g);
+    }
+    /* longitudinal bottom wires */
+    for (const t of [-0.3, 0, 0.3]) {
+      box(len, 0.01, 0.01, fin.steel, 0, -hh, t * wTray, g);
+    }
+    /* U-shaped rungs every 50 mm, drawn as one instanced mesh */
+    const step = 0.05;
+    const count = Math.max(2, Math.floor(len / step));
+    const rung = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.008, 0.008, wTray), fin.steel, count);
+    const up = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.008, hh * 2, 0.008), fin.steel, count * 2);
+    const m4 = new THREE.Matrix4();
+    for (let i = 0; i < count; i++) {
+      const px = -len / 2 + (i + 0.5) * (len / count);
+      rung.setMatrixAt(i, m4.makeTranslation(px, -hh, 0));
+      up.setMatrixAt(i * 2, m4.makeTranslation(px, 0, -wTray / 2));
+      up.setMatrixAt(i * 2 + 1, m4.makeTranslation(px, 0, wTray / 2));
+    }
+    g.add(rung, up);
+
+    /* the cable bundles the tray carries: fibre, a power run and a spare */
+    const lay: [number, number, THREE.Material][] = [
+      [-0.30, 0.011, fin.fibre],
+      [-0.10, 0.008, fin.fibre],
+      [0.12, 0.014, fin.cableBlack],
+      [0.31, 0.007, fin.cableBlue],
+    ];
+    const seg = Math.max(4, Math.round(len / 0.45));
+    for (const [off, r, m] of lay) {
+      const pts: [number, number, number][] = [];
+      for (let i = 0; i <= seg; i++) {
+        const t = i / seg;
+        /* a little wander and sag so the run does not look extruded */
+        const wob = Math.sin(t * Math.PI * 2.3 + off * 17) * 0.014;
+        const sag = Math.sin(t * Math.PI * 3.1 + off * 9) * 0.005;
+        pts.push([-len / 2 + t * len, -hh + r + 0.006 + sag, off * wTray + wob]);
+      }
+      cord(pts, g, m, r);
+    }
+    return g;
+  }
+
+  for (const bay of room.bays) {
+    solids.push({
+      x0: bay.x - W / 2, x1: bay.x - W / 2 + bay.w,
+      z0: bay.z - D / 2, z1: bay.z - D / 2 + bay.d,
+    });
+  }
+
+  const inPoly = (x: number, z: number) => {
+    let hit = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, zi] = poly[i]!, [xj, zj] = poly[j]!;
+      if ((zi > z) !== (zj > z) && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) hit = !hit;
+    }
+    return hit;
+  };
+  const openAt = (x: number, z: number) =>
+    inPoly(x, z) && !solids.some((s) => x > s.x0 && x < s.x1 && z > s.z0 && z < s.z1);
+  /**
+   * Which way a cabinet faces. Comparing against the middle of the room made a
+   * free-standing row like Blimea's face two ways at once, so instead we measure
+   * how much open floor there is on each side and front onto the roomier one.
+   */
+  const openness = (x: number, z: number, dx: number, dz: number) => {
+    let d = 0;
+    for (let t = 0.12; t <= 1.5; t += 0.12) { if (!openAt(x + dx * t, z + dz * t)) break; d = t; }
+    return d;
+  };
+  /**
+   * How each cabinet is turned. Cabinets that touch form one block and must face
+   * the same way: deciding bay by bay made Blimea's near-square OLT grid face in
+   * opposite directions. The block's own proportions choose the axis — a block
+   * deeper than it is wide is a row running along Z, so its front is on an X
+   * face — and the roomier side of that axis wins.
+   */
+  const orientOf = new Map<Bay, { rot: number; faceW: number; faceD: number }>();
+  {
+    const boxes = room.bays.map((b) => ({
+      bay: b, x0: b.x - W / 2, x1: b.x - W / 2 + b.w,
+      z0: b.z - D / 2, z1: b.z - D / 2 + b.d,
+    }));
+    /* union-find over cabinets whose footprints touch, within 16 cm */
+    const parent = boxes.map((_, i) => i);
+    const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i]!)));
+    const T = 0.16;
+    for (let i = 0; i < boxes.length; i++)
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]!, b = boxes[j]!;
+        if (a.x0 - T < b.x1 && b.x0 - T < a.x1 && a.z0 - T < b.z1 && b.z0 - T < a.z1)
+          parent[find(i)] = find(j);
+      }
+    const blocks = new Map<number, typeof boxes>();
+    boxes.forEach((b, i) => {
+      const r = find(i);
+      (blocks.get(r) ?? blocks.set(r, []).get(r)!).push(b);
+    });
+    for (const members of blocks.values()) {
+      const x0 = Math.min(...members.map((m) => m.x0)), x1 = Math.max(...members.map((m) => m.x1));
+      const z0 = Math.min(...members.map((m) => m.z0)), z1 = Math.max(...members.map((m) => m.z1));
+      const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+      const alongZ = z1 - z0 > (x1 - x0) * 1.15;
+      let rot: number;
+      if (alongZ) {
+        rot = openness(x1, cz, 1, 0) >= openness(x0, cz, -1, 0) ? Math.PI / 2 : -Math.PI / 2;
+      } else {
+        rot = openness(cx, z1, 0, 1) >= openness(cx, z0, 0, -1) ? 0 : Math.PI;
+      }
+      for (const m of members) {
+        orientOf.set(m.bay, alongZ
+          ? { rot, faceW: m.bay.d, faceD: m.bay.w }
+          : { rot, faceW: m.bay.w, faceD: m.bay.d });
       }
     }
   }
@@ -255,10 +593,11 @@ export function buildRoom(n: NetworkNode) {
     g.position.set(bay.x - W / 2 + bay.w / 2, 0, bay.z - D / 2 + bay.d / 2);
     scene.add(g);
     const base = bay.y ?? 0;
-    solids.push({
-      x0: bay.x - W / 2, x1: bay.x - W / 2 + bay.w,
-      z0: bay.z - D / 2, z1: bay.z - D / 2 + bay.d,
-    });
+    /* local +Z is the front from here on, whichever way the cabinet is turned */
+    const { rot, faceW, faceD } = orientOf.get(bay)!;
+    g.rotation.y = rot;
+    const front = 1;
+    const fz = faceD / 2;
 
     if (bay.kind === 'cage') {
       /* operator cage: aluminium frame with glass/mesh panels */
@@ -268,47 +607,133 @@ export function buildRoom(n: NetworkNode) {
         [0, -bay.d / 2, bay.w, 0.03], [0, bay.d / 2, bay.w, 0.03],
         [-bay.w / 2, 0, 0.03, bay.d], [bay.w / 2, 0, 0.03, bay.d],
       ] as const) box(pw, gh, pd, mat.glass, px, gh / 2, pz, g);
-      box(0.5, 1.9, 0.5, new THREE.MeshLambertMaterial({ color: 0x2e3238 }), 0, 0.95, 0, g);
+      const inner = new THREE.Group();
+      inner.position.set(0, 0, 0);
+      g.add(inner);
+      box(0.5, 1.9, 0.5, new THREE.MeshLambertMaterial({ color: 0x2e3238 }), 0, 0.95, 0, inner);
+      rackFrame(inner, 0.5, 1.9, 0.26, 0);
+      for (let i = 0; i < 6; i++) box(0.42, 0.11, 0.03, fin.module, 0, 0.5 + i * 0.2, 0.27, inner);
       label(bay.label, Math.min(bay.w * 0.8, 1.0), g.position.x, gh + 0.1, g.position.z, 0, '#c8d4e2');
       continue;
     }
 
-    const cab = box(bay.w, bay.h, bay.d,
-      new THREE.MeshLambertMaterial({ color: COLOR[bay.kind] ?? 0x4c5158 }),
-      0, base + bay.h / 2, 0, g);
+
+    /* the CGBT builds its own enclosure and the battery stand is an open rack:
+       a generic body would z-fight with one and hide the cells of the other */
+    if (bay.kind !== 'cgbt' && bay.kind !== 'battery') {
+      box(faceW, bay.h, faceD,
+        new THREE.MeshLambertMaterial({ color: COLOR[bay.kind] ?? 0x4c5158 }),
+        0, base + bay.h / 2, 0, g);
+    }
 
     if (bay.olts?.length) {
+      rackFrame(g, faceW, bay.h, fz, base);
       const olts = bay.olts.map((i) => n.olts[i]!).filter(Boolean);
-      const front = bay.z + bay.d / 2 < D / 2 ? 1 : -1;
       const slot = (bay.h - 0.3) / olts.length;
       olts.forEach((o, i) => {
         const sub = new THREE.Group();
         g.add(sub);
         oldChassis.push(sub);
-        chassis(o, sub, bay.w, 0.35 + i * slot + slot / 2, Math.min(slot - 0.12, 0.5), front);
+        chassis(o, sub, faceW, 0.35 + i * slot + slot / 2, Math.min(slot - 0.12, 0.5), front);
       });
       /* the renewed view puts one dual GPON/XGS-PON chassis in the same footprint */
       const nu = new THREE.Group();
       g.add(nu);
       nu.visible = false;
       newChassis.push(nu);
-      box(bay.w - 0.08, 0.85, 0.06, mat.chassisNew, 0, bay.h / 2, 0.3 * front, nu);
+      box(faceW - 0.08, 0.85, 0.06, mat.chassisNew, 0, bay.h / 2, 0.3 * front, nu);
+      box(faceW - 0.08, 0.024, 0.08, fin.bezel, 0, bay.h / 2 + 0.425, 0.3 * front, nu);
       for (let i = 0; i < 12; i++) {
-        portLed(-bay.w / 2 + 0.09 + i * ((bay.w - 0.18) / 11), bay.h / 2, 0.345 * front, nu, true);
+        portLed(-faceW / 2 + 0.09 + i * ((faceW - 0.18) / 11), bay.h / 2, 0.345 * front, nu, true);
       }
-    } else if (bay.kind === 'odf' || bay.kind === 'rack' || bay.kind === 'transport' || bay.kind === 'splitter') {
-      for (let i = 0; i < 5; i++) {
-        const f = bay.z + bay.d / 2 < D / 2 ? 1 : -1;
-        box(bay.w - 0.1, 0.1, 0.04, mat.tray, 0, base + 0.4 + i * 0.32, (bay.d / 2 + 0.01) * f, g);
+    } else if (bay.kind === 'odf') {
+      romBay(g, faceW, bay.h, fz, base, front);
+    } else if (bay.kind === 'cgbt') {
+      cgbtBay(g, faceW, bay.h, faceD, fz, base);
+    } else if (bay.kind === 'transport' || bay.kind === 'splitter' || bay.kind === 'catv') {
+      transportBay(g, faceW, bay.h, fz, base);
+    } else if (bay.kind === 'power') {
+      powerBay(g, faceW, bay.h, fz, base);
+    } else if (bay.kind === 'battery') {
+      batteryBay(g, faceW, bay.h, faceD, base);
+    } else if (bay.kind === 'ups') {
+      rackFrame(g, faceW, bay.h, fz, base);
+      box(faceW - 0.18, 0.12, 0.02, fin.screen, 0, base + bay.h * 0.74, fz * 1.02, g);
+      for (let i = 0; i < 3; i++) portLed(-0.08 + i * 0.08, base + bay.h * 0.6, fz * 1.03, g, true, 'status');
+    } else if (bay.kind === 'rack' || bay.kind === 'empty') {
+      rackFrame(g, faceW, bay.h, fz, base);
+      if (bay.kind === 'rack') {
+        for (let i = 0; i < 5; i++) {
+          box(faceW - 0.13, 0.13, 0.045, fin.module, 0, base + 0.45 + i * 0.28, fz * 0.96, g);
+          portLed(faceW / 2 - 0.11, base + 0.45 + i * 0.28, fz * 1.02, g, i % 3 !== 2, 'status');
+        }
       }
     }
 
+    /* the rear is a vented door, not a bare slab: from behind a rack still reads
+       as equipment rather than a black box */
+    if (bay.kind !== 'cgbt' && bay.kind !== 'battery' && bay.h > 0.9) {
+      const bz = -fz * 1.01;
+      box(faceW - 0.05, bay.h - 0.08, 0.012, fin.bezel, 0, base + bay.h / 2, bz, g);
+      for (let i = 0; i < Math.max(4, Math.round((bay.h - 0.3) / 0.16)); i++) {
+        box(faceW - 0.16, 0.055, 0.016, fin.rail, 0,
+            base + 0.2 + i * 0.16, -fz * 1.03, g);
+      }
+      box(0.02, 0.13, 0.03, fin.steel, faceW / 2 - 0.07, base + bay.h * 0.5, -fz * 1.05, g);
+    }
+
     /* the label goes on the face that looks into the room */
-    const toSouth = bay.z + bay.d / 2 < D / 2;
-    const face = (bay.d / 2 + 0.02) * (toSouth ? 1 : -1);
-    label(bay.label, Math.min(bay.w * 0.95, 0.8),
-      g.position.x, base + bay.h + 0.07, g.position.z + face, toSouth ? 0 : Math.PI, '#c8d4e2');
-    void cab;
+    const lo = new THREE.Vector3(0, base + bay.h + 0.07, fz + 0.02).applyAxisAngle(
+      new THREE.Vector3(0, 1, 0), rot).add(g.position);
+    label(bay.label, Math.min(faceW * 0.95, 0.8), lo.x, lo.y, lo.z, rot, '#c8d4e2');
+  }
+
+  /* ---- rejiband runs above each row of cabinets, as the plans mark them ---- */
+  {
+    const trayY = Math.min(H - 0.18, 2.18);
+    const rows = new Map<number, { x0: number; x1: number; z: number }>();
+    for (const bay of room.bays) {
+      if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9) continue;
+      const cz = bay.z - D / 2 + bay.d / 2;
+      const key = Math.round(cz * 2) / 2;      /* group cabinets sharing a wall line */
+      const x0 = bay.x - W / 2, x1 = x0 + bay.w;
+      const r = rows.get(key);
+      if (r) { r.x0 = Math.min(r.x0, x0); r.x1 = Math.max(r.x1, x1); }
+      else rows.set(key, { x0, x1, z: cz });
+    }
+    for (const r of rows.values()) {
+      rejiband(r.x0 - 0.15, r.z, r.x1 + 0.15, r.z, trayY);
+      /* a drop piece where the run meets the first cabinet of the row */
+      box(0.06, 0.34, 0.22, fin.steel, r.x0 + 0.05, trayY - 0.2, r.z, scene);
+    }
+    /* and a bundle dropping off the tray into each rack it passes over */
+    for (const bay of room.bays) {
+      if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9 || bay.h < 1.2) continue;
+      const cx = bay.x - W / 2 + bay.w / 2;
+      const cz = bay.z - D / 2 + bay.d / 2;
+      const top = (bay.y ?? 0) + bay.h;
+      if (top > trayY - 0.05) continue;
+      const m = bay.kind === 'power' || bay.kind === 'cgbt' ? fin.cableBlack : fin.fibre;
+      cord([[cx - 0.06, trayY - 0.06, cz],
+            [cx - 0.05, trayY - 0.16, cz + 0.05],
+            [cx - 0.03, top + 0.06, cz + 0.02],
+            [cx - 0.02, top - 0.02, cz]], scene, m, 0.009);
+    }
+  }
+
+  /* a fire extinguisher by the door, as the elevations show */
+  if (room.doors[0]) {
+    const d0 = room.doors[0];
+    const [ax, az] = poly[d0.edge]!;
+    const [bx, bz] = poly[(d0.edge + 1) % poly.length]!;
+    const ang = Math.atan2(bz - az, bx - ax);
+    const t = d0.at + d0.width + 0.28;
+    const ex = ax + Math.cos(ang) * t, ez = az + Math.sin(ang) * t;
+    const inx = ex - Math.sin(ang) * -0.12, inz = ez + Math.cos(ang) * -0.12;
+    if (inPoly(inx, inz)) {
+      box(0.11, 0.42, 0.11, fin.red, inx, 0.68, inz);
+      box(0.05, 0.09, 0.05, fin.rail, inx, 0.93, inz);
+    }
   }
 
   /* ---- legend ---- */
@@ -345,10 +770,18 @@ export function buildRoom(n: NetworkNode) {
     }
     return hit;
   };
-  const M = 0.34; /* keep this far from walls and cabinets */
+  /* Body radius. The aisle of a container node is only ~0.89 m wide, so a
+     single generous margin left barely 20 cm of walkable band and the visitor
+     got stuck; walls need more clearance than cabinets do. */
+  const M_WALL = 0.22, M_BAY = 0.14;
+  const clear = (x: number, z: number) =>
+    inside(x + M_WALL, z) && inside(x - M_WALL, z) &&
+    inside(x, z + M_WALL) && inside(x, z - M_WALL) &&
+    !solids.some((s) => x > s.x0 - M_BAY && x < s.x1 + M_BAY &&
+                        z > s.z0 - M_BAY && z < s.z1 + M_BAY);
+  /* If we somehow start inside something, never freeze: let the visitor walk out. */
   const free = (x: number, z: number) =>
-    inside(x + M, z) && inside(x - M, z) && inside(x, z + M) && inside(x, z - M) &&
-    !solids.some((s) => x > s.x0 - M && x < s.x1 + M && z > s.z0 - M && z < s.z1 + M);
+    clear(x, z) || !clear(cam.position.x, cam.position.z);
 
   /* start just inside the door, looking into the room */
   const d0 = room.doors[0];
@@ -390,9 +823,11 @@ export function buildRoom(n: NetworkNode) {
     if (free(x + dx, z)) cam.position.x = x + dx;
     else if (free(x, z + dz)) cam.position.z = z + dz;
   }
-  /** Zoom is a dolly along the view direction, so you can walk up to a rack. */
-  function dolly(amount: number) {
-    move(-Math.sin(yaw) * amount, -Math.cos(yaw) * amount);
+  /** Zoom is optical only: it narrows the field of view, it never moves you. */
+  const FOV_NEAR = 22, FOV_FAR = 78;
+  function zoom(amount: number) {
+    cam.fov = Math.max(FOV_NEAR, Math.min(FOV_FAR, cam.fov - amount));
+    cam.updateProjectionMatrix();
   }
 
   let drag: [number, number] | null = null;
@@ -409,7 +844,7 @@ export function buildRoom(n: NetworkNode) {
       /* two fingers: pinch to zoom */
       const [a, b] = [...pointers.values()];
       const dist = Math.hypot(a![0] - b![0], a![1] - b![1]);
-      if (pinch) dolly((dist - pinch) * 0.006);
+      if (pinch) zoom((dist - pinch) * 0.35);
       pinch = dist;
       return;
     }
@@ -428,7 +863,7 @@ export function buildRoom(n: NetworkNode) {
   canvas.addEventListener('pointerup', pu);
   canvas.addEventListener('pointercancel', pu);
 
-  const wheel = (e: WheelEvent) => { e.preventDefault(); dolly(-e.deltaY * 0.0016); };
+  const wheel = (e: WheelEvent) => { e.preventDefault(); zoom(-e.deltaY * 0.035); };
   canvas.addEventListener('wheel', wheel, { passive: false });
 
   const pad = { f: 0, b: 0, l: 0, r: 0 };

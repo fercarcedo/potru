@@ -24,7 +24,7 @@ la red pública FTTH de Asturias, tal y como la describe el Pliego de Condicione
 - **Gantt** de la Fase 2, semanas 13–58, coloreado por área.
 - **Visor 3D a escala** de cada sala: recinto, puerta y armarios colocados según el plano de
   planta, y cada OLT con sus tarjetas y sus puertos GPON reales (activos encendidos). Se recorre
-  con WASD, se mira arrastrando y se acerca con la rueda o pellizcando.
+  con WASD, se mira arrastrando y se amplía con la rueda o pellizcando.
 
 ## Regla de oro
 
