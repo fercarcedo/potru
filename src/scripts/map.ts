@@ -233,8 +233,69 @@ const NS = 'http://www.w3.org/2000/svg';
     const r2 = (v: number) => Math.round(v * 100) / 100;
     svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
   }
-  document.getElementById('mapZoomIn')?.addEventListener('click', () => zoomMap(0.72));
-  document.getElementById('mapZoomOut')?.addEventListener('click', () => zoomMap(1 / 0.72));
+  const zoomIn = document.getElementById('mapZoomIn') as HTMLButtonElement | null;
+  const zoomOut = document.getElementById('mapZoomOut') as HTMLButtonElement | null;
+  zoomIn?.addEventListener('click', () => zoomMap(0.72));
+  zoomOut?.addEventListener('click', () => zoomMap(1 / 0.72));
+
+  const vb = () => svg.getAttribute('viewBox')!.split(' ').map(Number) as number[];
+
+  /**
+   * Keeps the pad honest: grey out whichever button can no longer do anything,
+   * and only offer the grab cursor while there is something to pan to. Driven
+   * by a MutationObserver so it also follows the guided tour, which rewrites
+   * the viewBox itself.
+   */
+  function syncMap() {
+    const [, , w, h] = vb();
+    const zoomedIn = w < HOME_W - 0.5 || h < HOME_H - 0.5;
+    if (zoomIn) zoomIn.disabled = w <= MIN_W + 0.5;
+    if (zoomOut) zoomOut.disabled = !zoomedIn;
+    svg.style.cursor = zoomedIn ? 'grab' : '';
+    /* only swallow touch gestures when there is actually room to pan */
+    svg.style.touchAction = zoomedIn ? 'none' : '';
+  }
+  new MutationObserver(syncMap).observe(svg, { attributes: true, attributeFilter: ['viewBox'] });
+  syncMap();
+
+  /* ---- drag to pan, once zoomed in ---- */
+  let dragged = false;
+  let pan: { x: number; y: number; vx: number; vy: number; moved: number } | null = null;
+  svg.addEventListener('pointerdown', (e: PointerEvent) => {
+    const [x, y, w, h] = vb();
+    if (w >= HOME_W - 0.5 && h >= HOME_H - 0.5) return;   /* nothing to pan */
+    pan = { x: e.clientX, y: e.clientY, vx: x, vy: y, moved: 0 };
+    svg.setPointerCapture(e.pointerId);
+    svg.style.cursor = 'grabbing';
+  });
+  svg.addEventListener('pointermove', (e: PointerEvent) => {
+    if (!pan) return;
+    const [, , w, h] = vb();
+    const rect = svg.getBoundingClientRect();
+    const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+    pan.moved = Math.max(pan.moved, Math.hypot(dx, dy));
+    /* screen pixels → viewBox units */
+    const nx = Math.max(0, Math.min(HOME_W - w, pan.vx - dx * (w / rect.width)));
+    const ny = Math.max(0, Math.min(HOME_H - h, pan.vy - dy * (h / rect.height)));
+    const r2 = (v: number) => Math.round(v * 100) / 100;
+    svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(w)} ${r2(h)}`);
+  });
+  const endPan = (e: PointerEvent) => {
+    if (!pan) return;
+    dragged = pan.moved > 4;
+    pan = null;
+    svg.releasePointerCapture?.(e.pointerId);
+    syncMap();
+  };
+  svg.addEventListener('pointerup', endPan);
+  svg.addEventListener('pointercancel', endPan);
+  /* a drag that ends over a node must not also open its record */
+  svg.addEventListener('click', (e: Event) => {
+    if (!dragged) return;
+    dragged = false;
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
 
   /* ---- declutter: nudge the small labels off the node names ----
      The legacy map had 13 pairs of overlapping labels — «Pol. de Coaña» sat on
