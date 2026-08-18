@@ -1,5 +1,6 @@
 ---
 import { NODES } from '../lib/data';
+import { DOM } from '../lib/dom-ids';
 import { gantt, ganttViewBox } from '../lib/graphics';
 
 // The gantt is deterministic, so it is drawn at build time from nodes.json.
@@ -50,7 +51,7 @@ const viewBox = ganttViewBox(NODES);
           >
         </h4>
         <div class="gantt-shell">
-          <svg id="gantt" viewBox={viewBox} role="img" aria-label="Gantt de migración de nodos"
+          <svg id={DOM.gantt} viewBox={viewBox} role="img" aria-label="Gantt de migración de nodos"
             set:html={bars}
           />
           <div class="gantt-note">

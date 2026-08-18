@@ -1,36 +1,6 @@
 ---
-const steps: [string, string, string][] = [
-  [
-    'Usuario',
-    'ONT',
-    'Terminal activo en el domicilio. Conecta los servicios del operador a la fibra de acometida.',
-  ],
-  [
-    'Red de acceso',
-    'Splitters 1:16 → 1:4',
-    'Red pasiva primaria y secundaria. División óptica final 1×4×16 = 64 usuarios/fibra (Cangas del Narcea: 1:32). 806 redes PON.',
-  ],
-  [
-    'Activo',
-    'Nodo primario · OLT',
-    '20 nodos con OLT Alcatel 7342 (R4.8.13) o Ericsson BLM 1500 (R8.4.0), inyección CATV, energía CC, baterías y transmisión.',
-  ],
-  [
-    'Pasivo',
-    'Nodo secundario',
-    'Sin electrónica: repartidores ópticos colgados de un primario por fibra. El pliego general cita 5, pero las fichas por área detallan 9: Vegadeo, La Caridad y Soto del Barco (O.), Cabranes y Villamayor (SE.) y El Entrego, Sotrondio, Barredos y Pola de Laviana (Nalón).',
-  ],
-  [
-    'Transporte',
-    'Redes troncales',
-    'Fibra propia de gran capacidad o fibra alquilada con CWDM Transmode (5800 / 8133 / 8140) hacia el PAO.',
-  ],
-  [
-    'Interconexión',
-    'PAO Gijón',
-    'Enrutador Alcatel 7750SR-7 al 100% de ocupación. Jaulas de operadores, pasarelas POTS V5.2 y equipos auxiliares.',
-  ],
-];
+import { ARCHITECTURE_STEPS } from '../lib/data';
+import { DOM } from '../lib/dom-ids';
 ---
 
 <section
@@ -48,11 +18,11 @@ const steps: [string, string, string][] = [
     </p>
     <div class="arch-flow">
       {
-        steps.map(([k, h, p]) => (
+        ARCHITECTURE_STEPS.map((s) => (
           <div class="arch-step">
-            <span class="k">{k}</span>
-            <h4>{h}</h4>
-            <p>{p}</p>
+            <span class="k">{s.kicker}</span>
+            <h4>{s.heading}</h4>
+            <p>{s.text}</p>
           </div>
         ))
       }
@@ -63,7 +33,7 @@ const steps: [string, string, string][] = [
         La heterogeneidad y antigüedad del parque motiva el suministro de hasta 7.000 ONT GPON
         nuevas en la parte variable del contrato.
       </p>
-      <div id="ontBars" style="margin-top:16px"></div>
+      <div id={DOM.ontBars} style="margin-top:16px"></div>
     </div>
   </div>
 </section>

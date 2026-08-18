@@ -1,38 +1,40 @@
 ---
+import { DOM } from '../lib/dom-ids';
+
 // Wrapper for the 3D viewer. The scene is built by src/scripts/viewer3d.ts,
 // loaded on demand (dynamic import) when "Recorrer el interior en 3D" is
 // pressed. The simulation notice lives here, in the header, NOT inside the room.
 ---
 
-<div class="sv-bg" id="svBg">
+<div class="sv-bg" id={DOM.svBg}>
   <div class="sv-top">
-    <h4 id="svTitle"></h4>
+    <h4 id={DOM.svTitle}></h4>
     <div class="sv-warn">
       ⚠ RECREACIÓN A ESCALA — el recinto, la puerta y la posición de cada armario están tomados del
       plano de planta del pliego; el número de OLT, sus tarjetas y sus puertos GPON, de las tablas
       de equipamiento. Los acabados, los colores y el aspecto de los equipos son interpretación: no
       es una fotografía ni un modelo real del nodo.
     </div>
-    <button class="tour-btn" id="svMode" style="white-space:nowrap">⇄ Ver renovado</button>
-    <button class="sv-exit" id="svExit">✕ Salir</button>
+    <button class="tour-btn" id={DOM.svMode} style="white-space:nowrap">⇄ Ver renovado</button>
+    <button class="sv-exit" id={DOM.svExit}>✕ Salir</button>
   </div>
   <div style="position:relative;flex:1;display:flex">
-    <canvas id="svCanvas"></canvas>
+    <canvas id={DOM.svCanvas}></canvas>
     <div class="sv-wm">simulación · no es imagen real</div>
     <div class="sv-help">ARRASTRA para mirar · W A S D / flechas para moverte · RUEDA o PELLIZCA para ampliar</div>
     <div class="zoom-pad sv-zoom" role="group" aria-label="Zoom de la vista">
-      <button id="svZoomIn" type="button" aria-label="Ampliar" title="Ampliar">+</button>
-      <button id="svZoomOut" type="button" aria-label="Reducir" title="Reducir">−</button>
+      <button id={DOM.svZoomIn} type="button" aria-label="Ampliar" title="Ampliar">+</button>
+      <button id={DOM.svZoomOut} type="button" aria-label="Reducir" title="Reducir">−</button>
     </div>
     <div
-      id="svLegend"
+      id={DOM.svLegend}
       style="position:absolute;right:18px;top:118px;max-width:290px;background:rgba(6,11,20,.82);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:.7rem;color:var(--muted);line-height:1.55;backdrop-filter:blur(4px)"
     >
     </div>
-    <div class="sv-pad" id="svPad">
+    <div class="sv-pad" id={DOM.svPad}>
       <button class="up" data-k="f">▲</button>
       <button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button>
     </div>
-    <div class="sv-loading" id="svLoading" style="display:none">CARGANDO SALA…</div>
+    <div class="sv-loading" id={DOM.svLoading} style="display:none">CARGANDO SALA…</div>
   </div>
 </div>

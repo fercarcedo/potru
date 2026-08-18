@@ -3,7 +3,10 @@
  * travelling along them. The global prefers-reduced-motion rule silences the
  * animation.
  */
-  const svg=document.getElementById('heroFiber')!,ns='http://www.w3.org/2000/svg';
+import { DOM } from '../lib/dom-ids';
+
+export function initHeroFiber() {
+  const svg=document.getElementById(DOM.heroFiber)!,ns='http://www.w3.org/2000/svg';
   const paths=['M-50,480 C300,430 500,520 780,410 S1200,300 1460,340','M-50,530 C350,500 600,590 900,470 S1250,380 1460,420','M-50,420 C250,380 520,450 820,350 S1220,240 1460,270'];
   const colors=['#ffb454','#41e3d2','#41e3d2'];
   paths.forEach((d,i)=>{
@@ -19,3 +22,4 @@
       c.appendChild(a);svg.appendChild(c);
     }
   });
+}

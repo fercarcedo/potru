@@ -1,5 +1,6 @@
 ---
-import { ACTION_DESC, asset, cardLabel, ontCount, type NetworkNode } from '../lib/data';
+import { asset, type NetworkNode } from '../lib/data';
+import { renderActionLinks, renderAreaTag, renderMigStrip, renderOltTable, renderTownsBlock } from '../lib/node-render';
 
 interface Props {
   node: NetworkNode;
@@ -7,8 +8,6 @@ interface Props {
 
 const { node: n } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const isPao = n.id === 'pao';
-const total = ontCount(n);
 ---
 
 <div class="node-detail">
@@ -16,83 +15,20 @@ const total = ontCount(n);
 
   <h1>
     {n.name}
-    <span
-      class="mtag"
-      style={`background:${n.color}22;color:${n.color};border:1px solid ${n.color}55`}
-      >ÁREA {n.area.toUpperCase()}</span
-    >
+    <Fragment set:html={renderAreaTag(n)} />
   </h1>
   <div class="addr">📍 {n.address}</div>
   <p class="env">{n.enclosure}</p>
   {n.extra && <p class="extra">{n.extra}</p>}
 
-  <div class="mig-strip">
-    {
-      isPao ? (
-        <>
-          <div class="box">
-            <b>Fase 1</b>
-            <span>semanas 1–12</span>
-          </div>
-          <div class="box">
-            <b>Sin migración</b>
-            <span>de usuarios</span>
-          </div>
-        </>
-      ) : (
-        <>
-          <div class="box">
-            <b>Semana {n.weekFrom}</b>
-            <span>replanteo e inicio</span>
-          </div>
-          <div class="box">
-            <b>Semana {n.weekTo}</b>
-            <span>fin de migración</span>
-          </div>
-          <div class="box">
-            <b>{n.weekTo - n.weekFrom + 1} semanas</b>
-            <span>ventana total</span>
-          </div>
-          <div class="box">
-            <b>{total} ONT</b>
-            <span>a migrar</span>
-          </div>
-        </>
-      )
-    }
-  </div>
+  <div class="mig-strip" set:html={renderMigStrip(n)} />
 
   {
     n.olts.length > 0 && (
       <section class="block">
         <div class="act-label">Equipamiento OLT en producción</div>
         <div class="olt-wrap">
-          <table class="olt-table">
-            <tr>
-              <th>OLT</th>
-              <th>Equipo actual</th>
-              <th>Tarjetas</th>
-              <th>Puertos GPON act./tot.</th>
-              <th>ONT</th>
-            </tr>
-            {n.olts.map((o) => (
-              <tr>
-                <td class="mono">{o.code}</td>
-                <td>{o.vendor}</td>
-                <td class="mono" title={o.note}>{cardLabel(o)}</td>
-                <td class="mono">
-                  {o.portsActive} / {o.portsTotal}
-                </td>
-                <td class="mono">{o.onts}</td>
-              </tr>
-            ))}
-            {n.olts.length > 1 && (
-              <tr class="total">
-                <td colspan="4">Total del nodo</td>
-                <td class="mono">{total}</td>
-              </tr>
-            )}
-          </table>
+          <table class="olt-table" set:html={renderOltTable(n)} />
         </div>
       </section>
     )
@@ -100,38 +36,7 @@ const total = ontCount(n);
 
   {
     n.towns.length > 0 && (
-      <section class="block">
-        <div class="act-label">Poblaciones servidas por este nodo</div>
-        <div class="town-chips">
-          {n.towns.map((p) => (
-            <span>{p}</span>
-          ))}
-        </div>
-        {n.townsNote && <div class="town-note">{n.townsNote}</div>}
-        {n.ponGroups && (
-          <>
-            <div class="act-label" style="margin-top:14px">
-              Árboles PON compartidos (detalle técnico)
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:10px">
-              {n.ponGroups.groups.map((gr) => (
-                <div class="pon-group">
-                  {gr.map((p, i) => (
-                    <>
-                      {i > 0 && <span class="lnk">─◆─</span>}
-                      <span class="p">{p}</span>
-                    </>
-                  ))}
-                  <span class="tag">MISMA PON</span>
-                </div>
-              ))}
-            </div>
-            <div class="town-note" style="border-left-color:#c9a44e">
-              {n.ponGroups.note}
-            </div>
-          </>
-        )}
-      </section>
+      <section class="block" set:html={renderTownsBlock(n)} />
     )
   }
 
@@ -148,18 +53,7 @@ const total = ontCount(n);
 
   <section class="block">
     <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
-    <div class="act-links">
-      {
-        n.actions.map((a) => {
-          const [cls, desc, href] = ACTION_DESC[a]!;
-          return (
-            <a class={cls} href={`${base}${href}`} title={desc}>
-              {a} · {desc}
-            </a>
-          );
-        })
-      }
-    </div>
+    <div class="act-links" set:html={renderActionLinks(n, base)} />
   </section>
 
   <section class="block">

@@ -1,5 +1,6 @@
 ---
 import { DETAILS } from '../lib/details';
+import { DOM } from '../lib/dom-ids';
 
 // The map is drawn by the src/scripts/map.ts island, which the tour
 // (src/scripts/tour.ts) builds on. The 9 "see inside the cables" panels do
@@ -18,8 +19,8 @@ import { DETAILS } from '../lib/details';
       cualquier nodo para su ficha o inicia el paseo guiado.
     </p>
     <div class="tour-bar">
-      <button class="tour-btn" id="tourStart">▶ Iniciar paseo por la red</button>
-      <button class="tour-btn ghost" id="townsToggle">◉ Poblaciones servidas: visibles</button>
+      <button class="tour-btn" id={DOM.tourStart}>▶ Iniciar paseo por la red</button>
+      <button class="tour-btn ghost" id={DOM.townsToggle}>◉ Poblaciones servidas: visibles</button>
       <div class="tr-leg">
         <span
           ><span class="tr-line"></span> Fibra propia (p. ej. Cudillero–Vegadeo, Autovía Minera)</span
@@ -33,36 +34,36 @@ import { DETAILS } from '../lib/details';
     <div class="map-wrap" style="margin-top:30px">
       <div class="map-shell">
         <svg
-          id="astMap"
+          id={DOM.astMap}
           viewBox="0 0 1160 470"
           role="img"
           aria-label="Mapa esquemático de los nodos de la Red Asturcón"></svg>
-        <div class="tooltip" id="mapTip"></div>
-        <div class="area-legend" id="areaLegend"></div>
+        <div class="tooltip" id={DOM.mapTip}></div>
+        <div class="area-legend" id={DOM.areaLegend}></div>
       </div>
       <div class="zoom-pad" role="group" aria-label="Zoom del mapa">
-        <button id="mapZoomIn" type="button" aria-label="Acercar el mapa" title="Acercar">+</button>
-        <button id="mapZoomOut" type="button" aria-label="Alejar el mapa" title="Alejar">−</button>
+        <button id={DOM.mapZoomIn} type="button" aria-label="Acercar el mapa" title="Acercar">+</button>
+        <button id={DOM.mapZoomOut} type="button" aria-label="Alejar el mapa" title="Alejar">−</button>
       </div>
     </div>
-    <div class="tour-panel" id="tourPanel">
-      <div class="tour-step" id="tpStep"></div>
-      <h4 id="tpTitle"></h4>
-      <p id="tpText"></p>
-      <button class="tour-btn ghost" id="tpDetBtn" style="margin-top:12px"
+    <div class="tour-panel" id={DOM.tourPanel}>
+      <div class="tour-step" id={DOM.tpStep}></div>
+      <h4 id={DOM.tpTitle}></h4>
+      <p id={DOM.tpText}></p>
+      <button class="tour-btn ghost" id={DOM.tpDetBtn} style="margin-top:12px"
         >■■ Ver los cables por dentro</button
       >
       <div
-        id="tpDet"
+        id={DOM.tpDet}
         style="display:none;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.7;color:var(--muted);overflow-x:auto"
       >
         {DETAILS.map((panel, i) => <div data-det={i} hidden set:html={panel} />)}
       </div>
       <div class="tour-nav">
-        <button class="tour-btn ghost" id="tpPrev">◀ Anterior</button>
-        <button class="tour-btn" id="tpNext">Siguiente ▶</button>
-        <button class="tour-btn" id="tpEnter" style="display:none">⌂ Entrar en el nodo</button>
-        <button class="tour-btn ghost" id="tpExit" style="margin-left:auto">✕ Salir del paseo</button
+        <button class="tour-btn ghost" id={DOM.tpPrev}>◀ Anterior</button>
+        <button class="tour-btn" id={DOM.tpNext}>Siguiente ▶</button>
+        <button class="tour-btn" id={DOM.tpEnter} style="display:none">⌂ Entrar en el nodo</button>
+        <button class="tour-btn ghost" id={DOM.tpExit} style="margin-left:auto">✕ Salir del paseo</button
         >
       </div>
     </div>

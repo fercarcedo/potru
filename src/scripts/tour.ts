@@ -2,17 +2,27 @@
  * Guided tour of the network: 9 stops that frame the map, highlight trunks and
  * open the cable detail. The detail panels arrive already drawn from the build
  * (src/lib/details.ts); this only reveals the one for the current stop.
+ *
+ * Takes the map's svg/TR and the modal's openNode as explicit dependencies —
+ * initMap() and initModal() must run first, but that is now main.ts's call
+ * order to get right, not an import-order comment.
  */
 import { byId } from '../lib/data';
-import { TR, svg } from './map';
-import { openNode } from './modal';
+import { DOM } from '../lib/dom-ids';
 
-  const panel=document.getElementById('tourPanel')!;
-  const btnStart=document.getElementById('tourStart')!;
-  const tpStep=document.getElementById('tpStep')!,tpTitle=document.getElementById('tpTitle')!,
-        tpText=document.getElementById('tpText')!,tpPrev=document.getElementById('tpPrev')!,
-        tpNext=document.getElementById('tpNext')!,tpEnter=document.getElementById('tpEnter')!,
-        tpExit=document.getElementById('tpExit')!;
+export interface TourDeps {
+  svg: SVGSVGElement;
+  TR: Record<string, SVGElement>;
+  openNode: (id: string, view?: number) => void;
+}
+
+export function initTour({ svg, TR, openNode }: TourDeps) {
+  const panel=document.getElementById(DOM.tourPanel)!;
+  const btnStart=document.getElementById(DOM.tourStart)!;
+  const tpStep=document.getElementById(DOM.tpStep)!,tpTitle=document.getElementById(DOM.tpTitle)!,
+        tpText=document.getElementById(DOM.tpText)!,tpPrev=document.getElementById(DOM.tpPrev)!,
+        tpNext=document.getElementById(DOM.tpNext)!,tpEnter=document.getElementById(DOM.tpEnter)!,
+        tpExit=document.getElementById(DOM.tpExit)!;
   const HOME: number[]=[0,0,1160,470];
   interface Step { vb: number[]; hl: string[]; node: string | null; t: string; x: string }
   const STEPS: Step[]=[
@@ -44,11 +54,11 @@ import { openNode } from './modal';
     t:'La red completa, lista para los 10 Gbps',
     x:'Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gbps extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha.'}
   ];
-  const tpDetBtn=document.getElementById('tpDetBtn')!,tpDet=document.getElementById('tpDet')!;
+  const tpDetBtn=document.getElementById(DOM.tpDetBtn)!,tpDet=document.getElementById(DOM.tpDet)!;
   tpDetBtn.onclick=()=>{
     const open=tpDet.style.display!=='none';
     tpDet.style.display=open?'none':'block';
-    tpDetBtn.textContent=open?'\u25a0\u25a0 Ver los cables por dentro':'\u25a0\u25a0 Ocultar los cables';
+    tpDetBtn.textContent=open?'■■ Ver los cables por dentro':'■■ Ocultar los cables';
   };
   let idx=-1, animId: number|null=null, pulses: SVGElement[]=[];
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -93,7 +103,7 @@ import { openNode } from './modal';
     tpDet.querySelectorAll<HTMLElement>('[data-det]').forEach(d=>{d.hidden=d!==det});
     tpDet.style.display='none';
     tpDetBtn.style.display=det?'inline-block':'none';
-    tpDetBtn.textContent='\u25a0\u25a0 Ver los cables por dentro';
+    tpDetBtn.textContent='■■ Ver los cables por dentro';
     (tpPrev as HTMLButtonElement).disabled=i===0;
     tpNext.textContent=i===STEPS.length-1?'Terminar ✓':'Siguiente ▶';
     tpEnter.style.display=s.node&&byId[s.node]!.gallery.length>1?'inline-block':'none';
@@ -112,3 +122,4 @@ import { openNode } from './modal';
   tpPrev.onclick=()=>show(Math.max(0,idx-1));
   tpNext.onclick=()=>{if(idx===STEPS.length-1)exitTour();else show(idx+1)};
   tpExit.onclick=exitTour;
+}

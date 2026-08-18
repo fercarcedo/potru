@@ -1,0 +1,26 @@
+---
+import AffectedNodes from './AffectedNodes.astro';
+import type { ContractAction } from '../lib/data';
+
+interface Props {
+  action: ContractAction;
+}
+
+const { action: a } = Astro.props;
+---
+
+<div class="card" id={a.id}>
+  <h3><span class={`pill ${a.pill}`}>{a.code}</span> {a.heading}</h3>
+  {
+    a.bullets ? (
+      <ul>
+        {a.bullets.map((b) => (
+          <li>{b}</li>
+        ))}
+      </ul>
+    ) : (
+      <p>{a.text}</p>
+    )
+  }
+  {a.aff && <AffectedNodes aff={a.aff} />}
+</div>

@@ -9,8 +9,8 @@
 
 :root{
   --ink:#060b14; --panel:#0c1524; --panel2:#101c30; --line:#1c2c44;
-  --txt:#e8eef6; --muted:#8da0b8;
-  --gpon:#ffb454; --xgs:#41e3d2;
+  --txt:#e8eef6; --muted:#8da0b8; --dim:#5a6f8d;
+  --gpon:#ffb454; --xgs:#41e3d2; --pon:#c9a44e;
   --xgs-soft:rgba(65,227,210,.12); --gpon-soft:rgba(255,180,84,.12);
   --danger:#ff7d6b;
 }
@@ -281,10 +281,10 @@ footer .disclaimer{margin-top:0;max-width:none}
    intrínsecos, y sin esto el alto del atributo gana y la imagen sale aplastada */
 .detail-gallery img{width:100%;height:auto;display:block;background:#fff}
 .detail-gallery figcaption{background:var(--panel);border-top:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;padding:8px 11px}
-.pon-group{border:1.5px dashed #c9a44e;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:6px;background:rgba(255,215,107,.05)}
+.pon-group{border:1.5px dashed var(--pon);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:6px;background:rgba(255,215,107,.05)}
 .pon-group .p{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:.76rem}
-.pon-group .lnk{color:#c9a44e}
-.pon-group .tag{color:#c9a44e;font-size:.64rem;font-family:'IBM Plex Mono',monospace;margin-left:4px}
+.pon-group .lnk{color:var(--pon)}
+.pon-group .tag{color:var(--pon);font-size:.64rem;font-family:'IBM Plex Mono',monospace;margin-left:4px}
 
 /* ---------- Potru: segunda línea del hero (la tecnología, bajo el caudal) ---------- */
 .hero h1 .tech{display:inline-block;margin-top:.12em;font-size:.5em;letter-spacing:0}

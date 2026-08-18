@@ -1,430 +1,242 @@
-// @ts-nocheck -- Literal port of the legacy build's JavaScript.
-// This module and viewer3d.ts build SVG DOM / a WebGL scene leaning on JS's
-// implicit number-to-string coercion in setAttribute, exactly as the original
-// did. Typing them would mean rewriting hundreds of call sites and would put
-// the visual parity this migration is bound to at risk. The rest of the project
-// (src/lib, components, pages and the other islands) does pass `npm run check`.
 /**
  * Schematic map: trunks (own ones solid, leased ones dashed) with an ambient
  * pulse, primary and secondary nodes, the towns each one serves, and the loop
  * around the shared PON tree in Llanes.
  *
- * Exports the <svg> and the trunk index so the tour (tour.ts) can frame and
- * highlight; the legacy passed them through window.__map.
+ * initMap() builds it and returns the <svg> and the trunk index so the tour
+ * (tour.ts) can frame and highlight; it needs openNode to wire node clicks,
+ * which main.ts gets from initModal() and passes in — an explicit dependency
+ * in place of the legacy's window.__map and the "import map.ts before
+ * tour.ts" ordering this used to rely on silently.
  */
-import { NODES, byId } from '../lib/data';
-import { openNode } from './modal';
+import { HOST_ONLY, NODES, byId } from '../lib/data';
+import { DOM } from '../lib/dom-ids';
+import { escapeHtml as esc } from '../lib/escape-html';
+import { placeMapLabels } from './map/place-labels';
+import { initViewport } from './map/viewport';
 
 const NS = 'http://www.w3.org/2000/svg';
 
-/** Remembers which dot a label belongs to, so the placement pass at the end of
- *  this module can look for a free spot around it. */
-const anchor = (el: any, x: number, y: number, r: number) => {
-  el.dataset.ax = x; el.dataset.ay = y; el.dataset.ar = r;
+/** Screen position of each primary node's dot. Exported (with SECONDARY and
+ *  TOWN_POS below) purely so tests/data/map-layout.test.ts can check these
+ *  hand-placed labels stay in sync with nodes.json — the kind of drift a
+ *  spelling fix can introduce silently otherwise (see that test's header). */
+export const POS: Record<string, [number, number]> = {
+  muros: [385, 120], luarca: [300, 115], navia: [235, 105], castropol: [120, 120], tapia: [175, 95],
+  tineo: [300, 220], cangas: [255, 295], mieres: [560, 245], polalena: [545, 362], morcin: [502, 288],
+  moreda: [612, 302], cabanaquinta: [655, 348], felechosa: [700, 388], blimea: [700, 240], langreo: [645, 203],
+  arriondas: [880, 175], infiesto: [805, 190], nava: [735, 175], llanes: [965, 125], colombres: [1045, 120],
+};
+/** [name, x, y, colour, id of the primary it hangs off, how it connects] */
+export const SECONDARY: [string, number, number, string, string, string][] = [
+  ['Vegadeo', 95, 160, '#41e3d2', 'castropol', 'cable de 96 ff.oo. Castropol–Vegadeo'],
+  ['La Caridad', 205, 140, '#41e3d2', 'tapia', 'tubos 4–8 del cable Castropol–Cudillero'],
+  ['Soto del Barco', 420, 145, '#41e3d2', 'muros', 'fibra desde Muros de Nalón'],
+  ['Sta. Eulalia de Cabranes', 757, 148, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
+  ['Villamayor', 843, 205, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
+  ['El Entrego', 674, 264, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
+  ['Sotrondio', 712, 278, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
+  ['Barredos', 744, 294, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
+  ['Pola de Laviana', 772, 310, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
+];
+export const PAO = { x: 590, y: 95 };
+/** Served-town labels hung off each primary node's dot: [name, x, y][]. */
+export const TOWN_POS: Record<string, [string, number, number][]> = {
+  muros: [['San Esteban de Pravia', 402, 98]],
+  navia: [['Puerto de Vega', 258, 86], ['Pol. de Coaña', 224, 124]],
+  castropol: [['Figueras', 130, 96], ['Barres', 105, 100], ['Piantón', 82, 140]],
+  tineo: [['Pol. La Curiscada', 334, 193]],
+  mieres: [['Figaredo', 516, 275], ['Sta. Cruz', 553, 292], ['Ujo', 528, 308], ['Turón', 598, 272], ['Rioturbio', 592, 220]],
+  polalena: [['Villallana', 568, 336]],
+  moreda: [['Caborana', 586, 326], ['Oyanco', 630, 324], ['Villanueva', 644, 286]],
+  cabanaquinta: [['Corigos', 678, 368]],
+  langreo: [['Tuilla', 655, 180]],
+  infiesto: [['Sevares', 850, 198]],
+  llanes: [['Posada', 903, 132], ['Barro', 928, 97], ['Celorio', 938, 154], ['Porrúa', 992, 152]],
 };
 
-  export const svg=document.getElementById('astMap')!,tip=document.getElementById('mapTip')!,shell=svg.parentElement!;
-  const POS={muros:[385,120],luarca:[300,115],navia:[235,105],castropol:[120,120],tapia:[175,95],
-    tineo:[300,220],cangas:[255,295],mieres:[560,245],polalena:[545,362],morcin:[502,288],
-    moreda:[612,302],cabanaquinta:[655,348],felechosa:[700,388],blimea:[700,240],langreo:[645,203],
-    arriondas:[880,175],infiesto:[805,190],nava:[735,175],llanes:[965,125],colombres:[1045,120]};
-  const SECONDARY=[
-    ['Vegadeo',95,160,'#41e3d2','castropol','cable de 96 ff.oo. Castropol\u2013Vegadeo'],
-    ['La Caridad',205,140,'#41e3d2','tapia','tubos 4\u20138 del cable Castropol\u2013Cudillero'],
-    ['Soto del Barco',420,145,'#41e3d2','muros','fibra desde Muros de Nal\u00f3n'],
-    ['Sta. Eulalia de Cabranes',757,148,'#9df08a','infiesto','fibra desde Infiesto'],
-    ['Villamayor',843,205,'#9df08a','infiesto','fibra desde Infiesto'],
-    ['El Entrego',674,264,'#c9a0ff','blimea','fibra desde Blimea'],
-    ['Sotrondio',712,278,'#c9a0ff','blimea','fibra desde Blimea'],
-    ['Barredos',744,294,'#c9a0ff','blimea','fibra desde Blimea'],
-    ['Pola de Laviana',772,310,'#c9a0ff','blimea','fibra desde Blimea']];
-  const PAO={x:590,y:95},MIE=POS.mieres;
-  function e2(t,a){const el=document.createElementNS(NS,t);for(const k in a)el.setAttribute(k,a[k]);svg.appendChild(el);return el;}
-  e2('path',{d:'M60,80 C250,55 480,70 620,62 C800,55 980,80 1110,92',fill:'none',stroke:'#1c2c44','stroke-width':1.5,'stroke-dasharray':'6 5'});
-  e2('text',{x:1108,y:78,fill:'#3d5473','font-size':10,'text-anchor':'end','letter-spacing':'.2em'}).textContent='MAR CANTÁBRICO';
-  /* ---- TRUNKS (own ones solid, leased ones dashed) ---- */
-  export const TR: Record<string, SVGElement>={};
-  function trunk(id,d,own,label,lx,ly){
-    const p=e2('path',{d,fill:'none',stroke:own?'#41e3d2':'#ffb454','stroke-width':2.2,
-      opacity:.55,'stroke-dasharray':own?'0':'7 6','stroke-linecap':'round'});
-    if(label){const t=e2('text',{x:lx,y:ly,fill:own?'#37b3a6':'#c99a54','font-size':8.5,'letter-spacing':'.08em'});t.textContent=label;TR[id+'_lbl']=t;}
-    /* permanent ambient pulse: the cable is "alive" */
-    const amb=e2('circle',{r:2.6,fill:own?'#41e3d2':'#ffb454',opacity:.85});
-    const am=document.createElementNS(NS,'animateMotion');
-    am.setAttribute('dur',(6+(id.length%4)*1.7)+'s');am.setAttribute('repeatCount','indefinite');
-    am.setAttribute('path',d);amb.appendChild(am);
-    TR[id]=p;return p;
+/** Remembers which dot a label belongs to, so the placement pass at the end of
+ *  this module can look for a free spot around it. */
+const anchor = (el: SVGElement, x: number, y: number, r: number) => {
+  el.dataset.ax = `${x}`; el.dataset.ay = `${y}`; el.dataset.ar = `${r}`;
+};
+
+export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; TR: Record<string, SVGElement> } {
+  const svg = document.getElementById(DOM.astMap) as unknown as SVGSVGElement;
+  const tip = document.getElementById(DOM.mapTip)!;
+  const shell = svg.parentElement!;
+
+  type Attrs = Record<string, string | number>;
+  /** Creates one SVG element with its attributes, appended to `parent`
+   *  (defaults to the map's own <svg>). Values are coerced to strings the
+   *  same way setAttribute already does at runtime — explicit here only so
+   *  the type checker sees it too. */
+  function e2<K extends keyof SVGElementTagNameMap>(t: K, a: Attrs = {}, parent: Element = svg): SVGElementTagNameMap[K] {
+    const el = document.createElementNS(NS, t) as SVGElementTagNameMap[K];
+    for (const k in a) el.setAttribute(k, String(a[k]));
+    parent.appendChild(el);
+    return el;
   }
-  trunk('occ','M352,127 L300,115 L235,105 L205,140 L175,95 L120,120 L95,160',true,'PROPIA 64F \u00b7 CUDILLERO\u2013VEGADEO (v\u00eda ADIF)',118,66);
-  trunk('occrent','M590,95 C540,108 470,142 420,145 L385,120 L352,127',false,'ALQUILADA+CWDM \u00b7 GIJ\u00d3N\u2013CUDILLERO',462,184);
-  e2('circle',{cx:352,cy:127,r:3.5,fill:'none',stroke:'#8da0b8','stroke-width':1.2});
+
+  /** Positions the tooltip near the pointer, clamped inside the map's
+   *  shell, and fills it with `html` (already escaped by the caller). */
+  function showTip(ev: MouseEvent, html: string) {
+    const r = shell.getBoundingClientRect();
+    tip.style.opacity = '1';
+    tip.style.left = Math.min(ev.clientX - r.left + 14, r.width - 260) + 'px';
+    tip.style.top = (ev.clientY - r.top - 10) + 'px';
+    tip.innerHTML = html;
+  }
+  function hideTip() { tip.style.opacity = '0'; }
+
+  e2('path', { d: 'M60,80 C250,55 480,70 620,62 C800,55 980,80 1110,92', fill: 'none', stroke: '#1c2c44', 'stroke-width': 1.5, 'stroke-dasharray': '6 5' });
+  e2('text', { x: 1108, y: 78, fill: '#3d5473', 'font-size': 10, 'text-anchor': 'end', 'letter-spacing': '.2em' }).textContent = 'MAR CANTÁBRICO';
+
+  /* ---- TRUNKS (own ones solid, leased ones dashed) ---- */
+  const TR: Record<string, SVGElement> = {};
+  function trunk(id: string, d: string, own: boolean, label?: string, lx?: number, ly?: number) {
+    const p = e2('path', {
+      d, fill: 'none', stroke: own ? '#41e3d2' : '#ffb454', 'stroke-width': 2.2,
+      opacity: .55, 'stroke-dasharray': own ? '0' : '7 6', 'stroke-linecap': 'round',
+    });
+    if (label) {
+      const t = e2('text', { x: lx!, y: ly!, fill: own ? '#37b3a6' : '#c99a54', 'font-size': 8.5, 'letter-spacing': '.08em' });
+      t.textContent = label;
+      TR[id + '_lbl'] = t;
+    }
+    /* permanent ambient pulse: the cable is "alive" */
+    const amb = e2('circle', { r: 2.6, fill: own ? '#41e3d2' : '#ffb454', opacity: .85 });
+    e2('animateMotion', { dur: `${6 + (id.length % 4) * 1.7}s`, repeatCount: 'indefinite', path: d }, amb);
+    TR[id] = p;
+    return p;
+  }
+  trunk('occ', 'M352,127 L300,115 L235,105 L205,140 L175,95 L120,120 L95,160', true, 'PROPIA 64F · CUDILLERO–VEGADEO (vía ADIF)', 118, 66);
+  trunk('occrent', 'M590,95 C540,108 470,142 420,145 L385,120 L352,127', false, 'ALQUILADA+CWDM · GIJÓN–CUDILLERO', 462, 184);
+  e2('circle', { cx: 352, cy: 127, r: 3.5, fill: 'none', stroke: '#8da0b8', 'stroke-width': 1.2 });
   /* el rótulo va abajo a la izquierda y en dos líneas: en una sola se solapaba
      con «Muros de Nalón», que arranca en x=346, y quedaba ilegible */
-  e2('line',{x1:349,y1:130,x2:332,y2:145,stroke:'#5a6f8d','stroke-width':.7,opacity:.6});
-  e2('text',{x:318,y:154,fill:'#8da0b8','font-size':8.5,'text-anchor':'middle'}).textContent='Cudillero';
-  e2('text',{x:318,y:164,fill:'#5a6f8d','font-size':7.5,'text-anchor':'middle'}).textContent='(arqueta ADIF)';
-  trunk('minera','M590,95 C588,145 572,200 560,245',true,'AUTOVÍA MINERA',503,168);
-  trunk('lena','M560,245 L545,362',true);
-  trunk('nalon','M578,165 C615,182 645,190 645,203 L700,240',true);
-  trunk('morcin','M560,245 L502,288',false);
-  trunk('aller','M560,245 C585,270 600,288 612,302 L655,348 L700,388',false,'ADIF Sta.Cruz–Collanzo',742,352);
-  trunk('surocc','M420,145 C390,180 340,200 300,220 L255,295',false,'F.O. ALQUILADA + CWDM',282,258);
-  trunk('suror','M590,95 C650,130 700,160 735,175 L805,190 L880,175 C915,160 940,140 965,125',false,'GIJÓN–NAVA–INFIESTO–ARRIONDAS–LLANES',688,116);
-  trunk('orient','M965,125 L1045,120',false);
-  const rd=e2('path',{d:'M965,125 C880,72 730,58 590,95',fill:'none',stroke:'#9db4d8','stroke-width':1.8,opacity:.5,'stroke-dasharray':'2 6','stroke-linecap':'round'});
-  TR['redund']=rd;
-  const rdl=e2('text',{x:770,y:52,fill:'#7288a8','font-size':8.5,'letter-spacing':'.08em'});
-  rdl.textContent='RUTA REDUNDANTE ORIENTE\u2194GIJ\u00d3N (desde Llanes)';TR['redund_lbl']=rdl;
+  e2('line', { x1: 349, y1: 130, x2: 332, y2: 145, stroke: '#5a6f8d', 'stroke-width': .7, opacity: .6 });
+  e2('text', { x: 318, y: 154, fill: '#8da0b8', 'font-size': 8.5, 'text-anchor': 'middle' }).textContent = 'Cudillero';
+  e2('text', { x: 318, y: 164, fill: '#5a6f8d', 'font-size': 7.5, 'text-anchor': 'middle' }).textContent = '(arqueta ADIF)';
+  trunk('minera', 'M590,95 C588,145 572,200 560,245', true, 'AUTOVÍA MINERA', 503, 168);
+  trunk('lena', 'M560,245 L545,362', true);
+  trunk('nalon', 'M578,165 C615,182 645,190 645,203 L700,240', true);
+  trunk('morcin', 'M560,245 L502,288', false);
+  trunk('aller', 'M560,245 C585,270 600,288 612,302 L655,348 L700,388', false, 'ADIF Sta.Cruz–Collanzo', 742, 352);
+  trunk('surocc', 'M420,145 C390,180 340,200 300,220 L255,295', false, 'F.O. ALQUILADA + CWDM', 282, 258);
+  trunk('suror', 'M590,95 C650,130 700,160 735,175 L805,190 L880,175 C915,160 940,140 965,125', false, 'GIJÓN–NAVA–INFIESTO–ARRIONDAS–LLANES', 688, 116);
+  trunk('orient', 'M965,125 L1045,120', false);
+  const rd = e2('path', { d: 'M965,125 C880,72 730,58 590,95', fill: 'none', stroke: '#9db4d8', 'stroke-width': 1.8, opacity: .5, 'stroke-dasharray': '2 6', 'stroke-linecap': 'round' });
+  TR['redund'] = rd;
+  const rdl = e2('text', { x: 770, y: 52, fill: '#7288a8', 'font-size': 8.5, 'letter-spacing': '.08em' });
+  rdl.textContent = 'RUTA REDUNDANTE ORIENTE↔GIJÓN (desde Llanes)';
+  TR['redund_lbl'] = rdl;
 
-  SECONDARY.forEach(([name,x,y,col,par,how])=>{
-    if(POS[par]) e2('line',{x1:POS[par][0],y1:POS[par][1],x2:x,y2:y,stroke:col,'stroke-width':.9,opacity:.35,'stroke-dasharray':'3 3'});
-    const g=document.createElementNS(NS,'g');svg.appendChild(g);g.style.cursor='help';
-    const c=document.createElementNS(NS,'circle');
-    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',4.5);
-    c.setAttribute('fill','#060b14');c.setAttribute('stroke',col);c.setAttribute('stroke-width',1.6);c.setAttribute('opacity',.85);
-    g.appendChild(c);
-    const t=document.createElementNS(NS,'text');
-    t.setAttribute('x',x);t.setAttribute('y',y+16);t.setAttribute('fill','#8da0b8');
-    t.setAttribute('font-size',7.5);t.setAttribute('text-anchor','middle');
-    t.setAttribute('class','lbl-sec');anchor(t,x,y,4.5);
-    t.textContent=name;g.appendChild(t);
-    g.addEventListener('mousemove',ev=>{
-      const r=shell.getBoundingClientRect();
-      tip.style.opacity=1;
-      tip.style.left=Math.min(ev.clientX-r.left+14,r.width-260)+'px';
-      tip.style.top=(ev.clientY-r.top-10)+'px';
-      tip.innerHTML=`<b>${name} · nodo secundario</b><br>Sin electr\u00f3nica activa: solo repartidores \u00f3pticos pasivos. Se conecta al primario de ${byId[par].name} por ${how}. La renovaci\u00f3n no act\u00faa aqu\u00ed: al no haber OLT, no hay equipo que sustituir.`;
-    });
-    g.addEventListener('mouseleave',()=>tip.style.opacity=0);
-  });
-  NODES.forEach(n=>{
-    const [x,y]=POS[n.id];
-    const g=document.createElementNS(NS,'g');svg.appendChild(g);g.style.cursor='pointer';
-    const HOSTONLY=['mieres','langreo'];
-    const c=document.createElementNS(NS,'circle');
-    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',7);
-    c.setAttribute('fill',n.color);c.setAttribute('opacity',.95);g.appendChild(c);
-    if(HOSTONLY.includes(n.id)){
-      const ring=document.createElementNS(NS,'circle');
-      ring.setAttribute('cx',x);ring.setAttribute('cy',y);ring.setAttribute('r',11);
-      ring.setAttribute('fill','none');ring.setAttribute('stroke','#8da0b8');
-      ring.setAttribute('stroke-width',1);ring.setAttribute('stroke-dasharray','2 3');g.appendChild(ring);
+  for (const [name, x, y, col, par, how] of SECONDARY) {
+    const parPos = POS[par];
+    if (parPos) e2('line', { x1: parPos[0], y1: parPos[1], x2: x, y2: y, stroke: col, 'stroke-width': .9, opacity: .35, 'stroke-dasharray': '3 3' });
+    const g = e2('g', {});
+    g.style.cursor = 'help';
+    e2('circle', { cx: x, cy: y, r: 4.5, fill: '#060b14', stroke: col, 'stroke-width': 1.6, opacity: .85 }, g);
+    const t = e2('text', { x, y: y + 16, fill: '#8da0b8', 'font-size': 7.5, 'text-anchor': 'middle', class: 'lbl-sec' }, g);
+    anchor(t, x, y, 4.5);
+    t.textContent = name;
+    g.addEventListener('mousemove', (ev) => showTip(ev,
+      `<b>${esc(name)} · nodo secundario</b><br>Sin electrónica activa: solo repartidores ópticos pasivos. Se conecta al primario de ${esc(byId[par]!.name)} por ${esc(how)}. La renovación no actúa aquí: al no haber OLT, no hay equipo que sustituir.`));
+    g.addEventListener('mouseleave', hideTip);
+  }
+
+  NODES.forEach((n) => {
+    const [x, y] = POS[n.id]!;
+    const g = e2('g', {});
+    g.style.cursor = 'pointer';
+    const hostOnly = HOST_ONLY.includes(n.id);
+    e2('circle', { cx: x, cy: y, r: 7, fill: n.color, opacity: .95 }, g);
+    if (hostOnly) {
+      e2('circle', { cx: x, cy: y, r: 11, fill: 'none', stroke: '#8da0b8', 'stroke-width': 1, 'stroke-dasharray': '2 3' }, g);
     }
-    const halo=document.createElementNS(NS,'circle');
-    halo.setAttribute('cx',x);halo.setAttribute('cy',y);halo.setAttribute('r',7);
-    halo.setAttribute('fill','none');halo.setAttribute('stroke',n.color);halo.setAttribute('stroke-width',1);
-    const an=document.createElementNS(NS,'animate');an.setAttribute('attributeName','r');an.setAttribute('values','7;15');an.setAttribute('dur','2.6s');an.setAttribute('repeatCount','indefinite');
-    const ao=document.createElementNS(NS,'animate');ao.setAttribute('attributeName','opacity');ao.setAttribute('values','.6;0');ao.setAttribute('dur','2.6s');ao.setAttribute('repeatCount','indefinite');
-    halo.appendChild(an);halo.appendChild(ao);g.appendChild(halo);
-    const lbl=document.createElementNS(NS,'text');
-    lbl.setAttribute('x',x);lbl.setAttribute('y',y+22);lbl.setAttribute('fill','#8da0b8');
-    lbl.setAttribute('font-size',9.5);lbl.setAttribute('text-anchor','middle');
-    lbl.setAttribute('class','lbl-node');anchor(lbl,x,y,HOSTONLY.includes(n.id)?11:7);
-    lbl.textContent=n.name+(['mieres','langreo'].includes(n.id)?' *':'');g.appendChild(lbl);
-    g.addEventListener('mousemove',ev=>{
-      const r=shell.getBoundingClientRect();
-      tip.style.opacity=1;
-      tip.style.left=Math.min(ev.clientX-r.left+14,r.width-260)+'px';
-      tip.style.top=(ev.clientY-r.top-10)+'px';
-      const ont=n.olts.reduce((a,o)=>a+o.onts,0);
-      const ho=['mieres','langreo'].includes(n.id)?`<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturc\u00f3n aqu\u00ed son sus n\u00facleos perif\u00e9ricos.</span>`:'';
-      const pl=n.towns&&n.towns.length>1?`<br><span style="color:#b8c6d8">Sirve a: ${n.towns.slice(0,3).join(', ')}${n.towns.length>3?'…':''}</span>`:'';
-      tip.innerHTML=`<b>${n.name}</b><br>${n.olts.length} OLT · ${ont} ONT · migración sem. ${n.weekFrom}–${n.weekTo}${pl}${ho}<br><span style="color:${n.color}">Área ${n.area}</span> · <u>pulsa para la ficha</u>`;
+    const halo = e2('circle', { cx: x, cy: y, r: 7, fill: 'none', stroke: n.color, 'stroke-width': 1 }, g);
+    e2('animate', { attributeName: 'r', values: '7;15', dur: '2.6s', repeatCount: 'indefinite' }, halo);
+    e2('animate', { attributeName: 'opacity', values: '.6;0', dur: '2.6s', repeatCount: 'indefinite' }, halo);
+    const lbl = e2('text', { x, y: y + 22, fill: '#8da0b8', 'font-size': 9.5, 'text-anchor': 'middle', class: 'lbl-node' }, g);
+    anchor(lbl, x, y, hostOnly ? 11 : 7);
+    lbl.textContent = n.name + (hostOnly ? ' *' : '');
+    g.addEventListener('mousemove', (ev) => {
+      const ont = n.olts.reduce((a, o) => a + o.onts, 0);
+      const ho = hostOnly
+        ? `<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.</span>`
+        : '';
+      const pl = n.towns && n.towns.length > 1
+        ? `<br><span style="color:#b8c6d8">Sirve a: ${esc(n.towns.slice(0, 3).join(', '))}${n.towns.length > 3 ? '…' : ''}</span>`
+        : '';
+      showTip(ev, `<b>${esc(n.name)}</b><br>${n.olts.length} OLT · ${ont} ONT · migración sem. ${n.weekFrom}–${n.weekTo}${pl}${ho}<br><span style="color:${n.color}">Área ${esc(n.area)}</span> · <u>pulsa para la ficha</u>`);
     });
-    g.addEventListener('mouseleave',()=>tip.style.opacity=0);
-    g.addEventListener('click',()=>openNode(n.id));
+    g.addEventListener('mouseleave', hideTip);
+    g.addEventListener('click', () => openNode(n.id));
   });
-  const gp=document.createElementNS(NS,'g');svg.appendChild(gp);gp.style.cursor='pointer';
-  const sq=document.createElementNS(NS,'rect');
-  sq.setAttribute('x',PAO.x-10);sq.setAttribute('y',PAO.y-10);sq.setAttribute('width',20);sq.setAttribute('height',20);
-  sq.setAttribute('rx',4);sq.setAttribute('fill','#0e1a2e');sq.setAttribute('stroke','#41e3d2');sq.setAttribute('stroke-width',2);
-  gp.appendChild(sq);
-  const pl=document.createElementNS(NS,'text');
-  pl.setAttribute('x',PAO.x);pl.setAttribute('y',PAO.y-18);pl.setAttribute('fill','#e8eef6');
-  pl.setAttribute('font-size',10);pl.setAttribute('text-anchor','middle');pl.setAttribute('font-weight',600);
-  pl.textContent='GIJÓN · PAO';gp.appendChild(pl);
-  gp.addEventListener('click',()=>openNode('pao'));
-  gp.addEventListener('mousemove',ev=>{
-    const r=shell.getBoundingClientRect();
-    tip.style.opacity=1;
-    tip.style.left=Math.min(ev.clientX-r.left+14,r.width-260)+'px';
-    tip.style.top=(ev.clientY-r.top-10)+'px';
-    tip.innerHTML=`<b>PAO · Gijón</b><br>Punto de acceso de operadores. Aquí y en Mieres van los enrutadores nuevos.<br><u>pulsa para la ficha</u>`;
-  });
-  gp.addEventListener('mouseleave',()=>tip.style.opacity=0);
-  const leg=document.getElementById('areaLegend')!;
-  const seen=new Set();
-  NODES.forEach(n=>{
-    if(seen.has(n.area))return;seen.add(n.area);
-    const s=document.createElement('span');
-    s.style.cssText='display:flex;align-items:center;gap:6px';
-    s.innerHTML=`<span class="dot" style="background:${n.color}"></span>${n.area}`;
+
+  const gp = e2('g', {});
+  gp.style.cursor = 'pointer';
+  e2('rect', { x: PAO.x - 10, y: PAO.y - 10, width: 20, height: 20, rx: 4, fill: '#0e1a2e', stroke: '#41e3d2', 'stroke-width': 2 }, gp);
+  const pl = e2('text', { x: PAO.x, y: PAO.y - 18, fill: '#e8eef6', 'font-size': 10, 'text-anchor': 'middle', 'font-weight': 600 }, gp);
+  pl.textContent = 'GIJÓN · PAO';
+  gp.addEventListener('click', () => openNode('pao'));
+  gp.addEventListener('mousemove', (ev) => showTip(ev,
+    `<b>PAO · Gijón</b><br>Punto de acceso de operadores. Aquí y en Mieres van los enrutadores nuevos.<br><u>pulsa para la ficha</u>`));
+  gp.addEventListener('mouseleave', hideTip);
+
+  const leg = document.getElementById(DOM.areaLegend)!;
+  const seen = new Set<string>();
+  NODES.forEach((n) => {
+    if (seen.has(n.area)) return;
+    seen.add(n.area);
+    const s = document.createElement('span');
+    s.style.cssText = 'display:flex;align-items:center;gap:6px';
+    s.innerHTML = `<span class="dot" style="background:${n.color}"></span>${esc(n.area)}`;
     leg.appendChild(s);
   });
-  const s2=document.createElement('span');
-  s2.style.marginLeft='auto';s2.className='mono';
-  s2.textContent='● primario (OLT) · ○ secundario (pasivo) · • población servida · ▢ PAO · * nodo sin cobertura en su casco urbano';
+  const s2 = document.createElement('span');
+  s2.style.marginLeft = 'auto';
+  s2.className = 'mono';
+  s2.textContent = '● primario (OLT) · ○ secundario (pasivo) · • población servida · ▢ PAO · * nodo sin cobertura en su casco urbano';
   leg.appendChild(s2);
+
   /* ---- layer of served towns ---- */
-  const TOWN_POS={
-    muros:[['San Esteban de Pravia',402,98]],
-    navia:[['Puerto de Vega',258,86],['Pol. de Coa\u00f1a',224,124]],
-    castropol:[['Figueras',130,96],['Barres',105,100],['Piant\u00f3n',82,140]],
-    tineo:[['Pol. La Curiscada',334,193]],
-    mieres:[['Figaredo',516,275],['Sta. Cruz',553,292],['Uj\u00f3',528,308],['Tur\u00f3n',598,272],['Rioturbio',592,220]],
-    polalena:[['Villallana',568,336]],
-    moreda:[['Caborana',586,326],['Oyanco',630,324],['Villanueva',644,286]],
-    cabanaquinta:[['Corigos',678,368]],
-    langreo:[['Tuilla',655,180]],
-    infiesto:[['Sevares',850,198]],
-    llanes:[['Posada',903,132],['Barro',928,97],['Celorio',938,154],['Porr\u00faa',992,152]]
-  };
-  const townsLayer=document.createElementNS(NS,'g');svg.appendChild(townsLayer);
-  Object.entries(TOWN_POS).forEach(([nid,list])=>{
-    const n=byId[nid];const [nx,ny]=POS[nid];
-    list.forEach(([name,x,y])=>{
-      const ln=document.createElementNS(NS,'line');
-      ln.setAttribute('x1',nx);ln.setAttribute('y1',ny);ln.setAttribute('x2',x);ln.setAttribute('y2',y);
-      ln.setAttribute('stroke',n.color);ln.setAttribute('stroke-width',.7);ln.setAttribute('opacity',.22);
-      townsLayer.appendChild(ln);
-      const d=document.createElementNS(NS,'circle');
-      d.setAttribute('cx',x);d.setAttribute('cy',y);d.setAttribute('r',2.4);
-      d.setAttribute('fill',n.color);d.setAttribute('opacity',.75);
-      townsLayer.appendChild(d);
-      const t=document.createElementNS(NS,'text');
-      t.setAttribute('x',x);t.setAttribute('y',y-5);t.setAttribute('fill','#6f8199');
-      t.setAttribute('font-size',7);t.setAttribute('text-anchor','middle');
-      t.setAttribute('class','lbl-town');anchor(t,x,y,2.4);
-      t.textContent=name;townsLayer.appendChild(t);
+  const townsLayer = e2('g', {});
+  Object.entries(TOWN_POS).forEach(([nid, list]) => {
+    const n = byId[nid]!;
+    const [nx, ny] = POS[nid]!;
+    list.forEach(([name, x, y]) => {
+      e2('line', { x1: nx, y1: ny, x2: x, y2: y, stroke: n.color, 'stroke-width': .7, opacity: .22 }, townsLayer);
+      e2('circle', { cx: x, cy: y, r: 2.4, fill: n.color, opacity: .75 }, townsLayer);
+      const t = e2('text', { x, y: y - 5, fill: '#6f8199', 'font-size': 7, 'text-anchor': 'middle', class: 'lbl-town' }, townsLayer);
+      anchor(t, x, y, 2.4);
+      t.textContent = name;
     });
   });
+
   /* shared PON tree: Barro–Celorio–Porrúa–Posada (Llanes) */
-  const shp=document.createElementNS(NS,'path');
-  shp.setAttribute('d','M892,130 C888,102 914,86 934,92 C964,102 1004,132 998,154 C992,170 938,168 912,156 C900,150 894,142 892,130 Z');
-  shp.setAttribute('fill','rgba(255,215,107,.05)');shp.setAttribute('stroke','#ffd76b');
-  shp.setAttribute('stroke-width','1');shp.setAttribute('stroke-dasharray','3 4');shp.setAttribute('opacity','.6');
-  townsLayer.appendChild(shp);
-  const sht=document.createElementNS(NS,'text');
-  sht.setAttribute('x',940);sht.setAttribute('y',80);sht.setAttribute('fill','#c9a44e');
-  sht.setAttribute('font-size',7.5);sht.setAttribute('text-anchor','middle');sht.setAttribute('letter-spacing','.06em');
-  sht.textContent='\u00c1RBOL PON COMPARTIDO';townsLayer.appendChild(sht);
-  shp.style.pointerEvents='all';shp.style.cursor='help';
-  shp.addEventListener('mousemove',ev=>{
-    const r=shell.getBoundingClientRect();
-    tip.style.opacity=1;
-    tip.style.left=Math.min(ev.clientX-r.left+14,r.width-260)+'px';
-    tip.style.top=(ev.clientY-r.top-10)+'px';
-    tip.innerHTML=`<b>\u00c1rbol PON compartido</b><br>Detalle t\u00e9cnico del pliego: las redes FTTH de Barro, Celorio, Porr\u00faa y Posada de Llanes est\u00e1n compartidas entre s\u00ed \u2014 varias poblaciones cuelgan de los mismos \u00e1rboles \u00f3pticos pasivos del nodo de Llanes, en lugar de tener cada una su PON independiente.`;
-  });
-  shp.addEventListener('mouseleave',()=>tip.style.opacity=0);
-  const townsBtn=document.getElementById('townsToggle')!;
-  let townsOn=true;
-  townsBtn.onclick=()=>{townsOn=!townsOn;townsLayer.style.display=townsOn?'':'none';
-    townsBtn.textContent=townsOn?'\u25c9 Poblaciones servidas: visibles':'\u25cb Poblaciones servidas: ocultas';};
-
-  /* ---- map zoom: scales the viewBox about whatever is on screen ---- */
-  const HOME_W = 1160, HOME_H = 470, MIN_W = 240;
-  /** Zooms about the middle of the current view, keeping its aspect ratio. */
-  export function zoomMap(factor: number) {
-    const [x, y, w, h] = svg.getAttribute('viewBox')!.split(' ').map(Number) as number[];
-    const cx = x + w / 2, cy = y + h / 2;
-    let nw = Math.max(MIN_W, Math.min(HOME_W, w * factor));
-    let nh = h * (nw / w);
-    if (nh > HOME_H) { nh = HOME_H; nw = w * (nh / h); }
-    const nx = Math.max(0, Math.min(HOME_W - nw, cx - nw / 2));
-    const ny = Math.max(0, Math.min(HOME_H - nh, cy - nh / 2));
-    const r2 = (v: number) => Math.round(v * 100) / 100;
-    svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
-  }
-  const zoomIn = document.getElementById('mapZoomIn') as HTMLButtonElement | null;
-  const zoomOut = document.getElementById('mapZoomOut') as HTMLButtonElement | null;
-  zoomIn?.addEventListener('click', () => zoomMap(0.72));
-  zoomOut?.addEventListener('click', () => zoomMap(1 / 0.72));
-
-  const vb = () => svg.getAttribute('viewBox')!.split(' ').map(Number) as number[];
-
-  /**
-   * Keeps the pad honest: grey out whichever button can no longer do anything,
-   * and only offer the grab cursor while there is something to pan to. Driven
-   * by a MutationObserver so it also follows the guided tour, which rewrites
-   * the viewBox itself.
-   */
-  function syncMap() {
-    const [, , w, h] = vb();
-    const zoomedIn = w < HOME_W - 0.5 || h < HOME_H - 0.5;
-    if (zoomIn) zoomIn.disabled = w <= MIN_W + 0.5;
-    if (zoomOut) zoomOut.disabled = !zoomedIn;
-    svg.style.cursor = zoomedIn ? 'grab' : '';
-    /* only swallow touch gestures when there is actually room to pan */
-    svg.style.touchAction = zoomedIn ? 'none' : '';
-  }
-  new MutationObserver(syncMap).observe(svg, { attributes: true, attributeFilter: ['viewBox'] });
-  syncMap();
-
-  /* ---- drag to pan, once zoomed in ---- */
-  let dragged = false;
-  let pan: { x: number; y: number; vx: number; vy: number; moved: number } | null = null;
-  svg.addEventListener('pointerdown', (e: PointerEvent) => {
-    const [x, y, w, h] = vb();
-    if (w >= HOME_W - 0.5 && h >= HOME_H - 0.5) return;   /* nothing to pan */
-    pan = { x: e.clientX, y: e.clientY, vx: x, vy: y, moved: 0 };
-    svg.setPointerCapture(e.pointerId);
-    svg.style.cursor = 'grabbing';
-  });
-  svg.addEventListener('pointermove', (e: PointerEvent) => {
-    if (!pan) return;
-    const [, , w, h] = vb();
-    const rect = svg.getBoundingClientRect();
-    const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
-    pan.moved = Math.max(pan.moved, Math.hypot(dx, dy));
-    /* screen pixels → viewBox units */
-    const nx = Math.max(0, Math.min(HOME_W - w, pan.vx - dx * (w / rect.width)));
-    const ny = Math.max(0, Math.min(HOME_H - h, pan.vy - dy * (h / rect.height)));
-    const r2 = (v: number) => Math.round(v * 100) / 100;
-    svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(w)} ${r2(h)}`);
-  });
-  const endPan = (e: PointerEvent) => {
-    if (!pan) return;
-    dragged = pan.moved > 4;
-    pan = null;
-    svg.releasePointerCapture?.(e.pointerId);
-    syncMap();
+  const shp = e2('path', {
+    d: 'M892,130 C888,102 914,86 934,92 C964,102 1004,132 998,154 C992,170 938,168 912,156 C900,150 894,142 892,130 Z',
+    fill: 'rgba(255,215,107,.05)', stroke: '#ffd76b', 'stroke-width': '1', 'stroke-dasharray': '3 4', opacity: '.6',
+  }, townsLayer);
+  const sht = e2('text', { x: 940, y: 80, fill: '#c9a44e', 'font-size': 7.5, 'text-anchor': 'middle', 'letter-spacing': '.06em' }, townsLayer);
+  sht.textContent = 'ÁRBOL PON COMPARTIDO';
+  shp.style.pointerEvents = 'all';
+  shp.style.cursor = 'help';
+  shp.addEventListener('mousemove', (ev) => showTip(ev,
+    `<b>Árbol PON compartido</b><br>Detalle técnico del pliego: las redes FTTH de Barro, Celorio, Porrúa y Posada de Llanes están compartidas entre sí — varias poblaciones cuelgan de los mismos árboles ópticos pasivos del nodo de Llanes, en lugar de tener cada una su PON independiente.`));
+  shp.addEventListener('mouseleave', hideTip);
+  const townsBtn = document.getElementById(DOM.townsToggle)!;
+  let townsOn = true;
+  townsBtn.onclick = () => {
+    townsOn = !townsOn;
+    townsLayer.style.display = townsOn ? '' : 'none';
+    townsBtn.textContent = townsOn ? '◉ Poblaciones servidas: visibles' : '○ Poblaciones servidas: ocultas';
   };
-  svg.addEventListener('pointerup', endPan);
-  svg.addEventListener('pointercancel', endPan);
-  /* a drag that ends over a node must not also open its record */
-  svg.addEventListener('click', (e: Event) => {
-    if (!dragged) return;
-    dragged = false;
-    e.stopPropagation();
-    e.preventDefault();
-  }, true);
 
-  /* ---- label placement ------------------------------------------------
-     Every name is written next to its dot, and the dots are where the pliego
-     puts them, so the defaults collide: «Pol. de Coaña» landed on «Navia»,
-     «Tapia de Casariego» ran through Navia's marker, «Oyanco» sat on Moreda.
-     This pass keeps each label as drawn if that spot is clear and otherwise
-     walks a ring of positions around its own dot, anchoring the text away from
-     the dot when it goes to the side. Markers and the fixed captions count as
-     obstacles too, not just other labels. Node names are placed first, so the
-     small print yields to them, and a label that ends up far from its dot gets
-     a leader line. */
-  {
-    const PAD = 1.6;
-    const box = (r: any, m = PAD) =>
-      ({ x: r.x - m, y: r.y - m, w: r.width + m * 2, h: r.height + m * 2 });
-    const hits = (a: any, b: any) =>
-      a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
-    const area = (a: any, b: any) =>
-      Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
-      Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  initViewport(svg);
+  placeMapLabels(svg);
 
-    /* markers, the PAO square and the fixed captions are all immovable */
-    const obstacles: any[] = [];
-    const cables: any[] = [];
-    for (const c of [...svg.querySelectorAll('circle')] as any[]) {
-      const r = +c.getAttribute('r');
-      if (r < 2 || c.querySelector('animate')) continue;   /* not the pulse halo */
-      const cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
-      if (!Number.isFinite(cx) || !Number.isFinite(cy)) continue;  /* the travelling pulse */
-      obstacles.push({ x: cx - r, y: cy - r, w: r * 2, h: r * 2 });
-    }
-    /* The trunks and the shared-PON loop are drawn thick enough that a name
-       lying across one reads as a caption for the cable rather than for its
-       dot — «Sevares» did exactly that. They are only a tie-breaker, though:
-       among the spots that are genuinely clear, the one that also stays off
-       the cables and closest to home wins. Treating them as hard obstacles
-       flung the names half a map away. */
-    for (const path of [...svg.querySelectorAll('path')] as any[]) {
-      const len = path.getTotalLength?.() ?? 0;
-      if (!len || +path.getAttribute('stroke-width') < 1) continue;
-      for (let d = 0; d <= len; d += 5) {
-        const q = path.getPointAtLength(d);
-        cables.push({ x: q.x - 1.6, y: q.y - 1.6, w: 3.2, h: 3.2 });
-      }
-    }
-    for (const t of [...svg.querySelectorAll('text')] as any[])
-      if (!t.getAttribute('class')?.startsWith('lbl-')) obstacles.push(box(t.getBBox()));
-    for (const q of [...svg.querySelectorAll('rect')] as any[])
-      obstacles.push(box({ x: +q.getAttribute('x'), y: +q.getAttribute('y'),
-        width: +q.getAttribute('width'), height: +q.getAttribute('height') }, 3));
-
-    /* Beyond this the label no longer reads as belonging to its dot and needs
-       a leader line — which is a last resort, so it costs the solver dearly. */
-    const LEADER = 16;
-
-    /** Spots around a dot of radius r, nearest first. `end`/`start` push the
-     *  text away from the dot instead of straddling it. Three rings of eight,
-     *  so a crowded dot has somewhere close to go before it has to drift. */
-    const spots = (r: number): [number, number, string][] => {
-      const out: [number, number, string][] = [];
-      for (const pad of [4, 10, 17, 26])
-        for (const [ux, uy] of [[0, 1], [0, -1], [1, 0], [-1, 0],
-                                [.72, .72], [-.72, .72], [.72, -.72], [-.72, -.72]]) {
-          const anc = ux > .1 ? 'start' : ux < -.1 ? 'end' : 'middle';
-          /* the baseline sits at the foot of the text, so below the dot it has
-             to clear the cap height too, and beside it drops to mid-height */
-          const dy = uy > .1 ? uy * (r + pad) + 11
-                   : uy < -.1 ? uy * (r + pad) - 1
-                   : 4;
-          out.push([ux * (r + pad), dy, anc]);
-        }
-      return out;
-    };
-
-    const leaders = document.createElementNS(NS, 'g');
-    svg.appendChild(leaders);
-
-    for (const cls of ['.lbl-node', '.lbl-sec', '.lbl-town'])
-      for (const el of [...svg.querySelectorAll(cls)] as any[]) {
-        const ax = +el.dataset.ax, ay = +el.dataset.ay, ar = +el.dataset.ar;
-        /* a label may of course sit against its own dot */
-        const others = obstacles.filter(
-          (o) => !(ax > o.x && ax < o.x + o.w && ay > o.y && ay < o.y + o.h));
-        const home: [number, number, string] =
-          [+el.getAttribute('x') - ax, +el.getAttribute('y') - ay,
-           el.getAttribute('text-anchor')];
-        let clear: any = null, least: any = null;
-        const cands = [home, ...spots(ar)];
-        for (let i = 0; i < cands.length; i++) {
-          const [dx, dy, anc] = cands[i];
-          el.setAttribute('x', ax + dx); el.setAttribute('y', ay + dy);
-          el.setAttribute('text-anchor', anc);
-          const b = box(el.getBBox());
-          const hard = others.reduce((a, o) => a + area(b, o), 0);
-          if (hard) {
-            if (!least || hard < least.cost) least = { dx, dy, anc, cost: hard };
-            continue;
-          }
-          /* Clear of everything solid. Now prefer, in this order: no leader
-             line, then off the cables, then as close to home as possible. */
-          const raw = el.getBBox();
-          const gap = Math.hypot(
-            Math.max(raw.x, Math.min(ax, raw.x + raw.width)) - ax,
-            Math.max(raw.y, Math.min(ay, raw.y + raw.height)) - ay);
-          const soft = (gap > LEADER ? 500 : 0) + gap * 2 + i * 0.5 +
-            cables.reduce((a, o) => a + area(b, o), 0);
-          if (!clear || soft < clear.cost) clear = { dx, dy, anc, cost: soft };
-        }
-        const pick = clear || least;
-        el.setAttribute('x', ax + pick.dx); el.setAttribute('y', ay + pick.dy);
-        el.setAttribute('text-anchor', pick.anc);
-        const b = el.getBBox();
-        obstacles.push(box(b));
-        /* moved well away from its dot? point back at it */
-        /* the closest point of the label box to the dot */
-        const px = Math.max(b.x, Math.min(ax, b.x + b.width));
-        const py = Math.max(b.y, Math.min(ay, b.y + b.height));
-        const gap = Math.hypot(px - ax, py - ay);
-        if (gap > LEADER) {                       /* only then: point back at it */
-          const k = (ar + 2.5) / gap;
-          const ln = document.createElementNS(NS, 'line');
-          ln.setAttribute('x1', ax + (px - ax) * k); ln.setAttribute('y1', ay + (py - ay) * k);
-          ln.setAttribute('x2', ax + (px - ax) * 0.94); ln.setAttribute('y2', ay + (py - ay) * 0.94);
-          ln.setAttribute('stroke', '#5a6f8d'); ln.setAttribute('stroke-width', '.7');
-          ln.setAttribute('opacity', '.5');
-          leaders.appendChild(ln);
-        }
-      }
-  }
+  return { svg, TR };
+}

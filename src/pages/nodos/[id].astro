@@ -29,8 +29,9 @@ const desc =
 </Layout>
 
 <script>
-  import { openWalk } from '../../scripts/walk';
+  import { initWalk, openWalk } from '../../scripts/walk';
 
+  initWalk();
   const btn = document.querySelector<HTMLButtonElement>('[data-walk]');
   btn?.addEventListener('click', () => openWalk(btn.dataset.walk!));
 </script>

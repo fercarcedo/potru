@@ -1,16 +1,10 @@
 ---
-const stats: [string, string, boolean?][] = [
-  ['52', 'poblaciones con cobertura'],
-  ['60.051', 'puntos serviciables'],
-  ['+8.400', 'usuarios activos'],
-  ['20', 'nodos primarios a renovar'],
-  ['806', 'redes PON en producción'],
-  ['10 Gbps', 'enlace mínimo por nueva OLT', true],
-];
+import { HERO_STATS } from '../lib/data';
+import { DOM } from '../lib/dom-ids';
 ---
 
 <header class="hero">
-  <svg id="heroFiber" preserveAspectRatio="none" viewBox="0 0 1400 600" aria-hidden="true"></svg>
+  <svg id={DOM.heroFiber} preserveAspectRatio="none" viewBox="0 0 1400 600" aria-hidden="true"></svg>
   <div class="wrap" style="position:relative">
     <span class="tag">PLIEGO DE CONDICIONES TÉCNICAS · EXPTE CON 06/2025 · GITPA</span>
     <h1>
@@ -34,10 +28,10 @@ const stats: [string, string, boolean?][] = [
     </p>
     <div class="stats">
       {
-        stats.map(([n, l, hl]) => (
-          <div class={hl ? 'stat hl' : 'stat'}>
-            <div class="n">{n}</div>
-            <div class="l">{l}</div>
+        HERO_STATS.map((s) => (
+          <div class={s.highlight ? 'stat hl' : 'stat'}>
+            <div class="n">{s.value}</div>
+            <div class="l">{s.label}</div>
           </div>
         ))
       }

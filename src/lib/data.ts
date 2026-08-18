@@ -1,4 +1,5 @@
 import raw from '../data/nodes.json';
+import contentRaw from '../data/content.json';
 
 export interface Olt {
   /** identifier used in the pliego, e.g. MUR/1D */
@@ -110,3 +111,71 @@ export const cardLabel = (o: Olt): string =>
 
 /** Prepends the site base ('/potru/') to a relative path from the JSON. */
 export const asset = (path: string): string => import.meta.env.BASE_URL + path;
+
+/**
+ * Site copy transcribed from the pliego that isn't per-node data: the hero's
+ * headline figures, the ONT install-base breakdown, the architecture-layer
+ * summaries and the GPON/XGS-PON diagram's explanatory text. Kept alongside
+ * nodes.json/rooms.json rather than hardcoded into the components and
+ * scripts that display it, so it is one place to check against the pliego
+ * and one place the data tests can reach.
+ */
+export interface HeroStat {
+  value: string;
+  label: string;
+  highlight?: boolean;
+}
+
+export interface OntInstallEntry {
+  model: string;
+  note: string;
+  pct: number;
+  warn: boolean;
+}
+
+export interface ArchitectureStep {
+  kicker: string;
+  heading: string;
+  text: string;
+}
+
+export type DiagramMode = 'gpon' | 'xgs';
+export type DiagramInfo = Record<string, Record<DiagramMode, string>>;
+
+/** One card in the "Actuaciones previstas" section (Actions.astro). Either
+ *  `bullets` (parte fija, a checklist) or `text` (parte variable, a
+ *  paragraph) is present, matching how the pliego describes each. */
+export interface ContractAction {
+  /** anchor id, also used by ACTION_DESC's href for nodes affected by this action */
+  id: string;
+  /** PF-1, PV-6 · PV-7… */
+  code: string;
+  pill: 'fix' | 'var';
+  part: 'fija' | 'variable';
+  heading: string;
+  bullets?: string[];
+  text?: string;
+  /** nodes this action affects, for <AffectedNodes>; absent = none listed */
+  aff?: string;
+}
+
+interface ContentData {
+  heroStats: HeroStat[];
+  ontInstallBase: OntInstallEntry[];
+  architectureSteps: ArchitectureStep[];
+  diagramInfo: DiagramInfo;
+  contractActions: ContractAction[];
+}
+
+const content = contentRaw as unknown as ContentData;
+
+export const HERO_STATS: HeroStat[] = content.heroStats;
+export const ONT_INSTALL_BASE: OntInstallEntry[] = content.ontInstallBase;
+export const ARCHITECTURE_STEPS: ArchitectureStep[] = content.architectureSteps;
+export const DIAGRAM_INFO: DiagramInfo = content.diagramInfo;
+export const CONTRACT_ACTIONS: ContractAction[] = content.contractActions;
+
+/** The contract runs weeks 1–58; Phase 2 (all node migrations) ends at the
+ *  same week 58, which is why this single constant covers both the gantt's
+ *  span (graphics.ts) and the node grid's mini progress bars (NodeGrid.astro). */
+export const CONTRACT_WEEKS = 58;
