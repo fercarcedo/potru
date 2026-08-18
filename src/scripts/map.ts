@@ -350,19 +350,28 @@ const anchor = (el: any, x: number, y: number, r: number) => {
       obstacles.push(box({ x: +q.getAttribute('x'), y: +q.getAttribute('y'),
         width: +q.getAttribute('width'), height: +q.getAttribute('height') }, 3));
 
-    /** Ring of spots around a dot of radius r, nearest first. `end`/`start`
-     *  push the text away from the dot instead of straddling it. */
-    const spots = (r: number): [number, number, string][] => [
-      [0, r + 15, 'middle'], [0, -(r + 7), 'middle'],
-      [r + 5, 4, 'start'], [-(r + 5), 4, 'end'],
-      [r + 3, r + 12, 'start'], [-(r + 3), r + 12, 'end'],
-      [r + 3, -(r + 5), 'start'], [-(r + 3), -(r + 5), 'end'],
-      [0, r + 25, 'middle'], [0, -(r + 17), 'middle'],
-      [r + 14, 4, 'start'], [-(r + 14), 4, 'end'],
-      [r + 12, r + 20, 'start'], [-(r + 12), r + 20, 'end'],
-      [r + 12, -(r + 13), 'start'], [-(r + 12), -(r + 13), 'end'],
-      [0, r + 35, 'middle'], [0, -(r + 27), 'middle'],
-    ];
+    /* Beyond this the label no longer reads as belonging to its dot and needs
+       a leader line — which is a last resort, so it costs the solver dearly. */
+    const LEADER = 16;
+
+    /** Spots around a dot of radius r, nearest first. `end`/`start` push the
+     *  text away from the dot instead of straddling it. Three rings of eight,
+     *  so a crowded dot has somewhere close to go before it has to drift. */
+    const spots = (r: number): [number, number, string][] => {
+      const out: [number, number, string][] = [];
+      for (const pad of [4, 10, 17, 26])
+        for (const [ux, uy] of [[0, 1], [0, -1], [1, 0], [-1, 0],
+                                [.72, .72], [-.72, .72], [.72, -.72], [-.72, -.72]]) {
+          const anc = ux > .1 ? 'start' : ux < -.1 ? 'end' : 'middle';
+          /* the baseline sits at the foot of the text, so below the dot it has
+             to clear the cap height too, and beside it drops to mid-height */
+          const dy = uy > .1 ? uy * (r + pad) + 11
+                   : uy < -.1 ? uy * (r + pad) - 1
+                   : 4;
+          out.push([ux * (r + pad), dy, anc]);
+        }
+      return out;
+    };
 
     const leaders = document.createElementNS(NS, 'g');
     svg.appendChild(leaders);
@@ -388,10 +397,15 @@ const anchor = (el: any, x: number, y: number, r: number) => {
             if (!least || hard < least.cost) least = { dx, dy, anc, cost: hard };
             continue;
           }
-          /* clear of everything solid; prefer staying near home and off cable */
-          const soft = cables.reduce((a, o) => a + area(b, o), 0) + i * 6;
+          /* Clear of everything solid. Now prefer, in this order: no leader
+             line, then off the cables, then as close to home as possible. */
+          const raw = el.getBBox();
+          const gap = Math.hypot(
+            Math.max(raw.x, Math.min(ax, raw.x + raw.width)) - ax,
+            Math.max(raw.y, Math.min(ay, raw.y + raw.height)) - ay);
+          const soft = (gap > LEADER ? 500 : 0) + gap * 2 + i * 0.5 +
+            cables.reduce((a, o) => a + area(b, o), 0);
           if (!clear || soft < clear.cost) clear = { dx, dy, anc, cost: soft };
-          if (!soft) break;                       /* nothing better is possible */
         }
         const pick = clear || least;
         el.setAttribute('x', ax + pick.dx); el.setAttribute('y', ay + pick.dy);
@@ -403,7 +417,7 @@ const anchor = (el: any, x: number, y: number, r: number) => {
         const px = Math.max(b.x, Math.min(ax, b.x + b.width));
         const py = Math.max(b.y, Math.min(ay, b.y + b.height));
         const gap = Math.hypot(px - ax, py - ay);
-        if (gap > 16) {                           /* far enough to look adrift */
+        if (gap > LEADER) {                       /* only then: point back at it */
           const k = (ar + 2.5) / gap;
           const ln = document.createElementNS(NS, 'line');
           ln.setAttribute('x1', ax + (px - ax) * k); ln.setAttribute('y1', ay + (py - ay) * k);
