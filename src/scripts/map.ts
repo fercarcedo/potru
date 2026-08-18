@@ -322,11 +322,27 @@ const anchor = (el: any, x: number, y: number, r: number) => {
 
     /* markers, the PAO square and the fixed captions are all immovable */
     const obstacles: any[] = [];
+    const cables: any[] = [];
     for (const c of [...svg.querySelectorAll('circle')] as any[]) {
       const r = +c.getAttribute('r');
       if (r < 2 || c.querySelector('animate')) continue;   /* not the pulse halo */
       const cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
+      if (!Number.isFinite(cx) || !Number.isFinite(cy)) continue;  /* the travelling pulse */
       obstacles.push({ x: cx - r, y: cy - r, w: r * 2, h: r * 2 });
+    }
+    /* The trunks and the shared-PON loop are drawn thick enough that a name
+       lying across one reads as a caption for the cable rather than for its
+       dot — «Sevares» did exactly that. They are only a tie-breaker, though:
+       among the spots that are genuinely clear, the one that also stays off
+       the cables and closest to home wins. Treating them as hard obstacles
+       flung the names half a map away. */
+    for (const path of [...svg.querySelectorAll('path')] as any[]) {
+      const len = path.getTotalLength?.() ?? 0;
+      if (!len || +path.getAttribute('stroke-width') < 1) continue;
+      for (let d = 0; d <= len; d += 5) {
+        const q = path.getPointAtLength(d);
+        cables.push({ x: q.x - 1.6, y: q.y - 1.6, w: 3.2, h: 3.2 });
+      }
     }
     for (const t of [...svg.querySelectorAll('text')] as any[])
       if (!t.getAttribute('class')?.startsWith('lbl-')) obstacles.push(box(t.getBBox()));
@@ -360,19 +376,26 @@ const anchor = (el: any, x: number, y: number, r: number) => {
         const home: [number, number, string] =
           [+el.getAttribute('x') - ax, +el.getAttribute('y') - ay,
            el.getAttribute('text-anchor')];
-        let best: any = null;
-        for (const [dx, dy, anc] of [home, ...spots(ar)]) {
+        let clear: any = null, least: any = null;
+        const cands = [home, ...spots(ar)];
+        for (let i = 0; i < cands.length; i++) {
+          const [dx, dy, anc] = cands[i];
           el.setAttribute('x', ax + dx); el.setAttribute('y', ay + dy);
           el.setAttribute('text-anchor', anc);
           const b = box(el.getBBox());
-          const cost = others.reduce((a, o) => a + area(b, o), 0);
-          if (!cost) { best = null; break; }      /* clear: keep this spot */
-          if (!best || cost < best.cost) best = { dx, dy, anc, cost };
+          const hard = others.reduce((a, o) => a + area(b, o), 0);
+          if (hard) {
+            if (!least || hard < least.cost) least = { dx, dy, anc, cost: hard };
+            continue;
+          }
+          /* clear of everything solid; prefer staying near home and off cable */
+          const soft = cables.reduce((a, o) => a + area(b, o), 0) + i * 6;
+          if (!clear || soft < clear.cost) clear = { dx, dy, anc, cost: soft };
+          if (!soft) break;                       /* nothing better is possible */
         }
-        if (best) {                               /* nothing was clear: least bad */
-          el.setAttribute('x', ax + best.dx); el.setAttribute('y', ay + best.dy);
-          el.setAttribute('text-anchor', best.anc);
-        }
+        const pick = clear || least;
+        el.setAttribute('x', ax + pick.dx); el.setAttribute('y', ay + pick.dy);
+        el.setAttribute('text-anchor', pick.anc);
         const b = el.getBBox();
         obstacles.push(box(b));
         /* moved well away from its dot? point back at it */
