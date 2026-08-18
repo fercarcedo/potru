@@ -52,7 +52,11 @@ const NS = 'http://www.w3.org/2000/svg';
   trunk('occ','M352,127 L300,115 L235,105 L205,140 L175,95 L120,120 L95,160',true,'PROPIA 64F \u00b7 CUDILLERO\u2013VEGADEO (v\u00eda ADIF)',118,66);
   trunk('occrent','M590,95 C540,108 470,142 420,145 L385,120 L352,127',false,'ALQUILADA+CWDM \u00b7 GIJ\u00d3N\u2013CUDILLERO',462,184);
   e2('circle',{cx:352,cy:127,r:3.5,fill:'none',stroke:'#8da0b8','stroke-width':1.2});
-  e2('text',{x:342,y:145,fill:'#5a6f8d','font-size':8,'text-anchor':'middle'}).textContent='Cudillero (arqueta ADIF)';
+  /* el rótulo va abajo a la izquierda y en dos líneas: en una sola se solapaba
+     con «Muros de Nalón», que arranca en x=346, y quedaba ilegible */
+  e2('line',{x1:349,y1:130,x2:332,y2:145,stroke:'#5a6f8d','stroke-width':.7,opacity:.6});
+  e2('text',{x:318,y:154,fill:'#8da0b8','font-size':8.5,'text-anchor':'middle'}).textContent='Cudillero';
+  e2('text',{x:318,y:164,fill:'#5a6f8d','font-size':7.5,'text-anchor':'middle'}).textContent='(arqueta ADIF)';
   trunk('minera','M590,95 C588,145 572,200 560,245',true,'AUTOVÍA MINERA',503,168);
   trunk('lena','M560,245 L545,362',true);
   trunk('nalon','M578,165 C615,182 645,190 645,203 L700,240',true);
@@ -76,6 +80,7 @@ const NS = 'http://www.w3.org/2000/svg';
     const t=document.createElementNS(NS,'text');
     t.setAttribute('x',x);t.setAttribute('y',y+16);t.setAttribute('fill','#8da0b8');
     t.setAttribute('font-size',7.5);t.setAttribute('text-anchor','middle');
+    t.setAttribute('class','lbl-move');
     t.textContent=name;g.appendChild(t);
     g.addEventListener('mousemove',ev=>{
       const r=shell.getBoundingClientRect();
@@ -106,8 +111,12 @@ const NS = 'http://www.w3.org/2000/svg';
     const ao=document.createElementNS(NS,'animate');ao.setAttribute('attributeName','opacity');ao.setAttribute('values','.6;0');ao.setAttribute('dur','2.6s');ao.setAttribute('repeatCount','indefinite');
     halo.appendChild(an);halo.appendChild(ao);g.appendChild(halo);
     const lbl=document.createElementNS(NS,'text');
-    lbl.setAttribute('x',x);lbl.setAttribute('y',y+22);lbl.setAttribute('fill','#8da0b8');
+    /* Navia sits close enough to Tapia that their names touched; it drops a
+       little so both stay legible */
+    const LBL_DY: Record<string, number> = { navia: 9 };
+    lbl.setAttribute('x',x);lbl.setAttribute('y',y+22+(LBL_DY[n.id]||0));lbl.setAttribute('fill','#8da0b8');
     lbl.setAttribute('font-size',9.5);lbl.setAttribute('text-anchor','middle');
+    lbl.setAttribute('class','lbl-fixed');
     lbl.textContent=n.name+(['mieres','langreo'].includes(n.id)?' *':'');g.appendChild(lbl);
     g.addEventListener('mousemove',ev=>{
       const r=shell.getBoundingClientRect();
@@ -182,6 +191,7 @@ const NS = 'http://www.w3.org/2000/svg';
       const t=document.createElementNS(NS,'text');
       t.setAttribute('x',x);t.setAttribute('y',y-5);t.setAttribute('fill','#6f8199');
       t.setAttribute('font-size',7);t.setAttribute('text-anchor','middle');
+      t.setAttribute('class','lbl-move');
       t.textContent=name;townsLayer.appendChild(t);
     });
   });
@@ -208,3 +218,45 @@ const NS = 'http://www.w3.org/2000/svg';
   let townsOn=true;
   townsBtn.onclick=()=>{townsOn=!townsOn;townsLayer.style.display=townsOn?'':'none';
     townsBtn.textContent=townsOn?'\u25c9 Poblaciones servidas: visibles':'\u25cb Poblaciones servidas: ocultas';};
+
+  /* ---- map zoom: scales the viewBox about whatever is on screen ---- */
+  const HOME_W = 1160, HOME_H = 470, MIN_W = 240;
+  /** Zooms about the middle of the current view, keeping its aspect ratio. */
+  export function zoomMap(factor: number) {
+    const [x, y, w, h] = svg.getAttribute('viewBox')!.split(' ').map(Number) as number[];
+    const cx = x + w / 2, cy = y + h / 2;
+    let nw = Math.max(MIN_W, Math.min(HOME_W, w * factor));
+    let nh = h * (nw / w);
+    if (nh > HOME_H) { nh = HOME_H; nw = w * (nh / h); }
+    const nx = Math.max(0, Math.min(HOME_W - nw, cx - nw / 2));
+    const ny = Math.max(0, Math.min(HOME_H - nh, cy - nh / 2));
+    const r2 = (v: number) => Math.round(v * 100) / 100;
+    svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
+  }
+  document.getElementById('mapZoomIn')?.addEventListener('click', () => zoomMap(0.72));
+  document.getElementById('mapZoomOut')?.addEventListener('click', () => zoomMap(1 / 0.72));
+
+  /* ---- declutter: nudge the small labels off the node names ----
+     The legacy map had 13 pairs of overlapping labels — «Pol. de Coaña» sat on
+     top of «Navia» and «Tapia de Casariego», and so on. Node names hold their
+     place; town and secondary-node labels are moved to the first nearby spot
+     that is clear. */
+  {
+    const grow = (r: DOMRect | any, m = 0.5) =>
+      ({ x: r.x - m, y: r.y - m, w: r.width + m * 2, h: r.height + m * 2 });
+    const hits = (a: any, b: any) =>
+      a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+    const fixed = [...svg.querySelectorAll('.lbl-fixed')].map((e: any) => grow(e.getBBox()));
+    const placed: any[] = [];
+    const OFFSETS: [number, number][] =
+      [[0, 0], [0, 11], [0, -11], [14, 8], [-14, 8], [0, 19], [20, 0], [-20, 0], [0, -19]];
+    for (const el of [...svg.querySelectorAll('.lbl-move')] as any[]) {
+      const x0 = +el.getAttribute('x'), y0 = +el.getAttribute('y');
+      for (const [dx, dy] of OFFSETS) {
+        el.setAttribute('x', x0 + dx); el.setAttribute('y', y0 + dy);
+        const box = grow(el.getBBox());
+        if (![...fixed, ...placed].some((o) => hits(box, o))) break;
+      }
+      placed.push(grow(el.getBBox()));
+    }
+  }

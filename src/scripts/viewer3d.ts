@@ -825,9 +825,11 @@ export function buildRoom(n: NetworkNode) {
   }
   /** Zoom is optical only: it narrows the field of view, it never moves you. */
   const FOV_NEAR = 22, FOV_FAR = 78;
+  let syncZoomBtns = () => {};
   function zoom(amount: number) {
     cam.fov = Math.max(FOV_NEAR, Math.min(FOV_FAR, cam.fov - amount));
     cam.updateProjectionMatrix();
+    syncZoomBtns();
   }
 
   let drag: [number, number] | null = null;
@@ -864,6 +866,22 @@ export function buildRoom(n: NetworkNode) {
   canvas.addEventListener('pointercancel', pu);
 
   const wheel = (e: WheelEvent) => { e.preventDefault(); zoom(-e.deltaY * 0.035); };
+  /* the +/− pad in the corner: same optical zoom, one step per press */
+  const zoomBtns: [HTMLElement, number][] = [];
+  for (const [id, step] of [['svZoomIn', 9], ['svZoomOut', -9]] as const) {
+    const btn = document.getElementById(id);
+    if (!btn) continue;
+    btn.onclick = () => { zoom(step); syncZoomBtns(); };
+    zoomBtns.push([btn, step]);
+  }
+  /* grey a button out once its end of the range is reached */
+  syncZoomBtns = () => {
+    for (const [btn, step] of zoomBtns) {
+      (btn as HTMLButtonElement).disabled =
+        step > 0 ? cam.fov <= FOV_NEAR + 0.01 : cam.fov >= FOV_FAR - 0.01;
+    }
+  };
+  syncZoomBtns();
   canvas.addEventListener('wheel', wheel, { passive: false });
 
   const pad = { f: 0, b: 0, l: 0, r: 0 };

@@ -30,14 +30,20 @@ import { DETAILS } from '../lib/details';
         >
       </div>
     </div>
-    <div class="map-shell" style="margin-top:30px">
-      <svg
-        id="astMap"
-        viewBox="0 0 1160 470"
-        role="img"
-        aria-label="Mapa esquemático de los nodos de la Red Asturcón"></svg>
-      <div class="tooltip" id="mapTip"></div>
-      <div class="area-legend" id="areaLegend"></div>
+    <div class="map-wrap" style="margin-top:30px">
+      <div class="map-shell">
+        <svg
+          id="astMap"
+          viewBox="0 0 1160 470"
+          role="img"
+          aria-label="Mapa esquemático de los nodos de la Red Asturcón"></svg>
+        <div class="tooltip" id="mapTip"></div>
+        <div class="area-legend" id="areaLegend"></div>
+      </div>
+      <div class="zoom-pad" role="group" aria-label="Zoom del mapa">
+        <button id="mapZoomIn" type="button" aria-label="Acercar el mapa" title="Acercar">+</button>
+        <button id="mapZoomOut" type="button" aria-label="Alejar el mapa" title="Alejar">−</button>
+      </div>
     </div>
     <div class="tour-panel" id="tourPanel">
       <div class="tour-step" id="tpStep"></div>

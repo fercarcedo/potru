@@ -288,3 +288,20 @@ footer .disclaimer{margin-top:0;max-width:none}
 
 /* ---------- Potru: segunda línea del hero (la tecnología, bajo el caudal) ---------- */
 .hero h1 .tech{display:inline-block;margin-top:.12em;font-size:.5em;letter-spacing:0}
+
+/* ---------- Potru: mando de zoom (mapa de la portada y visor 3D) ---------- */
+.map-wrap{position:relative}
+.zoom-pad{position:absolute;top:12px;right:12px;z-index:4;display:flex;flex-direction:column;gap:6px}
+.zoom-pad button{width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:rgba(12,21,36,.9);color:var(--txt);border:1px solid var(--line);border-radius:9px;
+  font-family:'IBM Plex Mono',monospace;font-size:1.25rem;line-height:1;cursor:pointer;
+  backdrop-filter:blur(4px);transition:border-color .2s,color .2s}
+.zoom-pad button:hover{border-color:var(--xgs);color:var(--xgs)}
+.zoom-pad button:focus-visible{outline:2px solid var(--xgs);outline-offset:2px}
+.zoom-pad button:disabled{opacity:.35;cursor:default;border-color:var(--line);color:var(--muted)}
+.sv-zoom{top:14px;right:18px}
+@media(max-width:760px){
+  .zoom-pad button{width:34px;height:34px;font-size:1.05rem}
+  /* en móvil la leyenda del visor va debajo del mando */
+  #svLegend{top:104px!important;max-width:210px!important;font-size:.62rem!important}
+}
