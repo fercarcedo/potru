@@ -4,11 +4,16 @@
  * Formatting is not ESLint's job here — prettier owns it, and
  * eslint-config-prettier switches off every rule that would argue with it.
  * What is left is the part a formatter cannot see: unused code, a floating
- * promise, a `case` that falls through.
+ * promise, an assertion that is no longer telling the compiler anything.
  *
- * The .astro components are out of scope on purpose, as they are for
- * prettier: linting templates needs eslint-plugin-astro and its own parser,
- * and the logic worth linting already lives in src/scripts and src/lib.
+ * Type-aware linting is on (`recommendedTypeChecked`), which is why the .ts
+ * block carries `projectService`. It has to be scoped to .ts: the config
+ * files at the root are plain JS with no program behind them, so the same
+ * rules there fail to load rather than fail to find anything.
+ *
+ * The .astro components are not linted. Their logic is a few lines of
+ * frontmatter each — everything worth a rule lives in src/scripts and
+ * src/lib — and eslint-plugin-astro brings its own parser for the templates.
  */
 import js from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -19,30 +24,19 @@ import ts from 'typescript-eslint';
 export default defineConfig(
   globalIgnores(['dist/**', '.astro/**', 'playwright-report/**', 'test-results/**', 'public/**']),
   js.configs.recommended,
-  ts.configs.recommended,
   {
     files: ['**/*.ts'],
+    extends: [ts.configs.recommendedTypeChecked],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
-      /* type-aware, for the handful of rules below that need to know what a
-         value actually is. The full recommendedTypeChecked set is not on:
-         most of what it adds here is `no-unnecessary-type-assertion` firing
-         on the `arr[i]!` idiom, which is only unnecessary while
-         noUncheckedIndexedAccess is off — deleting those would quietly make
-         the codebase harder to tighten later. */
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
     rules: {
-      /* A dropped promise is a bug you only find in production: the 3D
-         engine failing to load, a font that never resolves. These three are
-         the reason this config is type-aware at all. */
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
       /* The islands index into arrays whose bounds the surrounding code
-         already guarantees — `poly[i]!`, `gallery[view]!`. The alternative is
-         a runtime check the codebase would then have to decide what to do
-         with, which is worse than the assertion. */
+         already guarantees — `poly[i]!`, `gallery[view]!`. With
+         noUncheckedIndexedAccess on, those assertions are load-bearing, so
+         no-unnecessary-type-assertion agrees with them and this rule only
+         needs to stop objecting to the shape. */
       '@typescript-eslint/no-non-null-assertion': 'off',
       /* An unused argument is often documentation of a signature the caller
          must still satisfy — a UnitBuilder that ignores `front`, say. Let a
@@ -53,5 +47,7 @@ export default defineConfig(
       ],
     },
   },
+  /* the root config files: plain JS, no program, so nothing type-aware */
+  { files: ['**/*.{js,mjs,cjs}'], extends: [ts.configs.disableTypeChecked] },
   prettier,
 );

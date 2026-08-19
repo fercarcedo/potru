@@ -66,7 +66,7 @@ export function initLightbox() {
   let onChange: ((i: number) => void) | undefined;
   let bodyOverflow = '';
 
-  const isOpen = () => bg!.classList.contains('open');
+  const isOpen = () => bg.classList.contains('open');
 
   function setZoom(on: boolean) {
     fig.classList.toggle('zoomed', on);

@@ -152,13 +152,20 @@ versioned.
   so how the source is written never reaches the wire. `.astro` files included, via
   `prettier-plugin-astro`.
 - **Linting is eslint's**, `src/` and `tests/` TypeScript only, on typescript-eslint's
-  `recommended` plus three type-aware rules — `no-floating-promises`, `no-misused-promises`,
-  `await-thenable`. A dropped promise is the failure this codebase is actually exposed to (a
-  dynamic import that never resolves, a font that never loads), and it is invisible to review.
-  The full `recommendedTypeChecked` set is deliberately off: most of what it adds here is
-  `no-unnecessary-type-assertion` firing on the `arr[i]!` idiom, which is only unnecessary while
-  `noUncheckedIndexedAccess` is off, so deleting those assertions would quietly make the codebase
-  harder to tighten later. `no-non-null-assertion` is off for the same reason.
+  `recommendedTypeChecked` — type-aware, so it catches the failures this codebase is actually
+  exposed to and review is not: a dropped promise from a dynamic import that never resolves, an
+  assertion that has stopped telling the compiler anything. It has to be scoped to `.ts`; the
+  config files at the root are plain JS with no program behind them, so the same rules there fail
+  to load rather than fail to find anything.
+- `noUncheckedIndexedAccess` is **on**, and it is what makes the `arr[i]!` idiom honest. Without
+  it those assertions are dead weight — `no-unnecessary-type-assertion` reported 80 of them — and
+  deleting them would have been the wrong fix, because the moment the flag went on they would all
+  be needed again. With it on, 80 became 1. Index into an array and either assert or handle the
+  `undefined`; do not reach for `as`.
+- Interfaces whose members are **plain closures declare them as properties**, not with method
+  shorthand (`openNode: (id: string) => void`, not `openNode(id: string): void`). `ModalApi` and
+  `EquipmentBuilders` are both destructured by their callers, and method syntax claims a `this`
+  that none of these functions has — which is exactly what `unbound-method` reports.
 - Commits are **in English**, conventional-commit style with a scope (`fix(map): …`,
   `feat(data): …`), and a body explaining what was wrong and why the fix works.
 - The pliego's drawings and data are excluded from the repo's MIT licence (authorship: GIT). Keep

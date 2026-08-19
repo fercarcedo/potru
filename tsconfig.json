@@ -5,6 +5,7 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "allowJs": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true
   }
 }

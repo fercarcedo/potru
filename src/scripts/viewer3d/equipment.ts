@@ -46,8 +46,11 @@ export type UnitBuilder = (
   front: number,
 ) => void;
 
+/* Every member is a plain closure, declared as a property rather than with
+   method shorthand: buildRoom() pulls them off this object by destructuring,
+   and method syntax would be claiming a `this` that none of them has. */
 export interface EquipmentBuilders {
-  box(
+  box: (
     w: number,
     h: number,
     d: number,
@@ -56,8 +59,8 @@ export interface EquipmentBuilders {
     y: number,
     z: number,
     parent?: THREE.Object3D,
-  ): THREE.Mesh;
-  label(
+  ) => THREE.Mesh;
+  label: (
     text: string,
     wm: number,
     x: number,
@@ -65,17 +68,17 @@ export interface EquipmentBuilders {
     z: number,
     ry: number,
     color?: string,
-  ): THREE.Mesh;
-  portLed(
+  ) => THREE.Mesh;
+  portLed: (
     x: number,
     y: number,
     z: number,
     parent: THREE.Object3D,
     on: boolean,
     role?: 'gpon-port' | 'status',
-  ): void;
-  cord(pts: Vec3[], parent: THREE.Object3D, m?: THREE.Material, r?: number): void;
-  rackFrame(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
+  ) => void;
+  cord: (pts: Vec3[], parent: THREE.Object3D, m?: THREE.Material, r?: number) => void;
+  rackFrame: (g: THREE.Object3D, w: number, h: number, fz: number, base: number) => void;
   /** ROM — Repartidor Óptico Modular: stacked splice/patch trays. */
   odfUnit: UnitBuilder;
   /** DWDM / WDM / Transmode transport: shelves of lit line modules. */
@@ -86,16 +89,16 @@ export interface EquipmentBuilders {
   videoUnit: UnitBuilder;
   /** «TX Cube» / «Transporte Cube»: one compact transport chassis. */
   txCubeUnit: UnitBuilder;
-  cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
+  cgbtBay: (g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) => void;
   /** «Dist. C.A.»: an AC distribution board, simpler than the CGBT. */
-  acDistBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
-  powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
-  batteryBay(g: THREE.Object3D, w: number, h: number, d: number, base: number): void;
-  chassis(o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number): void;
+  acDistBay: (g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) => void;
+  powerBay: (g: THREE.Object3D, w: number, h: number, fz: number, base: number) => void;
+  batteryBay: (g: THREE.Object3D, w: number, h: number, d: number, base: number) => void;
+  chassis: (o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number) => void;
   /** Wire-mesh cable tray between two points in room space. */
-  rejiband(a: Vec3, b: Vec3, wTray?: number): THREE.Group | undefined;
+  rejiband: (a: Vec3, b: Vec3, wTray?: number) => THREE.Group | undefined;
   /** Lift-off covers over a floor cable duct («tapas»). */
-  hatchRun(x: number, z: number, w: number, d: number, n: number): void;
+  hatchRun: (x: number, z: number, w: number, d: number, n: number) => void;
   /** ports/status lamps portLed() lit, for the render loop to blink. */
   leds: Led[];
 }

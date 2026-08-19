@@ -12,6 +12,7 @@
  */
 import { TOUR_STOPS, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
+import { readViewBox, type ViewBox } from './map/viewport';
 import { svgEl } from './svg';
 
 export interface TourDeps {
@@ -42,9 +43,9 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     animId: number | null = null,
     pulses: SVGElement[] = [];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function setVB(target: readonly number[]) {
+  function setVB(target: Readonly<ViewBox>) {
     if (animId) cancelAnimationFrame(animId);
-    const cur = svg.getAttribute('viewBox')!.split(' ').map(Number);
+    const cur = readViewBox(svg);
     if (reduced) {
       svg.setAttribute('viewBox', target.join(' '));
       return;
@@ -54,7 +55,19 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     function f(t: number) {
       const k = Math.min((t - t0) / D, 1),
         e = 1 - Math.pow(1 - k, 3);
-      svg.setAttribute('viewBox', cur.map((c, i) => c + (target[i] - c) * e).join(' '));
+      /* the four numbers by name rather than by a running index: a viewBox
+         is a fixed shape, and indexing it by a variable is what made the
+         compiler unsure the far side had a value at all */
+      const at = (from: number, to: number) => from + (to - from) * e;
+      svg.setAttribute(
+        'viewBox',
+        [
+          at(cur[0], target[0]),
+          at(cur[1], target[1]),
+          at(cur[2], target[2]),
+          at(cur[3], target[3]),
+        ].join(' '),
+      );
       if (k < 1) animId = requestAnimationFrame(f);
     }
     animId = requestAnimationFrame(f);

@@ -22,7 +22,12 @@ test.describe('schematic map label placement', () => {
   test('places every node, secondary and town label inside the map viewBox', async ({ page }) => {
     const overflow = await page.evaluate(() => {
       const svg = document.getElementById('astMap') as unknown as SVGSVGElement;
-      const [vx, vy, vw, vh] = svg.getAttribute('viewBox')!.split(' ').map(Number);
+      const [vx, vy, vw, vh] = svg.getAttribute('viewBox')!.split(' ').map(Number) as [
+        number,
+        number,
+        number,
+        number,
+      ];
       const out: string[] = [];
       for (const el of svg.querySelectorAll('.lbl-node, .lbl-sec, .lbl-town')) {
         const b = (el as SVGGraphicsElement).getBBox();

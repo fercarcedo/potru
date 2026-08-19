@@ -99,7 +99,7 @@ describe('rejiband', () => {
     ] as const) {
       const { b } = builders();
       const g = b.rejiband([...a], [...b2]);
-      expect(g, `${a} → ${b2}`).toBeTruthy();
+      expect(g, `${a.join(',')} → ${b2.join(',')}`).toBeTruthy();
       expect(meshes(g!).length).toBeGreaterThan(4);
     }
   });

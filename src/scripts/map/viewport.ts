@@ -12,17 +12,25 @@ const HOME_W = 1160,
   HOME_H = 470,
   MIN_W = 240;
 
+/** An SVG viewBox, as its four numbers. */
+export type ViewBox = [number, number, number, number];
+
+/**
+ * The map's current viewBox. The attribute is always the four numbers this
+ * module and the guided tour write, so the cast is the shape of that
+ * agreement rather than a hope — and having it in one place is what keeps
+ * `noUncheckedIndexedAccess` from turning every reader into `x!`.
+ */
+export function readViewBox(svg: SVGSVGElement): ViewBox {
+  return svg.getAttribute('viewBox')!.split(' ').map(Number) as ViewBox;
+}
+
 /** Wires zoom and pan for the map. Call once, after the map's <svg> has its
  *  initial viewBox set. */
 export function initViewport(svg: SVGSVGElement): void {
   /** Zooms about the middle of the current view, keeping its aspect ratio. */
   function zoomMap(factor: number) {
-    const [x, y, w, h] = svg.getAttribute('viewBox')!.split(' ').map(Number) as [
-      number,
-      number,
-      number,
-      number,
-    ];
+    const [x, y, w, h] = readViewBox(svg);
     const cx = x + w / 2,
       cy = y + h / 2;
     let nw = Math.max(MIN_W, Math.min(HOME_W, w * factor));
@@ -41,8 +49,7 @@ export function initViewport(svg: SVGSVGElement): void {
   zoomIn?.addEventListener('click', () => zoomMap(0.72));
   zoomOut?.addEventListener('click', () => zoomMap(1 / 0.72));
 
-  const vb = () =>
-    svg.getAttribute('viewBox')!.split(' ').map(Number) as [number, number, number, number];
+  const vb = () => readViewBox(svg);
 
   /**
    * Keeps the pad honest: grey out whichever button can no longer do anything,

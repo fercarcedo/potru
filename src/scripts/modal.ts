@@ -18,9 +18,12 @@ import {
 import { registerPlanSet } from './lightbox';
 import { openWalk } from './walk';
 
+/* properties, not method shorthand: main.ts, map.ts and tour.ts all take
+   `openNode` off this object and call it on its own, which is exactly what
+   method syntax would be warning about */
 export interface ModalApi {
-  openNode(id: string, view?: number): void;
-  closeModal(): void;
+  openNode: (id: string, view?: number) => void;
+  closeModal: () => void;
 }
 
 /** Wires the modal shell rendered by NodeModal.astro (#modalBg and its

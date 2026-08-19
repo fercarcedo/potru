@@ -26,13 +26,15 @@ export function initDiagram() {
       txt = '#e8eef6',
       mut = '#8da0b8',
       Y = 210;
-    [
-      [120, 300],
-      [300, 440],
-      [440, 610],
-      [700, 880],
-      [880, 1000],
-    ].forEach(([x1, x2]) =>
+    (
+      [
+        [120, 300],
+        [300, 440],
+        [440, 610],
+        [700, 880],
+        [880, 1000],
+      ] as const
+    ).forEach(([x1, x2]) =>
       el('line', { x1, y1: Y, x2, y2: Y, stroke: c, 'stroke-width': 2, opacity: 0.85 }),
     );
     for (let i = 0; i < 4; i++) {
@@ -59,12 +61,14 @@ export function initDiagram() {
         p,
       );
     }
-    [
-      [300, 60],
-      [300, 120],
-      [300, 300],
-      [300, 360],
-    ].forEach(([x, y]) => {
+    (
+      [
+        [300, 60],
+        [300, 120],
+        [300, 300],
+        [300, 360],
+      ] as const
+    ).forEach(([x, y]) => {
       el('line', { x1: x, y1: Y, x2: 170, y2: y, stroke: c, 'stroke-width': 1, opacity: 0.3 });
       el('circle', {
         cx: 162,
