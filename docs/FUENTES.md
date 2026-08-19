@@ -79,6 +79,12 @@ licitación en PLACSP.
     bastidores, y se habían transcrito como tres bastidores en mitad de la sala.
     Las cinco salas difíciles (Mieres, Tineo, Blimea, Pola de Lena y Cangas) se releyeron del PDF
     a 400 ppp; la escala de cada una se fijó con dos cotas independientes del propio plano.
+  - **Detalle por armario remedido**: en Langreo y en Llanes el Repartidor F.O. tiene 0,6 m de
+    fondo y sobresale 0,30 m de la fila —estaba a 0,33 como el resto, que es por qué se veía
+    distinto—, Llanes tiene un tercer armario de «Baterías» (0,600 × 0,500) junto al Transporte
+    DWDM que faltaba, y Langreo una «Alarma de incendios» de 170 mm. Los dos «Bastidor COGENT» de
+    Langreo se dibujan en el plano con arco de puerta, así que se modelan como armario cerrado con
+    frente perforado abisagrado, no como bastidor abierto.
 - **Discrepancias documentadas en la propia interfaz**: el pliego general cita 5 nodos
   secundarios, pero las fichas por área detallan 9 (Vegadeo, La Caridad y Soto del Barco en
   el Occidente; Cabranes y Villamayor en el Suroriente; El Entrego, Sotrondio, Barredos y

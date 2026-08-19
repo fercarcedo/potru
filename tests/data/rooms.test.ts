@@ -25,6 +25,7 @@ interface Bay {
   label: string;
   olts?: number[];
   units?: string[];
+  enclosed?: boolean;
 }
 interface Tray {
   level?: 'ceiling' | 'floor' | number;
@@ -152,6 +153,12 @@ describe('bays', () => {
           for (const oltIndex of bay.olts!) {
             expect(node.olts[oltIndex], `${id} has no olts[${oltIndex}]`).toBeTruthy();
           }
+        });
+      }
+
+      if (bay.enclosed) {
+        it(`${id}: bay ${i} (${bay.label}) is a kind that can carry a door`, () => {
+          expect(bay.kind).toBe('rack');
         });
       }
 

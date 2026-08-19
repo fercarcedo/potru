@@ -38,6 +38,12 @@ interface Bay {
   /** indices into the node's olts[] that live in this cabinet */
   olts?: number[];
   /**
+   * The plan draws this rack with a door swing, so it is a closed cabinet
+   * with a hinged front — Langreo's two «Bastidor COGENT» — not an open
+   * 19" frame like the rest.
+   */
+  enclosed?: boolean;
+  /**
    * What the plan says this cabinet actually holds, when its label names more
    * than one thing («Repartidor FO + TX Cube», «GPON y vídeo», «DWDM y
    * splitter»). Each entry fills its own band of the rack; omitted, the
@@ -306,6 +312,22 @@ export function buildRoom(n: NetworkNode) {
           portLed(faceW / 2 - 0.11, base + 0.45 + i * 0.28, fz * 1.02, g, i % 3 !== 2, 'status');
         }
       }
+      if (bay.enclosed) {
+        /* a perforated front door on its hinges, as the plan's door swing
+           says: the kit behind it shows through the ventilation slots */
+        const dw = faceW - 0.03, dh = bay.h - 0.06, dz = fz * 1.06;
+        box(dw, 0.03, 0.028, fin.bezel, 0, base + bay.h - 0.03, dz, g);
+        box(dw, 0.03, 0.028, fin.bezel, 0, base + 0.03, dz, g);
+        for (const sx of [-1, 1]) box(0.03, dh, 0.028, fin.bezel, sx * dw / 2, base + bay.h / 2, dz, g);
+        for (let i = 0; i < Math.round(dh / 0.09); i++) {
+          box(dw - 0.08, 0.05, 0.02, fin.rail, 0, base + 0.09 + i * 0.09, dz, g);
+        }
+        /* hinges down one side, handle down the other */
+        for (const hy of [0.2, 0.5, 0.8]) {
+          box(0.03, 0.08, 0.05, fin.steel, -dw / 2, base + bay.h * hy, dz - 0.01, g);
+        }
+        box(0.025, 0.16, 0.05, fin.steel, dw / 2 - 0.06, base + bay.h * 0.48, dz + 0.02, g);
+      }
     }
 
     /* the rear is a vented door, not a bare slab: from behind a rack still reads
@@ -405,7 +427,10 @@ export function buildRoom(n: NetworkNode) {
     `· ${room.bays.length} armarios rotulados en el plano<br>` +
     (olts.length
       ? `· ${olts.length} OLT · ${cardCount(n)} tarjetas<br>` +
-        olts.map((o) => `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))} · ${o.portsActive}/${o.portsTotal} puertos`).join('<br>')
+        olts.map((o) =>
+          `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))}` +
+          ` — ${o.portsPerCard} puertos GPON <b>por tarjeta</b>,` +
+          ` ${o.portsActive} de ${o.portsTotal} activos`).join('<br>')
       : '· Sin OLT: punto de interconexión con los operadores') +
     (room.note ? `<br><span style="color:#5a6f8d">${esc(room.note)}</span>` : '');
 
