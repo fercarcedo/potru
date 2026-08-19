@@ -1,0 +1,24 @@
+/* Guided tour (tour.ts): the control bar and the 9 panels built in details.ts. */
+.tour-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:22px 0 14px}
+.tour-btn{background:var(--xgs-soft);color:var(--xgs);border:1px solid rgba(65,227,210,.4);border-radius:8px;padding:11px 20px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.08em;transition:all .2s}
+.tour-btn:hover{background:rgba(65,227,210,.2)}
+.tour-btn.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+.tour-btn.ghost:hover{color:var(--txt)}
+.tour-btn:disabled{opacity:.35;cursor:default}
+.tour-panel{display:none;border:1px solid var(--line);border-left:3px solid var(--xgs);background:var(--panel);border-radius:0 10px 10px 0;padding:20px 22px;margin-top:14px}
+.tour-panel.open{display:block}
+.tour-step{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.16em;color:var(--xgs);text-transform:uppercase}
+.tour-panel h4{font-family:'Archivo Variable',sans-serif;font-stretch:125%;font-size:1.15rem;margin:6px 0 8px}
+.tour-panel p{font-size:.9rem;color:var(--muted);max-width:78ch}
+.tour-nav{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.tr-leg{display:flex;gap:16px;flex-wrap:wrap;font-size:.74rem;color:var(--muted);margin-top:10px}
+.tr-leg span{display:flex;align-items:center;gap:7px}
+.tr-line{width:26px;height:0;border-top:2.5px solid #41e3d2;display:inline-block}
+.tr-line.rent{border-top-style:dashed;border-top-color:#ffb454}
+@media(max-width:760px){
+  .tour-bar{flex-direction:column;align-items:stretch}
+  .tour-btn{width:100%;text-align:center}
+  .tour-nav .tour-btn{width:auto;flex:1;min-width:120px}
+  .tour-panel{padding:16px}
+  .tour-panel p{font-size:.95rem}
+}

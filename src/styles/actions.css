@@ -1,0 +1,17 @@
+/* «Actuaciones» cards (Actions.astro / ActionCard.astro) and the generic
+   .grid utility they lay themselves out with. */
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;transition:border-color .25s,transform .25s}
+.card:hover{border-color:#2c4266;transform:translateY(-2px)}
+.card h3{font-size:1.02rem;margin-bottom:10px;display:flex;gap:10px;align-items:baseline}
+.card p{font-size:.92rem;color:var(--muted)}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.pill.fix{background:var(--xgs-soft);color:var(--xgs)}
+.pill.var{background:var(--gpon-soft);color:var(--gpon)}
+.card ul{list-style:none;margin-top:10px}
+.card li{font-size:.92rem;color:var(--muted);padding:5px 0 5px 18px;position:relative}
+.card li::before{content:"›";position:absolute;left:0;color:var(--xgs)}
+.card .affected{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--muted)}
+.card .affected a{color:var(--xgs);text-decoration:none;cursor:pointer}
+.card .affected a:hover{text-decoration:underline}

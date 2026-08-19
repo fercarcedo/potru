@@ -1,0 +1,8 @@
+/* Self-hosted fonts (@fontsource) instead of the Google Fonts CDN.
+   Archivo is loaded with its wdth axis because the design uses font-stretch:125%. */
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';

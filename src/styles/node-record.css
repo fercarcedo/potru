@@ -1,0 +1,30 @@
+/* The node record itself — OLT table, migration figures, action links, towns
+   and shared PON groups. Rendered by node-render.ts into BOTH the modal and
+   the /nodos/<id> page, so it stays independent of either container. */
+.olt-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:18px}
+.olt-table th{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+.olt-table td{padding:7px 10px;border-bottom:1px solid var(--line);color:var(--txt)}
+.olt-table td.mono{color:var(--muted)}
+.olt-table tr.total td{font-weight:600;border-bottom:none;color:var(--xgs)}
+.mig-strip{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.mig-strip .box{border:1px solid var(--line);border-radius:8px;padding:10px 16px;background:var(--panel2)}
+.mig-strip .box b{display:block;font-family:'IBM Plex Mono',monospace;font-size:1rem;color:var(--xgs)}
+.mig-strip .box span{font-size:.72rem;color:var(--muted)}
+.act-links{display:flex;gap:8px;flex-wrap:wrap}
+.act-links a{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;padding:6px 12px;border-radius:6px;text-decoration:none;border:1px solid var(--line);transition:all .2s}
+.act-links a.fix{color:var(--xgs);background:var(--xgs-soft)}
+.act-links a.var{color:var(--gpon);background:var(--gpon-soft)}
+.act-links a:hover{border-color:currentColor}
+.act-label{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.town-chips{display:flex;flex-wrap:wrap;gap:7px}
+.town-chips span{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:5px 13px;font-size:.78rem;color:var(--txt)}
+.town-note{margin-top:9px;font-size:.76rem;color:var(--muted);border-left:2px solid var(--line);padding-left:10px;line-height:1.5}
+.pon-group{border:1.5px dashed var(--pon);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:6px;background:rgba(255,215,107,.05)}
+.pon-group .p{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:.76rem}
+.pon-group .lnk{color:var(--pon)}
+.pon-group .tag{color:var(--pon);font-size:.64rem;font-family:'IBM Plex Mono',monospace;margin-left:4px}
+@media(max-width:760px){
+  .olt-table{font-size:.76rem}
+  .olt-table th,.olt-table td{padding:6px 6px}
+  .mig-strip .box{flex:1;min-width:120px}
+}
