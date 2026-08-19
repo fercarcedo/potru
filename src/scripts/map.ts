@@ -39,19 +39,31 @@ export const SECONDARY: [string, number, number, string, string, string][] = [
   ['Pola de Laviana', 772, 310, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
 ];
 export const PAO = { x: 590, y: 95 };
-/** Served-town labels hung off each primary node's dot: [name, x, y][]. */
+/**
+ * Served-town labels hung off each primary node's dot: [name, x, y][].
+ *
+ * A town's dot must keep a few units of clearance from every trunk path, and
+ * the placement pass cannot give it any: a dot that lands *on* a cable breaks
+ * the map twice over. Its leader from the parent node runs along the trunk and
+ * so is invisible (this is what happened to «Pol. de Coaña», «Oyanco» and
+ * «Corigos», all within 5 units of a cable), and its name gets pushed off its
+ * own dot, because place-labels.ts charges a spot that lies across a cable
+ * («Figaredo» and «Sta. Cruz» ended up 11 units away from theirs). Both are
+ * fixed by moving the *dot* perpendicular to the trunk, not by moving the
+ * name. tests/e2e/map-labels.spec.ts measures both invariants.
+ */
 export const TOWN_POS: Record<string, [string, number, number][]> = {
   muros: [['San Esteban de Pravia', 402, 98]],
-  navia: [['Puerto de Vega', 258, 86], ['Pol. de Coaña', 224, 124]],
-  castropol: [['Figueras', 130, 96], ['Barres', 105, 100], ['Piantón', 82, 140]],
+  navia: [['Puerto de Vega', 258, 86], ['Pol. de Coaña', 240, 131]],
+  castropol: [['Figueras', 150, 130], ['Barres', 105, 100], ['Piantón', 82, 140]],
   tineo: [['Pol. La Curiscada', 334, 193]],
-  mieres: [['Figaredo', 516, 275], ['Sta. Cruz', 553, 292], ['Ujo', 528, 308], ['Turón', 598, 272], ['Rioturbio', 592, 220]],
+  mieres: [['Figaredo', 505, 265], ['Sta. Cruz', 566, 293], ['Ujo', 528, 308], ['Turón', 598, 272], ['Rioturbio', 592, 220]],
   polalena: [['Villallana', 568, 336]],
-  moreda: [['Caborana', 586, 326], ['Oyanco', 630, 324], ['Villanueva', 644, 286]],
-  cabanaquinta: [['Corigos', 678, 368]],
+  moreda: [['Caborana', 572, 320], ['Oyanco', 641, 313], ['Villanueva', 644, 286]],
+  cabanaquinta: [['Corigos', 689, 360]],
   langreo: [['Tuilla', 655, 180]],
   infiesto: [['Sevares', 850, 198]],
-  llanes: [['Posada', 903, 132], ['Barro', 928, 97], ['Celorio', 938, 154], ['Porrúa', 992, 152]],
+  llanes: [['Posada', 903, 132], ['Barro', 906, 110], ['Celorio', 930, 164], ['Porrúa', 996, 160]],
 };
 
 /** Remembers which dot a label belongs to, so the placement pass at the end of
@@ -86,14 +98,26 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
 
   /* ---- TRUNKS (own ones solid, leased ones dashed) ---- */
   const TR: Record<string, SVGElement> = {};
-  function trunk(id: string, d: string, own: boolean, label?: string, lx?: number, ly?: number) {
+  function trunk(id: string, d: string, own: boolean, label?: string | string[], lx?: number, ly?: number) {
+    /* data-trunk pairs a cable with its own caption, which is what
+       tests/e2e/map-labels.spec.ts needs to check that the caption is beside
+       the cable it names rather than merely beside *a* cable. */
     const p = e2('path', {
       d, fill: 'none', stroke: own ? '#41e3d2' : '#ffb454', 'stroke-width': 2.2,
       opacity: .55, 'stroke-dasharray': own ? '0' : '7 6', 'stroke-linecap': 'round',
+      'data-trunk': id,
     });
     if (label) {
-      const t = e2('text', { x: lx!, y: ly!, fill: own ? '#37b3a6' : '#c99a54', 'font-size': 8.5, 'letter-spacing': '.08em' });
-      t.textContent = label;
+      const t = e2('text', { x: lx!, y: ly!, fill: own ? '#37b3a6' : '#c99a54', 'font-size': 8.5, 'letter-spacing': '.08em', 'data-trunk': id });
+      /* An array is a caption set on two lines: one <text> with <tspan>s, so
+         the tour still has a single element to dim (TR[id + '_lbl']). Only
+         the Gijón–Cudillero caption needs it — on one line it is 190 units
+         wide and cannot fit between its own curve and the minera trunk. */
+      const lines = Array.isArray(label) ? label : [label];
+      if (lines.length === 1) t.textContent = lines[0]!;
+      else for (const [i, line] of lines.entries()) {
+        e2('tspan', { x: lx!, dy: i ? 10 : 0 }, t).textContent = line;
+      }
       TR[id + '_lbl'] = t;
     }
     /* permanent ambient pulse: the cable is "alive" */
@@ -102,19 +126,27 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
     TR[id] = p;
     return p;
   }
+  /* A trunk's caption is hand-placed — it is the one piece of text the
+     placement pass leaves alone — so it has to be put next to its own path
+     and away from the other captions by hand. Two of them had drifted far
+     enough to read as captions of the wrong cable: «ALQUILADA+CWDM ·
+     GIJÓN–CUDILLERO» sat 46 units below its curve, right under «AUTOVÍA
+     MINERA», which was itself 75 units to the left of the minera trunk, so
+     the two read as one two-line caption of the minera cable; and «ADIF
+     Sta.Cruz–Collanzo» sat 80 units to the right of the aller trunk. */
   trunk('occ', 'M352,127 L300,115 L235,105 L205,140 L175,95 L120,120 L95,160', true, 'PROPIA 64F · CUDILLERO–VEGADEO (vía ADIF)', 118, 66);
-  trunk('occrent', 'M590,95 C540,108 470,142 420,145 L385,120 L352,127', false, 'ALQUILADA+CWDM · GIJÓN–CUDILLERO', 462, 184);
+  trunk('occrent', 'M590,95 C540,108 470,142 420,145 L385,120 L352,127', false, ['ALQUILADA+CWDM', 'GIJÓN–CUDILLERO'], 452, 150);
   e2('circle', { cx: 352, cy: 127, r: 3.5, fill: 'none', stroke: '#8da0b8', 'stroke-width': 1.2 });
   /* el rótulo va abajo a la izquierda y en dos líneas: en una sola se solapaba
      con «Muros de Nalón», que arranca en x=346, y quedaba ilegible */
   e2('line', { x1: 349, y1: 130, x2: 332, y2: 145, stroke: '#5a6f8d', 'stroke-width': .7, opacity: .6 });
   e2('text', { x: 318, y: 154, fill: '#8da0b8', 'font-size': 8.5, 'text-anchor': 'middle' }).textContent = 'Cudillero';
   e2('text', { x: 318, y: 164, fill: '#5a6f8d', 'font-size': 7.5, 'text-anchor': 'middle' }).textContent = '(arqueta ADIF)';
-  trunk('minera', 'M590,95 C588,145 572,200 560,245', true, 'AUTOVÍA MINERA', 503, 168);
+  trunk('minera', 'M590,95 C588,145 572,200 560,245', true, 'AUTOVÍA MINERA', 588, 150);
   trunk('lena', 'M560,245 L545,362', true);
   trunk('nalon', 'M578,165 C615,182 645,190 645,203 L700,240', true);
   trunk('morcin', 'M560,245 L502,288', false);
-  trunk('aller', 'M560,245 C585,270 600,288 612,302 L655,348 L700,388', false, 'ADIF Sta.Cruz–Collanzo', 742, 352);
+  trunk('aller', 'M560,245 C585,270 600,288 612,302 L655,348 L700,388', false, 'ADIF Sta.Cruz–Collanzo', 712, 360);
   trunk('surocc', 'M420,145 C390,180 340,200 300,220 L255,295', false, 'F.O. ALQUILADA + CWDM', 282, 258);
   trunk('suror', 'M590,95 C650,130 700,160 735,175 L805,190 L880,175 C915,160 940,140 965,125', false, 'GIJÓN–NAVA–INFIESTO–ARRIONDAS–LLANES', 688, 116);
   trunk('orient', 'M965,125 L1045,120', false);
@@ -207,9 +239,11 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
     });
   });
 
-  /* shared PON tree: Barro–Celorio–Porrúa–Posada (Llanes) */
+  /* shared PON tree: Barro–Celorio–Porrúa–Posada (Llanes). The outline has to
+     enclose those four dots wherever they sit, so it is redrawn whenever they
+     move — see TOWN_POS.llanes. */
   const shp = e2('path', {
-    d: 'M892,130 C888,102 914,86 934,92 C964,102 1004,132 998,154 C992,170 938,168 912,156 C900,150 894,142 892,130 Z',
+    d: 'M890,130 C888,110 900,98 922,96 C946,94 990,120 1000,142 C1008,160 985,176 950,176 C915,176 894,160 890,130 Z',
     fill: 'rgba(255,215,107,.05)', stroke: '#ffd76b', 'stroke-width': '1', 'stroke-dasharray': '3 4', opacity: '.6',
   }, townsLayer);
   const sht = e2('text', { x: 940, y: 80, fill: '#c9a44e', 'font-size': 7.5, 'text-anchor': 'middle', 'letter-spacing': '.06em' }, townsLayer);
@@ -228,7 +262,12 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
   };
 
   initViewport(svg);
+  /* Twice on purpose: the placement pass measures text with getBBox(), which
+     reports the fallback monospace until IBM Plex Mono has loaded, so on a
+     cold cache the first pass places every label against the wrong metrics
+     and nothing would ever correct it. The pass is idempotent. */
   placeMapLabels(svg);
+  document.fonts?.ready.then(() => placeMapLabels(svg));
 
   return { svg, TR };
 }
