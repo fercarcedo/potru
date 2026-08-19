@@ -1,11 +1,18 @@
 /**
  * Builders for every piece of equipment a room can contain: the generic
- * box/label/cord/portLed primitives, and the per-kind bay builders (romBay,
- * cgbtBay, transportBay, powerBay, batteryBay, chassis, rejiband) that use
- * them. Split out of viewer3d.ts's buildRoom() verbatim, as one factory so
- * the handful of things every builder needs — the scene, the room's
- * materials and finishes, and the accumulated LED list a builder feeds into
- * — stay a single explicit dependency instead of ~15 closure captures.
+ * box/label/cord/portLed primitives, and the per-kind bay builders (cgbtBay,
+ * acDistBay, powerBay, batteryBay, chassis, rejiband) that use them. Split
+ * out of viewer3d.ts's buildRoom() verbatim, as one factory so the handful
+ * of things every builder needs — the scene, the room's materials and
+ * finishes, and the accumulated LED list a builder feeds into — stay a
+ * single explicit dependency instead of ~15 closure captures.
+ *
+ * Rack-mounted equipment is built by the *unit* builders (odfUnit, dwdmUnit,
+ * splitterUnit, videoUnit, txCubeUnit). They all share one contract — fill
+ * the vertical band [y0, y1] of a cabinet that is `w` wide with its front
+ * face at `fz` — because the plans routinely put two of them in the same
+ * cabinet («Repartidor FO + TX Cube», «GPON y vídeo», «DWDM y splitter»),
+ * and the caller stacks them by handing each one its own band.
  */
 import * as THREE from 'three';
 import type { Olt } from '../../lib/data';
@@ -18,19 +25,47 @@ export interface Led {
   ph: number;
 }
 
+/** A point in room space: metres, centred on the room, Y up. */
+export type Vec3 = [number, number, number];
+
+/**
+ * Fills one vertical slice of a cabinet's front.
+ *
+ * @param g     the cabinet's group; local +Z is its front, whichever way it faces
+ * @param w     the cabinet's face width
+ * @param fz    half its face depth — the plane its front panels sit on
+ * @param y0,y1 the band to fill, in the cabinet's local Y
+ * @param front +1; kept so cord routing can mirror with the face
+ */
+export type UnitBuilder =
+  (g: THREE.Object3D, w: number, fz: number, y0: number, y1: number, front: number) => void;
+
 export interface EquipmentBuilders {
   box(w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number, parent?: THREE.Object3D): THREE.Mesh;
   label(text: string, wm: number, x: number, y: number, z: number, ry: number, color?: string): THREE.Mesh;
   portLed(x: number, y: number, z: number, parent: THREE.Object3D, on: boolean, role?: 'gpon-port' | 'status'): void;
-  cord(pts: [number, number, number][], parent: THREE.Object3D, m?: THREE.Material, r?: number): void;
+  cord(pts: Vec3[], parent: THREE.Object3D, m?: THREE.Material, r?: number): void;
   rackFrame(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
-  romBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number, front: number): void;
+  /** ROM — Repartidor Óptico Modular: stacked splice/patch trays. */
+  odfUnit: UnitBuilder;
+  /** DWDM / WDM / Transmode transport: shelves of lit line modules. */
+  dwdmUnit: UnitBuilder;
+  /** Passive PLC splitter shelves — no LEDs, that is the point. */
+  splitterUnit: UnitBuilder;
+  /** CATV / vídeo: optical receiver plus the RF side and its coax. */
+  videoUnit: UnitBuilder;
+  /** «TX Cube» / «Transporte Cube»: one compact transport chassis. */
+  txCubeUnit: UnitBuilder;
   cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
-  transportBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
+  /** «Dist. C.A.»: an AC distribution board, simpler than the CGBT. */
+  acDistBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
   powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
   batteryBay(g: THREE.Object3D, w: number, h: number, d: number, base: number): void;
   chassis(o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number): void;
-  rejiband(x0: number, z0: number, x1: number, z1: number, y: number, wTray?: number): THREE.Group | undefined;
+  /** Wire-mesh cable tray between two points in room space. */
+  rejiband(a: Vec3, b: Vec3, wTray?: number): THREE.Group | undefined;
+  /** Lift-off covers over a floor cable duct («tapas»). */
+  hatchRun(x: number, z: number, w: number, d: number, n: number): void;
   /** ports/status lamps portLed() lit, for the render loop to blink. */
   leds: Led[];
 }
@@ -79,7 +114,7 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   }
 
   /** A slack fibre patch cord: a sagging tube through the given points. */
-  function cord(pts: [number, number, number][], parent: THREE.Object3D,
+  function cord(pts: Vec3[], parent: THREE.Object3D,
                 m: THREE.Material = fin.fibre, r = 0.0045) {
     const curve = new THREE.CatmullRomCurve3(pts.map(([x, y, z]) => new THREE.Vector3(x, y, z)));
     parent.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 16, r, 5, false), m));
@@ -100,15 +135,14 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
    * ROM — Repartidor Óptico Modular: a stack of splice/patch trays, each with a
    * row of SC/APC adapters, plus the slack fibre looping into a side manager.
    */
-  function romBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number, front: number) {
-    rackFrame(g, w, h, fz, base);
+  const odfUnit: UnitBuilder = (g, w, fz, y0, y1, front) => {
     const inner = w - 0.13;
-    const trays = Math.max(4, Math.min(11, Math.floor((h - 0.5) / 0.115)));
-    const y0 = base + 0.32;
+    const usable = y1 - y0;
+    const trays = Math.max(2, Math.min(11, Math.floor(usable / 0.115)));
     const mx = -w / 2 + 0.075;            /* vertical cable manager, left side */
-    box(0.055, h - 0.5, 0.05, fin.bezel, mx, base + 0.3 + (h - 0.5) / 2, fz * 0.96, g);
+    box(0.055, usable, 0.05, fin.bezel, mx, (y0 + y1) / 2, fz * 0.96, g);
     for (let i = 0; i < trays; i++) {
-      const y = y0 + i * 0.115;
+      const y = y0 + 0.06 + i * 0.115;
       box(inner, 0.10, 0.045, fin.trayFace, 0.03, y, fz * 0.96, g);
       /* adapter row: SC/APC, alternating green and blue as the trays fill up */
       const n = 12;
@@ -120,15 +154,105 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       if (i % 2 === 0) {
         for (const j of [1, 5, 9]) {
           const ax = -inner / 2 + 0.055 + j * ((inner - 0.09) / (n - 1)) + 0.03;
-          cord([[ax, y, fz * 1.05], [ax - 0.05, y - 0.055, fz * 1.16 * front > 0 ? fz * 1.16 : fz * 1.16],
+          cord([[ax, y, fz * 1.05], [ax - 0.05, y - 0.055, fz * 1.16 * front],
                 [mx + 0.02, y - 0.03, fz * 1.05], [mx, y - 0.01, fz * 0.98]], g);
         }
       }
     }
-    /* the bundle running down the manager and out of the top of the rack */
-    cord([[mx, base + 0.3, fz * 1.0], [mx, base + h * 0.55, fz * 1.08],
-          [mx, base + h - 0.06, fz * 0.9]], g, fin.fibre, 0.012);
-  }
+    /* the bundle running down the manager and out of the top of the unit */
+    cord([[mx, y0, fz * 1.0], [mx, (y0 + y1) / 2, fz * 1.08], [mx, y1, fz * 0.9]],
+         g, fin.fibre, 0.012);
+  };
+
+  /**
+   * Passive PLC splitter shelves. The plans put splitters in the same cabinet
+   * as the Transmode often enough that the two used to render identically;
+   * what tells them apart on site is that a splitter is passive — one input,
+   * a fan-out of pigtails, and **no lamps at all**.
+   */
+  const splitterUnit: UnitBuilder = (g, w, fz, y0, y1, front) => {
+    const inner = w - 0.13;
+    const shelves = Math.max(1, Math.min(5, Math.floor((y1 - y0) / 0.17)));
+    for (let s = 0; s < shelves; s++) {
+      const y = y0 + 0.10 + s * 0.17;
+      box(inner, 0.13, 0.05, fin.passive, 0, y, fz * 0.96, g);
+      box(inner, 0.012, 0.055, fin.bezel, 0, y + 0.065, fz * 0.96, g);
+      /* the input port, hard left, and its feed */
+      const ix = -inner / 2 + 0.035;
+      box(0.021, 0.038, 0.024, fin.adapter, ix, y, fz * 1.03, g);
+      cord([[ix, y, fz * 1.06], [ix - 0.03, y + 0.07, fz * 1.14 * front],
+            [-w / 2 + 0.07, y + 0.12, fz * 1.0]], g);
+      /* the 1:N fan-out: eight outputs, each with its pigtail dropping away */
+      const n = 8;
+      for (let j = 0; j < n; j++) {
+        const ax = -inner / 2 + 0.10 + j * ((inner - 0.14) / (n - 1));
+        box(0.016, 0.032, 0.022, fin.adapterBlue, ax, y, fz * 1.03, g);
+        if (j % 2 === 0) {
+          cord([[ax, y, fz * 1.06], [ax + 0.02, y - 0.06, fz * 1.13 * front],
+                [w / 2 - 0.07, y - 0.10, fz * 1.0]], g, fin.fibre, 0.0035);
+        }
+      }
+    }
+  };
+
+  /**
+   * The video half of a «GPON y vídeo» / «Splitter + vídeo» cabinet: an
+   * optical receiver fed by fibre, and the RF side — F connectors and the
+   * black coax leaving them, which is what makes it read as CATV rather than
+   * as one more optical shelf.
+   */
+  const videoUnit: UnitBuilder = (g, w, fz, y0, y1, front) => {
+    const inner = w - 0.13;
+    const y = (y0 + y1) / 2;
+    const h = Math.min(y1 - y0 - 0.04, 0.26);
+    box(inner, h, 0.06, fin.rfBody, 0, y, fz * 0.96, g);
+    box(inner, 0.016, 0.07, fin.bezel, 0, y + h / 2, fz * 0.96, g);
+    box(inner, 0.016, 0.07, fin.bezel, 0, y - h / 2, fz * 0.96, g);
+    /* optical receiver on the left: its fibre in, and a level meter */
+    const ox = -inner / 2 + 0.06;
+    box(0.09, h * 0.6, 0.03, fin.module, ox, y, fz * 1.02, g);
+    box(0.018, 0.018, 0.02, fin.adapter, ox, y + h * 0.18, fz * 1.05, g);
+    cord([[ox, y + h * 0.18, fz * 1.08], [ox - 0.04, y + h * 0.5, fz * 1.16 * front],
+          [-w / 2 + 0.07, y + h * 0.62, fz * 1.0]], g);
+    box(0.05, 0.03, 0.02, fin.screen, ox, y - h * 0.2, fz * 1.05, g);
+    portLed(ox + 0.03, y - h * 0.2, fz * 1.06, g, true, 'status');
+    /* RF output stage: F connectors, each with its coax dropping out */
+    const n = 4;
+    for (let j = 0; j < n; j++) {
+      const ax = inner / 2 - 0.05 - j * 0.055;
+      box(0.026, 0.026, 0.03, fin.copper, ax, y, fz * 1.03, g);
+      cord([[ax, y, fz * 1.06], [ax, y - h * 0.55, fz * 1.14 * front],
+            [w / 2 - 0.07, y - h * 0.8, fz * 1.0]], g, fin.coax, 0.0075);
+    }
+  };
+
+  /**
+   * «TX Cube» / «Transporte Cube»: the compact transport chassis several plans
+   * rack on top of the Repartidor FO. One box, a couple of line ports and a
+   * handful of client ports — deliberately a fraction of a DWDM shelf stack,
+   * because that size difference is how the plan distinguishes them.
+   */
+  const txCubeUnit: UnitBuilder = (g, w, fz, y0, y1, front) => {
+    const inner = w - 0.15;
+    const h = Math.min(y1 - y0 - 0.03, 0.2);
+    const y = y1 - 0.03 - h / 2;
+    box(inner, h, 0.08, fin.module, 0, y, fz * 0.94, g);
+    box(inner, 0.014, 0.09, fin.bezel, 0, y + h / 2, fz * 0.94, g);
+    box(inner, 0.014, 0.09, fin.bezel, 0, y - h / 2, fz * 0.94, g);
+    /* the two line ports, left, and their fibre leaving upwards */
+    for (const s of [-1, 1]) {
+      const lx = -inner / 2 + 0.04 + (s > 0 ? 0.032 : 0);
+      box(0.018, 0.02, 0.022, fin.adapter, lx, y + h * 0.2, fz * 1.02, g);
+      cord([[lx, y + h * 0.2, fz * 1.05], [lx - 0.02, y + h * 0.6, fz * 1.12 * front],
+            [-w / 2 + 0.07, y + h * 0.9, fz * 1.0]], g);
+    }
+    /* client SFP cage row, and the status lamps that make it a live box */
+    for (let j = 0; j < 6; j++) {
+      const ax = -inner / 2 + 0.12 + j * ((inner - 0.17) / 5);
+      box(0.02, 0.016, 0.018, fin.adapterBlue, ax, y - h * 0.22, fz * 1.02, g);
+      portLed(ax, y + h * 0.22, fz * 1.04, g, j % 3 !== 2, 'status');
+    }
+  };
 
   /** CGBT — Cuadro General de Baja Tensión: enclosure, window and MCB rows. */
   function cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) {
@@ -156,15 +280,41 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   }
 
   /**
-   * Optical transport / splitter shelf: horizontal line modules with their own
-   * optical ports, and the fibre leaving the front.
+   * «Dist. C.A.» — the AC distribution board a few nodes have instead of a
+   * CGBT. Same family of kit but a smaller animal: one DIN rail behind a
+   * plain door, no inspection window and no main rotary switch.
    */
-  function transportBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
-    rackFrame(g, w, h, fz, base);
+  function acDistBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) {
+    box(w, h, d, fin.panel, 0, base + h / 2, 0, g);
+    /* plain door, with the flush lock the enclosure actually has */
+    const dy = base + h * 0.6, dh = Math.min(h * 0.7, 0.6), dw = w - 0.06;
+    box(dw, dh, 0.018, fin.panel, 0, dy, fz * 1.02, g);
+    box(dw + 0.02, 0.014, 0.026, fin.bezel, 0, dy + dh / 2, fz * 1.02, g);
+    box(dw + 0.02, 0.014, 0.026, fin.bezel, 0, dy - dh / 2, fz * 1.02, g);
+    box(0.03, 0.03, 0.022, fin.steel, w / 2 - 0.05, dy, fz * 1.04, g);
+    /* the single rail of breakers, seen through the door's cut-out */
+    const per = Math.max(5, Math.round(dw / 0.03));
+    box(dw - 0.05, 0.075, 0.014, fin.toggle, 0, dy + dh * 0.18, fz * 1.03, g);
+    box(dw - 0.06, 0.006, 0.012, fin.steel, 0, dy + dh * 0.18 - 0.04, fz * 1.035, g);
+    for (let i = 0; i < per; i++) {
+      const bx = -(dw - 0.08) / 2 + i * ((dw - 0.08) / (per - 1));
+      box(0.02, 0.058, 0.016, fin.breaker, bx, dy + dh * 0.18, fz * 1.04, g);
+      box(0.012, 0.014, 0.017, fin.toggle, bx, dy + dh * 0.18 + (i % 2 ? 0.011 : -0.011), fz * 1.045, g);
+    }
+    /* the tag the boards carry, and the earth stud below it */
+    box(dw * 0.4, 0.05, 0.005, fin.cellLabel, -dw * 0.2, dy - dh * 0.28, fz * 1.03, g);
+    box(0.02, 0.02, 0.02, fin.copper, dw * 0.3, dy - dh * 0.3, fz * 1.03, g);
+  }
+
+  /**
+   * Optical transport shelf (DWDM / WDM / Transmode): horizontal line modules
+   * with their own optical ports, LEDs, and the fibre leaving the front.
+   */
+  const dwdmUnit: UnitBuilder = (g, w, fz, y0, y1) => {
     const inner = w - 0.13;
-    const shelves = Math.max(3, Math.min(6, Math.floor((h - 0.6) / 0.26)));
+    const shelves = Math.max(1, Math.min(6, Math.floor((y1 - y0) / 0.26)));
     for (let s = 0; s < shelves; s++) {
-      const y = base + 0.45 + s * 0.26;
+      const y = y0 + 0.13 + s * 0.26;
       box(inner, 0.19, 0.05, fin.module, 0, y, fz * 0.96, g);
       /* three plug-in modules per shelf, each with a pair of optical ports */
       for (let m = 0; m < 3; m++) {
@@ -179,7 +329,7 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
         }
       }
     }
-  }
+  };
 
   /** Rectifier / power shelf: plug-in modules with status LEDs. */
   function powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
@@ -272,13 +422,22 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     }
   }
 
-  /** Wire-mesh cable tray (rejiband): side rails, longitudinal wires and rungs. */
-  function rejiband(x0: number, z0: number, x1: number, z1: number, y: number, wTray = 0.3) {
-    const len = Math.hypot(x1 - x0, z1 - z0);
-    if (len < 0.4) return;
+  /**
+   * Wire-mesh cable tray (rejiband): side rails, longitudinal wires and rungs.
+   *
+   * Takes two points in room space rather than a horizontal pair plus a
+   * height, because the plans do not only run the tray along the walls: Tineo
+   * has a «Rejiband por el suelo», Infiesto a «bajada rejiband», and several
+   * nodes drop a branch from the ceiling run to a floor duct. Orienting from
+   * the direction vector covers all three with the same builder.
+   */
+  function rejiband(a: Vec3, b: Vec3, wTray = 0.3) {
+    const dir = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+    const len = dir.length();
+    if (len < 0.2) return;
     const g = new THREE.Group();
-    g.position.set((x0 + x1) / 2, y, (z0 + z1) / 2);
-    g.rotation.y = -Math.atan2(z1 - z0, x1 - x0);
+    g.position.set((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2);
+    g.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir.normalize());
     scene.add(g);
     const hh = 0.055;
     /* the two side rails, each a pair of wires */
@@ -315,7 +474,7 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     ];
     const seg = Math.max(4, Math.round(len / 0.45));
     for (const [off, r, m] of lay) {
-      const pts: [number, number, number][] = [];
+      const pts: Vec3[] = [];
       for (let i = 0; i <= seg; i++) {
         const t = i / seg;
         /* a little wander and sag so the run does not look extruded */
@@ -328,5 +487,29 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     return g;
   }
 
-  return { box, label, portLed, cord, rackFrame, romBay, cgbtBay, transportBay, powerBay, batteryBay, chassis, rejiband, leds };
+  /**
+   * The «tapas» of a floor cable duct: `n` lift-off chequer-plate covers in a
+   * row from (x, z), each `w × d`. The caseta plans label them TAPAS and note
+   * «PLANTA SIN SUELO» — they are the covers of the duct the cables run in,
+   * not manholes and not a raised floor, so they sit flush with the slab.
+   */
+  function hatchRun(x: number, z: number, w: number, d: number, n: number) {
+    /* the duct itself, seen as a dark recess through the joints */
+    box(w * n + 0.03, 0.05, d + 0.03, fin.hatchWell, x + (w * n) / 2, -0.024, z + d / 2);
+    for (let i = 0; i < n; i++) {
+      const cx = x + w * (i + 0.5);
+      const cz = z + d / 2;
+      box(w - 0.012, 0.014, d - 0.012, fin.hatchPlate, cx, 0.007, cz);
+      /* the two recessed lifting handles each cover has */
+      for (const s of [-1, 1]) {
+        box(w * 0.22, 0.006, 0.022, fin.hatchWell, cx, 0.015, cz + s * d * 0.3);
+      }
+    }
+  }
+
+  return {
+    box, label, portLed, cord, rackFrame,
+    odfUnit, dwdmUnit, splitterUnit, videoUnit, txCubeUnit,
+    cgbtBay, acDistBay, powerBay, batteryBay, chassis, rejiband, hatchRun, leds,
+  };
 }

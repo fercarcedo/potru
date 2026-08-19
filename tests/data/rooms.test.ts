@@ -24,13 +24,37 @@ interface Bay {
   kind: string;
   label: string;
   olts?: number[];
+  units?: string[];
+}
+interface Tray {
+  level?: 'ceiling' | 'floor' | number;
+  pts: Point[];
+  w?: number;
+  to?: 'ceiling' | 'floor' | number;
+}
+interface Hatch {
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  n?: number;
+}
+interface Vent {
+  edge: number;
+  at: number;
+  w: number;
+  h?: number;
+  y?: number;
 }
 interface Room {
   source: string;
   h: number;
   outline: Point[];
   doors: Door[];
+  vents?: Vent[];
   bays: Bay[];
+  trays?: Tray[];
+  hatches?: Hatch[];
 }
 
 const ROOMS = rooms as unknown as Record<string, Room>;
@@ -39,8 +63,13 @@ const ROOMS = rooms as unknown as Record<string, Room>;
 // branch, or the generic boxed-cabinet fallback with a COLOR table entry).
 const KNOWN_BAY_KINDS = new Set([
   'cabinet', 'power', 'olt', 'splitter', 'odf', 'transport',
-  'cgbt', 'empty', 'rack', 'battery', 'ac', 'ups', 'catv', 'cage',
+  'cgbt', 'acdist', 'empty', 'rack', 'battery', 'ac', 'ups', 'catv', 'cage',
 ]);
+
+// The rack-mounted units a cabinet can hold, mirroring viewer3d.ts's
+// UNIT_WEIGHT / UNIT_BUILDER tables. A typo here would otherwise leave a
+// cabinet silently empty rather than fail.
+const KNOWN_UNITS = new Set(['olt', 'odf', 'dwdm', 'splitter', 'video', 'txcube']);
 
 function polygonArea(pts: Point[]): number {
   let area = 0;
@@ -125,6 +154,100 @@ describe('bays', () => {
           }
         });
       }
+
+      if (bay.units) {
+        it(`${id}: bay ${i} (${bay.label}) lists units the viewer can build`, () => {
+          expect(bay.units!.length).toBeGreaterThan(0);
+          for (const u of bay.units!) {
+            expect(KNOWN_UNITS.has(u), `unknown unit "${u}"`).toBe(true);
+          }
+          // an 'olt' unit is what draws the chassis, so the bay has to say
+          // which OLTs of the node it holds
+          if (bay.units!.includes('olt')) expect(bay.olts?.length).toBeGreaterThan(0);
+        });
+      }
+    }
+  }
+});
+
+describe('rejiband runs', () => {
+  for (const [id, room] of Object.entries(ROOMS)) {
+    const box = bbox(room.outline);
+    for (const [i, tray] of (room.trays ?? []).entries()) {
+      it(`${id}: tray ${i} is a polyline inside the room`, () => {
+        expect(tray.pts.length).toBeGreaterThanOrEqual(2);
+        for (const [x, z] of tray.pts) {
+          expect(x).toBeGreaterThanOrEqual(box.minX - 1e-6);
+          expect(x).toBeLessThanOrEqual(box.maxX + 1e-6);
+          expect(z).toBeGreaterThanOrEqual(box.minZ - 1e-6);
+          expect(z).toBeLessThanOrEqual(box.maxZ + 1e-6);
+        }
+      });
+
+      it(`${id}: tray ${i} has no zero-length segment`, () => {
+        for (let j = 0; j + 1 < tray.pts.length; j++) {
+          const a = tray.pts[j]!, b = tray.pts[j + 1]!;
+          expect(Math.hypot(b[0] - a[0], b[1] - a[1])).toBeGreaterThan(0.05);
+        }
+      });
+
+      if (tray.to !== undefined) {
+        it(`${id}: tray ${i}'s drop goes somewhere else`, () => {
+          expect(tray.to).not.toBe(tray.level ?? 'ceiling');
+        });
+      }
+    }
+  }
+});
+
+describe('floor duct covers («tapas»)', () => {
+  for (const [id, room] of Object.entries(ROOMS)) {
+    const box = bbox(room.outline);
+    for (const [i, hatch] of (room.hatches ?? []).entries()) {
+      const runW = hatch.w * (hatch.n ?? 1);
+
+      it(`${id}: hatch ${i} fits within the room's bounding box`, () => {
+        expect(hatch.w).toBeGreaterThan(0);
+        expect(hatch.d).toBeGreaterThan(0);
+        expect(hatch.x).toBeGreaterThanOrEqual(box.minX - 1e-6);
+        expect(hatch.x + runW).toBeLessThanOrEqual(box.maxX + 1e-6);
+        expect(hatch.z).toBeGreaterThanOrEqual(box.minZ - 1e-6);
+        expect(hatch.z + hatch.d).toBeLessThanOrEqual(box.maxZ + 1e-6);
+      });
+
+      it(`${id}: hatch ${i} is in the aisle, not under a cabinet`, () => {
+        for (const bay of room.bays) {
+          const clear = hatch.x + runW <= bay.x + 1e-6 || bay.x + bay.w <= hatch.x + 1e-6
+            || hatch.z + hatch.d <= bay.z + 1e-6 || bay.z + bay.d <= hatch.z + 1e-6;
+          expect(clear, `overlaps "${bay.label}"`).toBe(true);
+        }
+      });
+    }
+  }
+});
+
+describe('wall vents', () => {
+  for (const [id, room] of Object.entries(ROOMS)) {
+    for (const [i, vent] of (room.vents ?? []).entries()) {
+      it(`${id}: vent ${i} fits within its edge`, () => {
+        expect(vent.edge).toBeGreaterThanOrEqual(0);
+        expect(vent.edge).toBeLessThan(room.outline.length);
+        const a = room.outline[vent.edge]!;
+        const b = room.outline[(vent.edge + 1) % room.outline.length]!;
+        const edgeLen = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        expect(vent.w).toBeGreaterThan(0);
+        expect(vent.at).toBeGreaterThanOrEqual(0);
+        expect(vent.at + vent.w).toBeLessThanOrEqual(edgeLen + 1e-6);
+      });
+
+      it(`${id}: vent ${i} does not sit in a doorway`, () => {
+        for (const door of room.doors) {
+          if (door.edge !== vent.edge) continue;
+          const clear = vent.at + vent.w <= door.at + 1e-6
+            || door.at + door.width <= vent.at + 1e-6;
+          expect(clear, `vent ${i} overlaps a door on edge ${vent.edge}`).toBe(true);
+        }
+      });
     }
   }
 });
