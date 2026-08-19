@@ -5,7 +5,7 @@
  * off if it is actually guarded, so this mirrors tests/data/nodes.test.ts.
  */
 import { describe, expect, it } from 'vitest';
-import { ACTION_DESC, ARCHITECTURE_STEPS, CONTRACT_ACTIONS, DIAGRAM_INFO, HERO_STATS, ONT_INSTALL_BASE } from '../../src/lib/data';
+import { ACTION_DESC, ARCHITECTURE_STEPS, CONTRACT_ACTIONS, DIAGRAM_INFO, HERO_STATS, ONT_INSTALL_BASE, PAO_TRANSPORT, TOUR_STOPS, byId } from '../../src/lib/data';
 
 describe('heroStats', () => {
   it('has at least one entry and no blank value/label', () => {
@@ -83,5 +83,57 @@ describe('contractActions', () => {
     for (const code of Object.keys(ACTION_DESC)) {
       expect(cardCodes.has(code), `${code} is referenced by ACTION_DESC but has no card`).toBe(true);
     }
+  });
+});
+
+describe('tourStops', () => {
+  it('has 9 stops with unique ids, a title and a body', () => {
+    expect(TOUR_STOPS).toHaveLength(9);
+    const ids = TOUR_STOPS.map((s) => s.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const s of TOUR_STOPS) {
+      expect(s.id.trim(), 'blank stop id').not.toBe('');
+      expect(s.title.trim(), s.id).not.toBe('');
+      expect(s.text.trim(), s.id).not.toBe('');
+    }
+  });
+
+  it('frames every stop inside the map’s own 1160×470 canvas', () => {
+    /* the viewBox is fed straight to the map's <svg>; a stop framed outside
+       it shows blank space instead of the network */
+    for (const s of TOUR_STOPS) {
+      const [x, y, w, h] = s.viewBox;
+      expect(s.viewBox, s.id).toHaveLength(4);
+      expect(w, s.id).toBeGreaterThan(0);
+      expect(h, s.id).toBeGreaterThan(0);
+      expect(x, s.id).toBeGreaterThanOrEqual(0);
+      expect(y, s.id).toBeGreaterThanOrEqual(0);
+      expect(x + w, s.id).toBeLessThanOrEqual(1160);
+      expect(y + h, s.id).toBeLessThanOrEqual(470);
+    }
+  });
+
+  it('only points “Entrar en el nodo” at nodes that exist', () => {
+    for (const s of TOUR_STOPS) {
+      if (s.node) expect(byId[s.node], `${s.id} → ${s.node}`).toBeTruthy();
+    }
+  });
+});
+
+describe('paoTransport', () => {
+  it('never reports more channels occupied than a system has', () => {
+    expect(PAO_TRANSPORT.rows.length).toBeGreaterThan(0);
+    for (const r of PAO_TRANSPORT.rows) {
+      expect(r.name.trim()).not.toBe('');
+      expect(r.channels, r.name).toBeGreaterThan(0);
+      expect(r.used, r.name).toBeGreaterThanOrEqual(0);
+      expect(r.used, r.name).toBeLessThanOrEqual(r.channels);
+    }
+  });
+
+  it('carries the direct-fibre run and the 7750SR-7 capacity warning', () => {
+    expect(PAO_TRANSPORT.directLabel.trim()).not.toBe('');
+    expect(PAO_TRANSPORT.directNote.trim()).not.toBe('');
+    expect(PAO_TRANSPORT.warning).toContain('7750SR-7');
   });
 });

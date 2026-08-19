@@ -8,7 +8,7 @@
  * Every text carries a halo (paint-order: stroke) so it never gets lost in the
  * lines and circles underneath it.
  */
-import { CONTRACT_WEEKS, HOST_ONLY, type NetworkNode } from './data';
+import { CONTRACT_WEEKS, HOST_ONLY, type NetworkNode, type PaoTransport } from './data';
 import { escapeHtml as esc } from './escape-html';
 
 /** Colours normalised per CWDM wavelength: [colour, name]. */
@@ -249,14 +249,12 @@ export function occRow(name: string, total: number, used: number, cols?: string[
   return g;
 }
 
-/** Unified PAO panel: channel-by-channel occupancy of the CWDMs in Gijón. */
-export function mkPAO(): string {
-  const rows = [
-    { name: 'CWDM 8133 · Occidental', n: 8, used: 8 },
-    { name: 'CWDM 8140 · Suroccidental', n: 4, used: 2 },
-    { name: 'CWDM 8133 · Suroriental', n: 8, used: 8 },
-    { name: 'CWDM 8133 · Oriental', n: 8, used: 8 },
-  ];
+/** Unified PAO panel: channel-by-channel occupancy of the CWDMs in Gijón.
+ *  The figures are pliego data and live in content.json (PAO_TRANSPORT), not
+ *  here — this only draws whatever it is handed, like every other generator
+ *  in this file. */
+export function mkPAO(t: PaoTransport): string {
+  const { rows } = t;
   const H = 118 + rows.length * 62;
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
@@ -268,7 +266,7 @@ export function mkPAO(): string {
     g += `<line x1="20" y1="${y + 4}" x2="66" y2="${y + 4}" stroke="#f2d024" stroke-width="2.6"/>`;
     g += `<path d="M66,${y - 14} L96,${y - 24} L96,${y + 24} L66,${y + 14} Z" fill="#12233c" stroke="#41e3d2" stroke-width="1.3"/>`;
     g += `<text x="112" y="${y - 14}" fill="#e8eef6" font-size="14.5">${esc(r.name)}</text>`;
-    for (let i = 0; i < r.n; i++) {
+    for (let i = 0; i < r.channels; i++) {
       const cx = 124 + i * 40, cy = y + 10;
       const c = CW8[i % 8];
       if (i < r.used) {
@@ -278,17 +276,17 @@ export function mkPAO(): string {
         g += `<circle cx="${cx}" cy="${cy}" r="12" fill="none" stroke="#41e3d2" stroke-width="2.2" stroke-dasharray="4 3"/>`;
       }
     }
-    const st = r.used < r.n ? `${r.used}/${r.n} · ${r.n - r.used} LIBRES` : `${r.used}/${r.n} · sin vacantes`;
-    g += `<text x="${124 + r.n * 40 + 18}" y="${y + 15}" fill="${r.used < r.n ? '#41e3d2' : '#8da0b8'}" font-size="13.5">${st}</text>`;
+    const st = r.used < r.channels ? `${r.used}/${r.channels} · ${r.channels - r.used} LIBRES` : `${r.used}/${r.channels} · sin vacantes`;
+    g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? '#41e3d2' : '#8da0b8'}" font-size="13.5">${st}</text>`;
   });
   const yd = 70 + rows.length * 62;
-  g += `<text x="112" y="${yd - 8}" fill="#e8eef6" font-size="14.5">Caudal / Aller / Nalón</text>`;
+  g += `<text x="112" y="${yd - 8}" fill="#e8eef6" font-size="14.5">${esc(t.directLabel)}</text>`;
   g += `<line x1="124" y1="${yd + 8}" x2="470" y2="${yd + 8}" stroke="#f2d024" stroke-width="3.5"/>`;
   g += `<line x1="124" y1="${yd + 18}" x2="470" y2="${yd + 18}" stroke="#f2d024" stroke-width="3.5"/>`;
   g += `<line x1="124" y1="${yd + 13}" x2="470" y2="${yd + 13}" stroke="#f2d024" stroke-width="18" opacity=".12"/>`;
-  g += `<text x="486" y="${yd + 18}" fill="#8da0b8" font-size="13.5">fibras DIRECTAS al 7750 de Mieres · sin CWDM</text>`;
+  g += `<text x="486" y="${yd + 18}" fill="#8da0b8" font-size="13.5">${esc(t.directNote)}</text>`;
   g += `<rect x="10" y="${yd + 34}" width="760" height="30" rx="8" fill="rgba(255,180,84,.12)" stroke="rgba(255,180,84,.5)"/>`;
-  g += `<text x="24" y="${yd + 54}" fill="#ffb454" font-size="13">⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gbps libre en toda la máquina</text>`;
+  g += `<text x="24" y="${yd + 54}" fill="#ffb454" font-size="13">${esc(t.warning)}</text>`;
   g += '</svg>';
   return g;
 }

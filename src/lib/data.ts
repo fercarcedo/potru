@@ -139,6 +139,44 @@ export interface ArchitectureStep {
   text: string;
 }
 
+/**
+ * One stop of the guided tour: where to frame the map, which trunks to light
+ * up, which node's record the "Entrar en el nodo" button opens, and the copy
+ * shown in the panel. `id` is also the key of the stop's "see inside the
+ * cables" drawing in DETAILS (src/lib/details.ts) — the two used to be two
+ * arrays lined up by index, with nothing checking they stayed aligned.
+ */
+export interface TourStop {
+  id: string;
+  /** [x, y, w, h] for the map's viewBox at this stop */
+  viewBox: [number, number, number, number];
+  /** keys into map.ts's TR index: the trunks this stop highlights */
+  trunks: string[];
+  /** node whose record the stop can open, or null */
+  node: string | null;
+  title: string;
+  text: string;
+}
+
+/** One CWDM system in the PAO, with its channel count and how many of those
+ *  channels the pliego lists as occupied. */
+export interface PaoRow {
+  name: string;
+  channels: number;
+  used: number;
+}
+
+/** Channel-by-channel occupancy of the transport systems in the PAO, plus
+ *  the direct-fibre run and the 7750SR-7 capacity warning. Data, not
+ *  drawing: graphics.ts's mkPAO() renders it. */
+export interface PaoTransport {
+  rows: PaoRow[];
+  /** the valleys reaching Mieres by direct fibre, with no CWDM in between */
+  directLabel: string;
+  directNote: string;
+  warning: string;
+}
+
 export type DiagramMode = 'gpon' | 'xgs';
 export type DiagramInfo = Record<string, Record<DiagramMode, string>>;
 
@@ -165,6 +203,8 @@ interface ContentData {
   architectureSteps: ArchitectureStep[];
   diagramInfo: DiagramInfo;
   contractActions: ContractAction[];
+  tourStops: TourStop[];
+  paoTransport: PaoTransport;
 }
 
 const content = contentRaw as unknown as ContentData;
@@ -174,6 +214,8 @@ export const ONT_INSTALL_BASE: OntInstallEntry[] = content.ontInstallBase;
 export const ARCHITECTURE_STEPS: ArchitectureStep[] = content.architectureSteps;
 export const DIAGRAM_INFO: DiagramInfo = content.diagramInfo;
 export const CONTRACT_ACTIONS: ContractAction[] = content.contractActions;
+export const TOUR_STOPS: TourStop[] = content.tourStops;
+export const PAO_TRANSPORT: PaoTransport = content.paoTransport;
 
 /** The contract runs weeks 1–58; Phase 2 (all node migrations) ends at the
  *  same week 58, which is why this single constant covers both the gantt's
