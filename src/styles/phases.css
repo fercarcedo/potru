@@ -1,0 +1,17 @@
+/* «Fases»: the phase timeline, the per-node week chips and the phase-2 gantt
+   drawn at build time by graphics.ts. */
+.timeline{margin-top:36px;position:relative;padding-left:34px}
+.timeline::before{content:"";position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--gpon),var(--xgs))}
+.phase{position:relative;margin-bottom:34px}
+.phase::before{content:"";position:absolute;left:-31px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--ink);border:3px solid var(--xgs)}
+.phase:first-child::before{border-color:var(--gpon)}
+.phase h3{font-size:1.12rem}
+.phase .dur{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--xgs);letter-spacing:.1em;margin:4px 0 8px}
+.phase p{color:var(--muted);font-size:.95rem;max-width:74ch}
+.node-times{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.nt{border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:var(--panel);font-size:.78rem;color:var(--muted)}
+.nt b{display:block;color:var(--txt);font-family:'IBM Plex Mono',monospace;font-size:.82rem}
+.gantt-shell{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:18px 14px 8px;margin-top:18px;overflow-x:auto}
+#gantt{min-width:700px;width:100%;height:auto;display:block}
+#gantt text{font-family:'IBM Plex Mono',monospace}
+.gantt-note{font-size:.76rem;color:var(--muted);padding:10px 4px 8px}

@@ -1,0 +1,9 @@
+/* Design tokens. --gpon (amber) and --xgs (teal) carry the whole GPON ↔ XGS-PON
+   reading of the site and are also read from JS and from the SVG generators. */
+:root{
+  --ink:#060b14; --panel:#0c1524; --panel2:#101c30; --line:#1c2c44;
+  --txt:#e8eef6; --muted:#8da0b8; --dim:#5a6f8d;
+  --gpon:#ffb454; --xgs:#41e3d2; --pon:#c9a44e;
+  --xgs-soft:rgba(65,227,210,.12); --gpon-soft:rgba(255,180,84,.12);
+  --danger:#ff7d6b;
+}

@@ -99,8 +99,12 @@ versioned.
 - Honour `prefers-reduced-motion` (there is a global CSS rule, and `tour.ts` checks it).
 - Progressive enhancement: node cards and gantt bars are real anchors to `/nodos/<id>`; JS upgrades
   them to the modal.
-- Styling is one hand-written `src/styles/global.css` with CSS custom properties (`--gpon` amber,
-  `--xgs` teal); fonts are self-hosted via `@fontsource`, never a CDN.
+- Styling is hand-written CSS with custom properties (`--gpon` amber, `--xgs` teal); fonts are
+  self-hosted via `@fontsource`, never a CDN. `src/styles/global.css` is only an index of
+  `@import`s — the rules live in one partial per section or component next to it, and Vite inlines
+  them so the site still ships a single stylesheet. Put a rule in the partial that owns the markup,
+  keep its `@media` overrides **at the end of that same partial** (equal-specificity overrides only
+  win if they come later), and change `global.css` when a new partial needs a place in the cascade.
 - Commits are **in English**, conventional-commit style with a scope (`fix(map): …`,
   `feat(data): …`), and a body explaining what was wrong and why the fix works.
 - The pliego's drawings and data are excluded from the repo's MIT licence (authorship: GIT). Keep
