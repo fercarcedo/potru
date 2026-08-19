@@ -71,8 +71,11 @@ cards and gantt bars to the modal):
   dynamic-imports `three` only when the visitor presses "Recorrer el interior en 3D" (keep it that
   way — it is the only heavy chunk).
 
-`src/scripts/map.ts` carries `// @ts-nocheck`: it is a literal port of the legacy JavaScript and
-leans on implicit number→string coercion in `setAttribute` throughout. Everything else type-checks.
+Everything type-checks, including `src/scripts/map.ts` — once a literal, `// @ts-nocheck`'d port of
+the legacy JavaScript. Its `e2()` element builder now takes a typed `Attrs = Record<string, string |
+number>` and calls `String(a[k])` explicitly before `setAttribute`, matching the coercion
+`setAttribute` already did implicitly at runtime, so the type checker sees the same thing the
+runtime always did.
 
 ### Data files are the source of truth
 
