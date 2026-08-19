@@ -8,13 +8,8 @@
 import * as THREE from 'three';
 import { DOM } from '../../lib/dom-ids';
 import type { Led } from './equipment';
-import { pointInPolygon } from './geometry';
-
-export interface Door {
-  edge: number;
-  at: number;
-  width: number;
-}
+import type { Door, Solid } from './walkable';
+import { doorway, isClear, walkInFrom } from './walkable';
 
 export interface ControlsDeps {
   cam: THREE.PerspectiveCamera;
@@ -25,7 +20,7 @@ export interface ControlsDeps {
   /** room outline, centred on the room, same as buildRoom's `poly` */
   poly: [number, number][];
   /** cabinet footprints to steer around, same as buildRoom's `solids` */
-  solids: { x0: number; x1: number; z0: number; z1: number }[];
+  solids: Solid[];
   /** the door to start just inside of; undefined starts at the room's centre */
   startDoor?: Door;
   /** ports/status lamps lit by createEquipmentBuilders(), blinked here */
@@ -40,43 +35,17 @@ export interface Controls {
 export function initControls(deps: ControlsDeps): Controls {
   const { cam, canvas, holder, renderer, scene, poly, solids, startDoor, leds } = deps;
 
-  const inside = (x: number, z: number) => pointInPolygon(poly, x, z);
-  /* Body radius. The aisle of a container node is only ~0.89 m wide, so a
-     single generous margin left barely 20 cm of walkable band and the visitor
-     got stuck; walls need more clearance than cabinets do. */
-  const M_WALL = 0.22, M_BAY = 0.14;
-  const clear = (x: number, z: number) =>
-    inside(x + M_WALL, z) && inside(x - M_WALL, z) &&
-    inside(x, z + M_WALL) && inside(x, z - M_WALL) &&
-    !solids.some((s) => x > s.x0 - M_BAY && x < s.x1 + M_BAY &&
-                        z > s.z0 - M_BAY && z < s.z1 + M_BAY);
+  const clear = (x: number, z: number) => isClear(poly, solids, x, z);
   /* If we somehow start inside something, never freeze: let the visitor walk out. */
   const free = (x: number, z: number) =>
     clear(x, z) || !clear(cam.position.x, cam.position.z);
 
   /* start just inside the door, looking into the room */
-  const d0 = startDoor;
-  let start: [number, number] = [0, 0];
-  if (d0) {
-    const [x1, z1] = poly[d0.edge]!;
-    const [x2, z2] = poly[(d0.edge + 1) % poly.length]!;
-    const ang = Math.atan2(z2 - z1, x2 - x1);
-    const mid = d0.at + d0.width / 2;
-    start = [x1 + Math.cos(ang) * mid, z1 + Math.sin(ang) * mid];
-  }
-  /* walk in from the door until there is room to stand, then a bit further */
+  const start: [number, number] = startDoor ? doorway(poly, startDoor) : [0, 0];
   cam.position.set(0, 1.6, 0);
-  let entered = false;
-  for (let step = 0; step <= 40; step++) {
-    const k = step / 40;
-    const cx = start[0] * (1 - k), cz = start[1] * (1 - k);
-    if (!free(cx, cz)) continue;
-    const walked = Math.hypot(cx - start[0], cz - start[1]);
-    cam.position.set(cx, 1.6, cz);
-    entered = true;
-    if (walked > 1.1) break;
-  }
-  if (!entered && free(0, 0)) cam.position.set(0, 1.6, 0);
+  const landed = walkInFrom(poly, solids, start);
+  if (landed) cam.position.set(landed[0], 1.6, landed[1]);
+  else if (free(0, 0)) cam.position.set(0, 1.6, 0);
 
   /* look towards the middle of the room: view dir is (-sin y, -cos y) */
   let yaw = Math.atan2(cam.position.x, cam.position.z);

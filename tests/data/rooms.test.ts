@@ -63,7 +63,7 @@ const ROOMS = rooms as unknown as Record<string, Room>;
 // branch, or the generic boxed-cabinet fallback with a COLOR table entry).
 const KNOWN_BAY_KINDS = new Set([
   'cabinet', 'power', 'olt', 'splitter', 'odf', 'transport',
-  'cgbt', 'acdist', 'empty', 'rack', 'battery', 'ac', 'ups', 'catv', 'cage',
+  'cgbt', 'acdist', 'empty', 'rack', 'battery', 'ac', 'ups', 'catv', 'cage', 'void',
 ]);
 
 // The rack-mounted units a cabinet can hold, mirroring viewer3d.ts's
@@ -175,7 +175,8 @@ describe('rejiband runs', () => {
     const box = bbox(room.outline);
     for (const [i, tray] of (room.trays ?? []).entries()) {
       it(`${id}: tray ${i} is a polyline inside the room`, () => {
-        expect(tray.pts.length).toBeGreaterThanOrEqual(2);
+        // a pure «bajada» is one point plus a `to` level: the drop is the run
+        expect(tray.pts.length).toBeGreaterThanOrEqual(tray.to === undefined ? 2 : 1);
         for (const [x, z] of tray.pts) {
           expect(x).toBeGreaterThanOrEqual(box.minX - 1e-6);
           expect(x).toBeLessThanOrEqual(box.maxX + 1e-6);
