@@ -46,6 +46,8 @@ interface Bay {
   label: string;
   /** indices into the node's olts[] that live in this cabinet */
   olts?: number[];
+  /** the equipment model the plan names for this cabinet, where it names one */
+  model?: string;
   /**
    * The plan draws this rack with a door swing, so it is a closed cabinet
    * with a hinged front — Langreo's two «Bastidor COGENT» — not an open
@@ -531,7 +533,7 @@ export function buildRoom(n: NetworkNode) {
       for (const u of units) {
         const top = y + ((y1 - y0) * (UNIT_WEIGHT[u] ?? 1)) / total;
         if (u === 'olt') buildOltUnit(bay, g, faceW, y, top, front);
-        else UNIT_BUILDER[u]!(g, faceW, fz, y, top, front);
+        else UNIT_BUILDER[u]!(g, faceW, fz, y, top, front, bay.model);
         y = top;
       }
     } else if (bay.kind === 'cgbt') {

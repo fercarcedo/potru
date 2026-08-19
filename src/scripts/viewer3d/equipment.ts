@@ -44,6 +44,8 @@ export type UnitBuilder = (
   y0: number,
   y1: number,
   front: number,
+  /** the model the plan names for this cabinet, where it names one */
+  model?: string,
 ) => void;
 
 /* Every member is a plain closure, declared as a property rather than with
@@ -59,6 +61,15 @@ export interface EquipmentBuilders {
     y: number,
     z: number,
     parent?: THREE.Object3D,
+  ) => THREE.Mesh;
+  silkscreen: (
+    parent: THREE.Object3D,
+    text: string,
+    wm: number,
+    x: number,
+    y: number,
+    z: number,
+    opts?: { align?: 'left' | 'center'; color?: string; hm?: number },
   ) => THREE.Mesh;
   label: (
     text: string,
@@ -152,6 +163,46 @@ export function createEquipmentBuilders(
     p.position.set(x, y, z);
     p.rotation.y = ry;
     scene.add(p);
+    return p;
+  }
+
+  /**
+   * Text printed on a piece of equipment, the way real kit carries its
+   * vendor and model on the bezel.
+   *
+   * Unlike label(), which floats a caption over a cabinet in world
+   * coordinates, this hangs off the cabinet's own group so it turns with it.
+   * The canvas is sized from the physical width — the visitor can walk to
+   * within 20 cm of a rack, and a fixed 512 px would be a blur by then.
+   */
+  function silkscreen(
+    parent: THREE.Object3D,
+    text: string,
+    wm: number,
+    x: number,
+    y: number,
+    z: number,
+    opts: { align?: 'left' | 'center'; color?: string; hm?: number } = {},
+  ) {
+    const { align = 'center', color = '#c8d0d8' } = opts;
+    const hm = opts.hm ?? wm * 0.07;
+    /* ~1200 px per metre of print, capped so a wide chassis stays cheap */
+    const pw = Math.min(2048, Math.max(256, Math.round(wm * 1200)));
+    const ph = Math.max(32, Math.round((pw * hm) / wm));
+    const t = cv(pw, ph, (g) => {
+      g.clearRect(0, 0, pw, ph);
+      g.fillStyle = color;
+      g.font = `600 ${Math.round(ph * 0.72)}px monospace`;
+      g.textBaseline = 'middle';
+      g.textAlign = align === 'left' ? 'left' : 'center';
+      g.fillText(text, align === 'left' ? ph * 0.3 : pw / 2, ph * 0.54, pw - ph * 0.5);
+    });
+    const p = new THREE.Mesh(
+      new THREE.PlaneGeometry(wm, hm),
+      new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }),
+    );
+    p.position.set(x, y, z);
+    parent.add(p);
     return p;
   }
 
@@ -438,9 +489,26 @@ export function createEquipmentBuilders(
    * Optical transport shelf (DWDM / WDM / Transmode): horizontal line modules
    * with their own optical ports, LEDs, and the fibre leaving the front.
    */
-  const dwdmUnit: UnitBuilder = (g, w, fz, y0, y1) => {
+  const dwdmUnit: UnitBuilder = (g, w, fz, y0, y1, _front, model) => {
     const inner = w - 0.13;
     const shelves = Math.max(1, Math.min(6, Math.floor((y1 - y0) / 0.26)));
+    /* «Transmode 5800 + 8133», «Transmode EMXP 10 GbE» — the plan names the
+       box in some nodes and not in others, and an unnamed shelf stays
+       unnamed rather than borrowing a neighbour's model */
+    if (model) {
+      silkscreen(
+        g,
+        model.toUpperCase(),
+        inner * 0.9,
+        0,
+        y0 + 0.13 + shelves * 0.26 - 0.09,
+        fz * 1.03,
+        {
+          hm: 0.026,
+          color: '#9db4d8',
+        },
+      );
+    }
     for (let s = 0; s < shelves; s++) {
       const y = y0 + 0.13 + s * 0.26;
       box(inner, 0.19, 0.05, fin.module, 0, y, fz * 0.96, g);
@@ -552,10 +620,29 @@ export function createEquipmentBuilders(
    */
   function chassis(o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number) {
     const body = o.vendor.includes('Alcatel') ? mat.chassisAlcatel : mat.chassisEricsson;
-    box(w - 0.08, h, 0.06, body, 0, y, 0.3 * front, g);
-    /* shelf bezel and vendor strip, so the chassis is not a bare slab */
-    box(w - 0.08, 0.022, 0.075, fin.bezel, 0, y + h / 2, 0.3 * front, g);
-    box(w - 0.08, 0.022, 0.075, fin.bezel, 0, y - h / 2, 0.3 * front, g);
+    const fw = w - 0.08;
+    box(fw, h, 0.06, body, 0, y, 0.3 * front, g);
+    /* Vendor and model above, the pliego's own code and card set below —
+       where the real thing carries them. Every one of these strings is a
+       datum: nodes.json's `vendor`, `code`, `cards` and `cardModel`, from
+       the node's equipment table. What the chassis *looks* like is still
+       interpretation; what it says it is, is not. */
+    const bz = 0.032;
+    box(fw, bz, 0.075, fin.bezel, 0, y + h / 2, 0.3 * front, g);
+    box(fw, bz, 0.075, fin.bezel, 0, y - h / 2, 0.3 * front, g);
+    const sz = 0.3 * front + 0.039;
+    silkscreen(g, o.vendor.toUpperCase(), fw * 0.92, 0, y + h / 2, sz, {
+      align: 'left',
+      hm: bz * 0.8,
+    });
+    /* the Ericsson cards are the ones the pliego never names, so that half of
+       the line simply says how many there are */
+    const cards = o.cardModel ? `${o.cards} × ${o.cardModel}` : `${o.cards} tarjetas`;
+    silkscreen(g, `${o.code} · ${cards}`, fw * 0.92, 0, y - h / 2, sz, {
+      align: 'left',
+      hm: bz * 0.8,
+      color: '#9db4d8',
+    });
     const usable = w - 0.14;
     const step = usable / o.cards;
     let lit = 0;
@@ -678,6 +765,7 @@ export function createEquipmentBuilders(
   return {
     box,
     label,
+    silkscreen,
     portLed,
     cord,
     rackFrame,

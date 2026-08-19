@@ -60,6 +60,10 @@ licitación en PLACSP.
   - `vents`, los **huecos para aire acondicionado** del muro izquierdo de las casetas y la
     **salida de aire** que Felechosa rotula en el muro del fondo. El plano da su posición y su
     ancho a lo largo del muro; la altura sobre el suelo no está en el plano y es interpretación.
+  - `model` en un armario de transporte **sólo donde el plano nombra el equipo**: «Transmode 5800 +
+    8133» en Muros, «Transmode EMXP 10 GbE» en Blimea, «CWDM Transmode» en Luarca, «Transporte
+    Transmode» en otros nueve. Donde el plano se limita a poner «WDM» o «DWDM» no hay campo y la
+    balda va sin rotular: el modelo no se hereda del nodo de al lado.
   - `units` en un armario cuyo rótulo nombra más de un equipo («Repartidor F.O. + TX Cube»,
     «GPON y vídeo», «DWDM y splitter», «Splitter + vídeo · Transmode»): cada uno ocupa su franja
     del bastidor en vez de dibujarse uno solo. Transmode es una plataforma DWDM, así que
@@ -103,6 +107,14 @@ licitación en PLACSP.
   «7 tarjetas de 8 puertos» pero su tabla da 44 puertos totales; BLI/1B y BLI/9B registran más
   puertos activos que totales (6/5 y 12/11); y la prosa de MUR/1D dice «48 tarjetas» donde su
   tabla dice 4 (4 × 8 = 32 puertos, que es lo que cuadra).
+- **Lo serigrafiado en el visor 3D sí es literal.** El bastidor de cada OLT lleva impreso su
+  fabricante y modelo (`vendor`), su código del pliego (`code`) y su juego de tarjetas (`cards` y
+  `cardModel`), y la balda de transporte el modelo que rotula el plano — en el sitio donde el
+  equipo real lo lleva. Las seis OLT cuyo `cardModel` es «GLT2A y GLT2B» se dibujan con las
+  tarjetas iguales y lo dicen en el rótulo: el pliego dice que hay dos tipos, no cuál va en cada
+  ranura, y lo honesto con un dato desconocido es escribirlo, no dibujar una suposición. Lo que
+  sigue sin ser literal es el **aspecto**: saber que es un Alcatel 7342 no es tener una foto de un
+  Alcatel 7342, y el pliego no la trae.
 - **Lo que NO es literal** se marca como tal donde aparece: el reparto de tubos de la
   troncal de la Autovía Minera es ilustrativo (la segregación hacia el Nalón sí es literal),
   los tubos 1–15 del TROMIENSCFO128 figuran sin desglose, y en el visor 3D los acabados, los colores y el
