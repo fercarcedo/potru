@@ -18,17 +18,25 @@ import { DOM } from '../lib/dom-ids';
       <button id={DOM.btnGpon} class="active-gpon" role="tab" aria-selected="true"
         >◉ RED ACTUAL · GPON</button
       >
-      <button id={DOM.btnXgs} role="tab" aria-selected="false">◎ RED RENOVADA · GPON/XGS-PON</button>
+      <button id={DOM.btnXgs} role="tab" aria-selected="false">◎ RED RENOVADA · GPON/XGS-PON</button
+      >
     </div>
     <div class="diagram-shell">
-      <svg id={DOM.netDiagram} viewBox="0 0 1160 430" role="img" aria-label="Esquema de la Red Asturcón"
-      ></svg>
+      <svg
+        id={DOM.netDiagram}
+        viewBox="0 0 1160 430"
+        role="img"
+        aria-label="Esquema de la Red Asturcón"></svg>
       <div class="diag-caption">
-        <span><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gbps ↓</span
+        <span
+          ><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gbps ↓</span
         >
-        <span><span class="dot" style="background:var(--xgs)"></span> Portadora XGS-PON · 10 Gbps ↓</span
+        <span
+          ><span class="dot" style="background:var(--xgs)"></span> Portadora XGS-PON · 10 Gbps ↓</span
         >
-        <span><span class="dot" style="background:var(--dim)"></span> Elemento pasivo (no cambia)</span>
+        <span
+          ><span class="dot" style="background:var(--dim)"></span> Elemento pasivo (no cambia)</span
+        >
         <span class="mono" style="margin-left:auto">▶ pulsos = tráfico descendente</span>
       </div>
     </div>

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Independent explanatory viewer of the GPON to XGS-PON renewal of the Red Asturc\u00f3n public FTTH network (pliego CON 06/2025)",
+  "description": "Independent explanatory viewer of the GPON to XGS-PON renewal of the Red Asturcón public FTTH network (pliego CON 06/2025)",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
@@ -28,14 +28,15 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@eslint/js": "^9.42.0",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@types/three": "0.185.0",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^16.6.1",
+    "globals": "^17.11.0",
     "happy-dom": "^20.11.2",
     "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"

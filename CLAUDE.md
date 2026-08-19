@@ -149,9 +149,8 @@ versioned.
 - **Formatting is prettier's**, over the whole repo (`npm run format`, `format:check` in the gate).
   Nothing is hand-aligned: `src/styles/` used to be written one rule per line with the spaces
   squeezed out, and that bought nothing — Astro minifies the stylesheet at build time either way,
-  so how the source is written never reaches the wire. `.astro` files are the one exclusion
-  (`.prettierignore`): formatting the templates needs `prettier-plugin-astro` and a diff across
-  every one of them, and their scoped `<style>` blocks are already written expanded by hand.
+  so how the source is written never reaches the wire. `.astro` files included, via
+  `prettier-plugin-astro`.
 - **Linting is eslint's**, `src/` and `tests/` TypeScript only, on typescript-eslint's
   `recommended` plus three type-aware rules — `no-floating-promises`, `no-misused-promises`,
   `await-thenable`. A dropped promise is the failure this codebase is actually exposed to (a
