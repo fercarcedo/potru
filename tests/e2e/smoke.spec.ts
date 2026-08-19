@@ -201,3 +201,48 @@ test('every internal link and asset on the home page stays under the /potru/ bas
   });
   expect(offenders).toEqual([]);
 });
+
+test.describe('plans open full size', () => {
+  // The plans are 1891 x 1310 drawings shown at ~330 px in the record, so the
+  // dimension chains they exist for are only readable full size.
+
+  test('a plan on the node page opens the lightbox, and Escape closes it', async ({ page }) => {
+    await page.goto('./nodos/muros/');
+    await page.locator('.detail-gallery .plan-link').first().click();
+
+    const lb = page.locator('#lbBg');
+    await expect(lb).toHaveClass(/open/);
+    await expect(page.locator('#lbCap')).toContainText('Muros de Nalón');
+
+    // click the plan to swap from fit-to-screen to the image's own pixels
+    await page.locator('#lbImg').click();
+    await expect(page.locator('#lbFig')).toHaveClass(/zoomed/);
+
+    await page.keyboard.press('Escape');
+    await expect(lb).not.toHaveClass(/open/);
+  });
+
+  test('closing a plan opened over the record leaves the record open', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="muros"]').click();
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+
+    await page.locator('#mImgLink').click();
+    await expect(page.locator('#lbBg')).toHaveClass(/open/);
+
+    // Escape belongs to the topmost overlay: the record must survive it, and
+    // the page behind must stay locked
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#lbBg')).not.toHaveClass(/open/);
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+  });
+
+  test('every plan stays a real link to its image, so it works without JS', async ({ page }) => {
+    await page.goto('./nodos/muros/');
+    const hrefs = await page.locator('.plan-link').evaluateAll((links) =>
+      links.map((a) => (a as HTMLAnchorElement).getAttribute('href') ?? ''));
+    expect(hrefs.length).toBeGreaterThan(1);
+    for (const href of hrefs) expect(href).toMatch(/^\/potru\/planos\/.+\.jpg$/);
+  });
+});

@@ -43,6 +43,10 @@ export function initModal(): ModalApi {
     img.src = asset(shot.src);
     img.width = shot.w;
     img.height = shot.h;
+    /* the alt doubles as the full-size view's caption, so it names the plan
+       and its node rather than staying the generic placeholder */
+    img.alt = `${shot.label} · ${n.name}`;
+    (document.getElementById(DOM.mImgLink) as HTMLAnchorElement).href = asset(shot.src);
     document.getElementById(DOM.mBadge)!.style.display = view > 0 ? 'block' : 'none';
 
     const tabs = document.getElementById(DOM.mTabs)!;

@@ -1,0 +1,39 @@
+/* Full-size plan view (Lightbox.astro + scripts/lightbox.ts). Sits above the
+   node record (z-index 100) and below the 3D viewer (200), which is the only
+   thing that ever replaces the whole screen. */
+.lb-bg{position:fixed;inset:0;background:rgba(3,6,12,.94);backdrop-filter:blur(6px);z-index:150;display:none;flex-direction:column}
+.lb-bg.open{display:flex}
+.lb-top{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(6,11,20,.9)}
+.lb-cap{flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-open{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted);text-decoration:none;white-space:nowrap}
+.lb-open:hover{color:var(--xgs)}
+.lb-close{background:var(--ink);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.72rem;white-space:nowrap}
+.lb-close:hover{border-color:var(--xgs);color:var(--xgs)}
+
+/* fit to the screen by default; .zoomed swaps to the image's own pixels and
+   lets the figure scroll, which is the only way the annotations are legible */
+.lb-fig{flex:1;min-height:0;margin:0;display:flex;align-items:center;justify-content:center;overflow:auto;padding:14px;background:#fff}
+.lb-fig img{max-width:100%;max-height:100%;object-fit:contain;display:block;cursor:zoom-in}
+.lb-fig.zoomed{align-items:flex-start;justify-content:flex-start;cursor:grab}
+.lb-fig.zoomed img{max-width:none;max-height:none;width:auto;height:auto;cursor:zoom-out}
+.lb-fig.dragging{cursor:grabbing}
+.lb-help{padding:9px 16px;border-top:1px solid var(--line);background:rgba(6,11,20,.9);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-align:center}
+
+/* the plans themselves, wherever they are shown */
+.plan-link{display:block;position:relative;cursor:zoom-in}
+.plan-link::after{
+  /* bottom right: the record's close button owns the top right of a plan,
+     its gallery tabs the bottom left, and its interior badge the top left */
+  content:'⤢';position:absolute;bottom:10px;right:10px;
+  background:rgba(6,11,20,.82);border:1px solid var(--line);border-radius:6px;
+  color:var(--muted);font-size:.78rem;line-height:1;padding:5px 7px;
+  opacity:0;transition:opacity .18s;pointer-events:none;
+}
+.plan-link:hover::after,.plan-link:focus-visible::after{opacity:1;color:var(--xgs);border-color:var(--xgs)}
+
+@media(max-width:760px){
+  .lb-top{padding:10px 12px;gap:10px}
+  .lb-cap{font-size:.64rem}
+  .lb-open{display:none}
+  .lb-help{font-size:.6rem;padding:8px 10px}
+}

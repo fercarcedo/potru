@@ -29,6 +29,7 @@
 @import './node-record.css';
 @import './node-modal.css';
 @import './node-detail.css';
+@import './lightbox.css';
 
 /* overlay, loaded on demand */
 @import './viewer3d.css';

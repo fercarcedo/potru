@@ -22,13 +22,15 @@ const olts = renderOltTable(n);
   {
     hero && (
       <div class="node-hero">
-        <img
-          src={asset(hero.src)}
-          alt={`${hero.label} · ${n.name}`}
-          width={hero.w}
-          height={hero.h}
-          decoding="async"
-        />
+        <a class="plan-link" data-plan href={asset(hero.src)} target="_blank" rel="noopener">
+          <img
+            src={asset(hero.src)}
+            alt={`${hero.label} · ${n.name}`}
+            width={hero.w}
+            height={hero.h}
+            decoding="async"
+          />
+        </a>
         <span class="hero-tag">{hero.label.toUpperCase()}</span>
       </div>
     )
@@ -79,14 +81,16 @@ const olts = renderOltTable(n);
           <div class="detail-gallery">
             {plans.map((g) => (
               <figure>
-                <img
-                  src={asset(g.src)}
-                  alt={`${g.label} · ${n.name}`}
-                  width={g.w}
-                  height={g.h}
-                  loading="lazy"
-                  decoding="async"
-                />
+                <a class="plan-link" data-plan href={asset(g.src)} target="_blank" rel="noopener">
+                  <img
+                    src={asset(g.src)}
+                    alt={`${g.label} · ${n.name}`}
+                    width={g.w}
+                    height={g.h}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
                 <figcaption>{g.label.toUpperCase()}</figcaption>
               </figure>
             ))}

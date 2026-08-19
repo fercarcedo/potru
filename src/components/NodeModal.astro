@@ -12,7 +12,9 @@ import { DOM } from '../lib/dom-ids';
       <span class="interior-badge" id={DOM.mBadge} style="display:none"
         >VISTA INTERIOR · PLANOS DEL PLIEGO</span
       >
-      <img id={DOM.mImg} alt="Plano del nodo" />
+      <a class="plan-link" id={DOM.mImgLink} data-plan href="#" target="_blank" rel="noopener">
+        <img id={DOM.mImg} alt="Plano del nodo" />
+      </a>
       <div class="gal-tabs" id={DOM.mTabs}></div>
       <button class="close" id={DOM.mClose} aria-label="Cerrar">✕</button>
     </div>

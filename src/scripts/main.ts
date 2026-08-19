@@ -17,11 +17,13 @@ import { initModal } from './modal';
 import { initMap } from './map';
 import { initTour } from './tour';
 import { initWalk } from './walk';
+import { initLightbox } from './lightbox';
 
 initHeroFiber();
 initDiagram();
 initOntBars();
 initWalk();
+initLightbox();
 
 const { openNode } = initModal();
 const map = initMap(openNode);

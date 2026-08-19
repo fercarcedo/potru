@@ -1,0 +1,26 @@
+---
+import { DOM } from '../lib/dom-ids';
+
+// Full-size view of a plan. The plans are 1891 x 1310 CAD drawings shown at
+// ~330 px in the record, which is far too small to read the dimension chains
+// they exist for; this puts one on the whole screen.
+//
+// Nothing here is required for the plans to be reachable: every one of them
+// is a real <a href> to the image file, so no-JS, middle-click and ⌘-click
+// all still open the original. src/scripts/lightbox.ts only upgrades the
+// plain left-click.
+---
+
+<div class="lb-bg" id={DOM.lbBg} role="dialog" aria-modal="true" aria-label="Plano a tamaño completo">
+  <div class="lb-top">
+    <span class="lb-cap" id={DOM.lbCap}></span>
+    <a class="lb-open" id={DOM.lbOpen} href="#" target="_blank" rel="noopener"
+      >↗ Abrir el original</a
+    >
+    <button class="lb-close" id={DOM.lbClose} aria-label="Cerrar">✕ Salir</button>
+  </div>
+  <figure class="lb-fig" id={DOM.lbFig}>
+    <img id={DOM.lbImg} alt="" />
+  </figure>
+  <div class="lb-help">PULSA el plano para verlo a tamaño real · ARRASTRA para moverte · ESC para salir</div>
+</div>

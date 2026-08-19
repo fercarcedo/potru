@@ -48,6 +48,7 @@ export const DOM = {
   // NodeModal.astro
   modalBg: 'modalBg',
   mImg: 'mImg',
+  mImgLink: 'mImgLink',
   mBadge: 'mBadge',
   mTabs: 'mTabs',
   mClose: 'mClose',
@@ -61,6 +62,14 @@ export const DOM = {
   mWalk: 'mWalk',
   mActs: 'mActs',
   mPerma: 'mPerma',
+
+  // Lightbox.astro
+  lbBg: 'lbBg',
+  lbFig: 'lbFig',
+  lbImg: 'lbImg',
+  lbCap: 'lbCap',
+  lbOpen: 'lbOpen',
+  lbClose: 'lbClose',
 
   // Viewer3D.astro
   svBg: 'svBg',
