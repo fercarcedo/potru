@@ -16,6 +16,10 @@ import { DOM } from '../lib/dom-ids';
   <div class="lb-top">
     <span class="lb-cap" id={DOM.lbCap}></span>
     <span class="lb-count" id={DOM.lbCount}></span>
+    {/* The set wraps round rather than dead-ending, so there is no greyed-out
+        arrow to say "you are at the end". Sighted visitors read that off the
+        counter and the strip; this is what replaces it for everyone else. */}
+    <span class="lb-said" id={DOM.lbSaid} aria-live="polite"></span>
     <a class="lb-open" id={DOM.lbOpen} href="#" target="_blank" rel="noopener"
       >↗ Abrir el original</a
     >

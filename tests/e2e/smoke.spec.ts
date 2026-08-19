@@ -300,3 +300,14 @@ test.describe('stepping through a node\'s plans', () => {
     await expect(page.locator('#mTabs button.on')).toHaveText('Alzado derecho');
   });
 });
+
+test('stepping between plans is announced, since the set wraps with no end state', async ({ page }) => {
+  await page.goto('./nodos/tineo/');
+  await page.locator('.node-hero .plan-link').click();
+  const said = page.locator('#lbSaid');
+  await expect(said).toHaveText(/Ubicación · Tineo, 1 de 5/i);
+  await page.keyboard.press('ArrowLeft');           // wraps to the last
+  await expect(said).toHaveText(/, 5 de 5$/);
+  // and the visible caption is not doubled up with the counter beside it
+  await expect(page.locator('#lbCap')).not.toContainText('de 5');
+});

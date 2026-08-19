@@ -6,6 +6,8 @@
 .lb-top{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(6,11,20,.9)}
 .lb-cap{flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-count{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--xgs);white-space:nowrap}
+/* announced, never shown: the counter beside it already says this on screen */
+.lb-said{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .lb-open{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted);text-decoration:none;white-space:nowrap}
 .lb-open:hover{color:var(--xgs)}
 .lb-close{background:var(--ink);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.72rem;white-space:nowrap}

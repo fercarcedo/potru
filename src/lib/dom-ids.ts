@@ -69,6 +69,7 @@ export const DOM = {
   lbImg: 'lbImg',
   lbCap: 'lbCap',
   lbCount: 'lbCount',
+  lbSaid: 'lbSaid',
   lbPrev: 'lbPrev',
   lbNext: 'lbNext',
   lbThumbs: 'lbThumbs',

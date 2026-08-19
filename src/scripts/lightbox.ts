@@ -55,6 +55,7 @@ export function initLightbox() {
   const img = document.getElementById(DOM.lbImg) as HTMLImageElement;
   const cap = document.getElementById(DOM.lbCap)!;
   const count = document.getElementById(DOM.lbCount)!;
+  const said = document.getElementById(DOM.lbSaid)!;
   const original = document.getElementById(DOM.lbOpen) as HTMLAnchorElement;
   const thumbs = document.getElementById(DOM.lbThumbs)!;
   const prev = document.getElementById(DOM.lbPrev)!;
@@ -81,6 +82,11 @@ export function initLightbox() {
     img.alt = p.caption;
     cap.textContent = p.caption;
     count.textContent = plans.length > 1 ? `${idx + 1} / ${plans.length}` : '';
+    /* announced as one phrase — "Plano de planta · Tineo, 3 de 5" — rather
+       than as two unrelated updates to the caption and the counter */
+    said.textContent = plans.length > 1
+      ? `${p.caption}, ${idx + 1} de ${plans.length}`
+      : p.caption;
     original.href = p.src;
     setZoom(false);
     fig.scrollTo(0, 0);
