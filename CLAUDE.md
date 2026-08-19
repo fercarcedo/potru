@@ -27,6 +27,7 @@ npm run dev       # dev server
 npm run build     # static site into dist/
 npm run preview   # serve dist/ as it will be published
 npm run check     # astro check — types and templates
+npm run format    # prettier over src/styles — see the styling note below
 npm run test      # vitest: data, lib and script unit tests (tests/data, tests/lib, tests/scripts)
 npm run test:e2e  # playwright: builds + previews dist/, then drives it in Chromium (tests/e2e)
 npm run verify    # check + test + build + test:e2e, in that order
@@ -122,7 +123,13 @@ versioned.
 - Progressive enhancement: node cards and gantt bars are real anchors to `/nodos/<id>`; JS upgrades
   them to the modal.
 - Styling is hand-written CSS with custom properties (`--gpon` amber, `--xgs` teal); fonts are
-  self-hosted via `@fontsource`, never a CDN. There are two homes for a rule, and which one is not a
+  self-hosted via `@fontsource`, never a CDN. The partials in `src/styles/` are kept readable by
+  `npm run format` (prettier, scoped to that directory — `npm run format:check` in review). They
+  used to be written one rule per line with the spaces squeezed out, which saved nothing: Astro
+  minifies the stylesheet at build time either way, so source formatting never reaches the wire.
+  The `.astro` components' own scoped `<style>` blocks are already written expanded and prettier
+  is deliberately not pointed at them: reformatting those files means the astro plugin and a diff
+  across every template, for no gain. There are two homes for a rule, and which one is not a
   style choice — it is forced by whether Astro's scoped-style attribute can reach the markup:
   - **A component's own `<style>`** if every element the rule touches is written directly in that
     component's own template — no `set:html`, no child component, nothing a client island rewrites.

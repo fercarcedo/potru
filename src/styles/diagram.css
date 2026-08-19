@@ -1,22 +1,100 @@
 /* «Red en vivo»: GPON ↔ XGS-PON toggle and the end-to-end schematic that
    diagram.ts rebuilds on every mode change. */
-.mode-toggle{display:flex;border:1px solid var(--line);width:max-content;margin:26px 0 30px;border-radius:8px;overflow:hidden}
-.mode-toggle button{background:var(--panel);color:var(--muted);border:none;padding:12px 22px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.08em;transition:all .25s}
-.mode-toggle button.active-gpon{background:var(--gpon-soft);color:var(--gpon)}
-.mode-toggle button.active-xgs{background:var(--xgs-soft);color:var(--xgs)}
-.mode-toggle button:focus-visible{outline:2px solid var(--xgs);outline-offset:-2px}
-.diagram-shell{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--ink));border-radius:10px;padding:10px 6px 2px;overflow-x:auto}
-#netDiagram{width:100%;height:auto;display:block}
-#netDiagram text{font-family:'IBM Plex Mono',monospace}
-.diag-caption{display:flex;flex-wrap:wrap;gap:18px;padding:14px 16px;border-top:1px solid var(--line);font-size:.78rem;color:var(--muted)}
-.diag-caption span{display:flex;align-items:center;gap:7px}
-.info-box{margin-top:16px;border-left:3px solid var(--xgs);background:var(--panel);padding:16px 18px;font-size:.92rem;color:var(--muted);min-height:76px;border-radius:0 8px 8px 0}
-.info-box b{color:var(--txt)}
-.node-el{cursor:pointer;transition:filter .2s}
-.node-el:hover{filter:brightness(1.5)}
-@media(max-width:900px){#netDiagram{min-width:880px}}
-@media(max-width:760px){
-  .mode-toggle{width:100%}
-  .mode-toggle button{flex:1;padding:12px 8px;font-size:.72rem}
-  .info-box{font-size:.88rem}
+.mode-toggle {
+  display: flex;
+  border: 1px solid var(--line);
+  width: max-content;
+  margin: 26px 0 30px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mode-toggle button {
+  background: var(--panel);
+  color: var(--muted);
+  border: none;
+  padding: 12px 22px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  transition: all 0.25s;
+}
+.mode-toggle button.active-gpon {
+  background: var(--gpon-soft);
+  color: var(--gpon);
+}
+.mode-toggle button.active-xgs {
+  background: var(--xgs-soft);
+  color: var(--xgs);
+}
+.mode-toggle button:focus-visible {
+  outline: 2px solid var(--xgs);
+  outline-offset: -2px;
+}
+.diagram-shell {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--ink));
+  border-radius: 10px;
+  padding: 10px 6px 2px;
+  overflow-x: auto;
+}
+#netDiagram {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#netDiagram text {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.diag-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.diag-caption span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.info-box {
+  margin-top: 16px;
+  border-left: 3px solid var(--xgs);
+  background: var(--panel);
+  padding: 16px 18px;
+  font-size: 0.92rem;
+  color: var(--muted);
+  min-height: 76px;
+  border-radius: 0 8px 8px 0;
+}
+.info-box b {
+  color: var(--txt);
+}
+.node-el {
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.node-el:hover {
+  filter: brightness(1.5);
+}
+@media (max-width: 900px) {
+  #netDiagram {
+    min-width: 880px;
+  }
+}
+@media (max-width: 760px) {
+  .mode-toggle {
+    width: 100%;
+  }
+  .mode-toggle button {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 0.72rem;
+  }
+  .info-box {
+    font-size: 0.88rem;
+  }
 }

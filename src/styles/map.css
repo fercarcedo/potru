@@ -1,9 +1,57 @@
 /* Schematic map of the network (map.ts), its hover tooltip and area legend. */
-.map-wrap{position:relative}
-.map-shell{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px 8px 4px;position:relative;overflow-x:auto}
-#astMap{width:100%;height:auto;display:block}
-#astMap text{font-family:'IBM Plex Mono',monospace;paint-order:stroke;stroke:#060b14;stroke-width:2.6px;stroke-linejoin:round}
-.tooltip{position:absolute;pointer-events:none;background:#0e1a2e;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:.8rem;opacity:0;transition:opacity .15s;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:250px;z-index:5}
-.tooltip b{color:var(--xgs);font-family:'IBM Plex Mono',monospace;font-size:.78rem}
-.area-legend{display:flex;flex-wrap:wrap;gap:14px;padding:14px 16px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
-@media(max-width:900px){#astMap{min-width:840px}}
+.map-wrap {
+  position: relative;
+}
+.map-shell {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 14px 8px 4px;
+  position: relative;
+  overflow-x: auto;
+}
+#astMap {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#astMap text {
+  font-family: 'IBM Plex Mono', monospace;
+  paint-order: stroke;
+  stroke: #060b14;
+  stroke-width: 2.6px;
+  stroke-linejoin: round;
+}
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #0e1a2e;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  max-width: 250px;
+  z-index: 5;
+}
+.tooltip b {
+  color: var(--xgs);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+}
+.area-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+@media (max-width: 900px) {
+  #astMap {
+    min-width: 840px;
+  }
+}

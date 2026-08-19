@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Independent explanatory viewer of the GPON to XGS-PON renewal of the Red Asturcón public FTTH network (pliego CON 06/2025)",
+  "description": "Independent explanatory viewer of the GPON to XGS-PON renewal of the Red Asturc\u00f3n public FTTH network (pliego CON 06/2025)",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "format": "prettier --write src/styles",
+    "format:check": "prettier --check src/styles",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
@@ -27,6 +29,7 @@
     "@playwright/test": "^1.62.1",
     "@types/three": "0.185.0",
     "happy-dom": "^20.11.2",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   }
