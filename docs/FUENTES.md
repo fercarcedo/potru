@@ -48,7 +48,22 @@ licitación en PLACSP.
   rótulo. Los planos de Blimea, Mieres y Tineo se leyeron del PDF a 400 ppp, porque en los JPEG
   de `public/planos/` los rótulos de bastidor son ilegibles. Se modela sólo el recinto de la
   Red Asturcón: lo colindante ajeno (centro de transformación de Hidrocantábrico, sala SCC-BO,
-  pasillos) queda como muro ciego.
+  pasillos) queda como muro ciego. Además del contorno y los armarios se transcriben:
+  - `trays`, el recorrido de la **rejiband** que el plano dibuja como banda rayada. No es una
+    tirada por fila: los nodos caseta la llevan por el muro del fondo, bajan por la izquierda,
+    vuelven por el frente y cierran con un montante cerca de la puerta, y Felechosa dobla ese
+    montante. Tineo añade un ramal central y una tirada «por el suelo», e Infiesto una «bajada».
+  - `hatches`, las **tapas** de la canaleta de suelo: seis registros de 445 × 595 mm en el pasillo
+    de cada caseta («PLANTA SIN SUELO»; no son arquetas, sino las tapas del canal de cables).
+  - `vents`, los **huecos para aire acondicionado** del muro izquierdo de las casetas y la
+    **salida de aire** que Felechosa rotula en el muro del fondo. El plano da su posición y su
+    ancho a lo largo del muro; la altura sobre el suelo no está en el plano y es interpretación.
+  - `units` en un armario cuyo rótulo nombra más de un equipo («Repartidor F.O. + TX Cube»,
+    «GPON y vídeo», «DWDM y splitter», «Splitter + vídeo · Transmode»): cada uno ocupa su franja
+    del bastidor en vez de dibujarse uno solo. Transmode es una plataforma DWDM, así que
+    «DWDM y splitter» y «Splitter + vídeo · Transmode» se dibujan con los mismos elementos.
+  - El escalado de los planos caseta (4 450 × 2 400 mm) se fijó con dos referencias del propio
+    dibujo: el paso de 445 mm de las tapas y los 4,14 m entre caras interiores de muro.
 - **Discrepancias documentadas en la propia interfaz**: el pliego general cita 5 nodos
   secundarios, pero las fichas por área detallan 9 (Vegadeo, La Caridad y Soto del Barco en
   el Occidente; Cabranes y Villamayor en el Suroriente; El Entrego, Sotrondio, Barredos y

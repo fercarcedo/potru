@@ -6,12 +6,30 @@
  */
 import * as THREE from 'three';
 import type { EquipmentBuilders } from './equipment';
-import type { RoomMaterials } from './textures';
+import { pointInPolygon } from './geometry';
+import type { Finishes, RoomMaterials } from './textures';
 
 export interface Door {
   edge: number;
   at: number;
   width: number;
+}
+
+/**
+ * A louvred opening in a wall: Felechosa's «SALIDAS AIRE» and the «HUECOS
+ * PARA AIRE ACONDICIONADO» the caseta plans mark on the left wall, where the
+ * compact AIRDATA unit outside breathes through.
+ */
+export interface Vent {
+  edge: number;
+  /** distance along the edge to the opening's near end */
+  at: number;
+  /** opening width */
+  w: number;
+  /** opening height; 0.3 m if the plan does not give one */
+  h?: number;
+  /** height of the opening's centre above the floor */
+  y?: number;
 }
 
 /** three ≥155 reads light intensity in physical units, so the r128-era
@@ -26,16 +44,18 @@ export interface ShellDeps {
   /** the room outline, centred (same as buildRoom's `poly`) */
   poly: [number, number][];
   doors: Door[];
+  vents?: Vent[];
   /** room width, depth and free height */
   W: number;
   D: number;
   H: number;
   box: EquipmentBuilders['box'];
   label: EquipmentBuilders['label'];
+  fin: Finishes;
 }
 
 export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
-  const { scene, mat, poly, doors, W, D, H, box, label } = deps;
+  const { scene, mat, poly, doors, vents = [], W, D, H, box, label, fin } = deps;
 
   /* ---- shell: floor, ceiling and one wall per outline edge, with door gaps ---- */
   const shape = new THREE.Shape(poly.map(([x, z]) => new THREE.Vector2(x, z)));
@@ -75,6 +95,33 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
       label('SALIDA', 0.5, dx, 2.25, dz, -ang, '#2a5c55');
     }
   });
+
+  /* ---- ventilation louvres, on the inner face of their wall ---- */
+  for (const v of vents) {
+    const [x1, z1] = poly[v.edge]!;
+    const [x2, z2] = poly[(v.edge + 1) % poly.length]!;
+    const ang = Math.atan2(z2 - z1, x2 - x1);
+    const mid = v.at + v.w / 2;
+    const px = x1 + Math.cos(ang) * mid, pz = z1 + Math.sin(ang) * mid;
+    /* step off the wall towards whichever side is inside the room */
+    const nx = -Math.sin(ang), nz = Math.cos(ang);
+    const sign = pointInPolygon(poly, px + nx * 0.1, pz + nz * 0.1) ? 1 : -1;
+    const h = v.h ?? 0.3;
+    const y = v.y ?? H - 0.45;
+    const g = new THREE.Group();
+    g.position.set(px + nx * sign * 0.02, y, pz + nz * sign * 0.02);
+    g.rotation.y = -ang + (sign > 0 ? 0 : Math.PI);
+    scene.add(g);
+    box(v.w, h, 0.02, fin.hatchWell, 0, 0, 0, g);
+    box(v.w + 0.04, h + 0.04, 0.015, fin.louvre, 0, 0, -0.012, g);
+    /* the blades, angled enough to read as a grille rather than a dark panel */
+    const blades = Math.max(3, Math.round(h / 0.035));
+    for (let i = 0; i < blades; i++) {
+      const by = -h / 2 + (i + 0.5) * (h / blades);
+      const b = box(v.w - 0.02, 0.018, 0.026, fin.louvre, 0, by, 0.012, g);
+      b.rotation.x = 0.5;
+    }
+  }
 
   /* ceiling tray and lights, following the long axis of the room */
   const along = W >= D;

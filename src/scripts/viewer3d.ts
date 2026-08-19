@@ -21,10 +21,10 @@ import { cardCount, cardLabel, type NetworkNode } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { initControls } from './viewer3d/controls';
-import { createEquipmentBuilders } from './viewer3d/equipment';
+import { createEquipmentBuilders, type UnitBuilder } from './viewer3d/equipment';
 import { pointInPolygon } from './viewer3d/geometry';
 import { computeOrientations } from './viewer3d/orientation';
-import { LX, buildShell } from './viewer3d/shell';
+import { LX, buildShell, type Vent } from './viewer3d/shell';
 import { buildFinishes, buildFloorTexture, buildMaterials, buildWallTexture } from './viewer3d/textures';
 
 THREE.ColorManagement.enabled = false;
@@ -37,13 +37,40 @@ interface Bay {
   label: string;
   /** indices into the node's olts[] that live in this cabinet */
   olts?: number[];
+  /**
+   * What the plan says this cabinet actually holds, when its label names more
+   * than one thing («Repartidor FO + TX Cube», «GPON y vídeo», «DWDM y
+   * splitter»). Each entry fills its own band of the rack; omitted, the
+   * cabinet holds one unit of whatever `kind` implies.
+   */
+  units?: string[];
+}
+/** A run of rejiband, transcribed from the plan's hatched bands. */
+interface Tray {
+  /** where the run sits: under the ceiling, on the slab, or an explicit height */
+  level?: 'ceiling' | 'floor' | number;
+  /** the polyline it follows, in plan metres */
+  pts: [number, number][];
+  /** tray width; 0.3 m unless the plan says otherwise */
+  w?: number;
+  /** a vertical drop at pts[0] between `level` and `to` (a «bajada rejiband») */
+  to?: 'ceiling' | 'floor' | number;
+}
+/** A row of lift-off covers over the floor cable duct («tapas»). */
+interface Hatch {
+  x: number; z: number; w: number; d: number;
+  /** how many covers in the row; 1 unless the plan draws more */
+  n?: number;
 }
 interface Room {
   source: string;
   h: number;
   outline: [number, number][];
   doors: { edge: number; at: number; width: number }[];
+  vents?: Vent[];
   bays: Bay[];
+  trays?: Tray[];
+  hatches?: Hatch[];
   note?: string;
 }
 
@@ -65,9 +92,34 @@ const OWN_ENCLOSURE = new Set(['cgbt', 'battery']);
 const COLOR: Record<string, number> = {
   olt: 0x2e3238, odf: 0x39414c, transport: 0x36404e, splitter: 0x36404e,
   catv: 0x3b3a42, rack: 0x2e3238, power: 0x4a4f57, battery: 0x23262c,
-  cgbt: 0x55606e, ups: 0x8a9099, cabinet: 0x6f7680, cage: 0xc9cdd2,
-  ac: 0x8f959c, empty: 0x4c5158,
+  cgbt: 0x55606e, acdist: 0x55606e, ups: 0x8a9099, cabinet: 0x6f7680,
+  cage: 0xc9cdd2, ac: 0x8f959c, empty: 0x4c5158,
 };
+
+/** What a bay holds when its label names only one thing. */
+const UNITS_OF_KIND: Record<string, string> = {
+  olt: 'olt', odf: 'odf', transport: 'dwdm', splitter: 'splitter', catv: 'video',
+};
+
+/**
+ * How much of a rack each unit wants when it shares the cabinet. Only the
+ * ratios matter: a «Repartidor FO + TX Cube» gives the ODF three quarters of
+ * the bay and the compact transport box the rest, which is roughly how the
+ * elevations draw them.
+ */
+const UNIT_WEIGHT: Record<string, number> = {
+  olt: 3, odf: 3, dwdm: 2, splitter: 2, video: 1.4, txcube: 1,
+};
+
+/** The kinds whose front is built band by band rather than as one cabinet. */
+const RACK_UNITS = new Set(Object.keys(UNIT_WEIGHT));
+
+/** Where a tray level sits, in metres above the floor. */
+function trayHeight(level: Tray['level'], H: number): number {
+  if (level === 'floor') return 0.09;
+  if (typeof level === 'number') return level;
+  return Math.min(H - 0.18, 2.18);
+}
 
 export function buildRoom(n: NetworkNode) {
   stopRoom();
@@ -97,10 +149,19 @@ export function buildRoom(n: NetworkNode) {
   const wallTex = buildWallTexture();
   const mat = buildMaterials(floorTex, wallTex);
   const fin = buildFinishes();
-  const { box, label, portLed, cord, rackFrame, romBay, cgbtBay, transportBay, powerBay, batteryBay, chassis, rejiband, leds } =
-    createEquipmentBuilders(scene, mat, fin);
+  const {
+    box, label, portLed, cord, rackFrame,
+    odfUnit, dwdmUnit, splitterUnit, videoUnit, txCubeUnit,
+    cgbtBay, acDistBay, powerBay, batteryBay, chassis, rejiband, hatchRun, leds,
+  } = createEquipmentBuilders(scene, mat, fin);
 
-  const { halo } = buildShell({ scene, mat, poly, doors: room.doors, W, D, H, box, label });
+  const UNIT_BUILDER: Record<string, UnitBuilder> = {
+    odf: odfUnit, dwdm: dwdmUnit, splitter: splitterUnit, video: videoUnit, txcube: txCubeUnit,
+  };
+
+  const { halo } = buildShell({
+    scene, mat, poly, doors: room.doors, vents: room.vents, W, D, H, box, label, fin,
+  });
 
   /* ---- equipment bays ---- */
   const oldChassis: THREE.Object3D[] = [];
@@ -115,6 +176,34 @@ export function buildRoom(n: NetworkNode) {
   }
 
   const orientOf = computeOrientations(room.bays, poly, solids, W, D);
+
+  /**
+   * The OLT unit of a cabinet: the real line cards and lit GPON ports of every
+   * OLT the pliego's table puts in this bay, plus the single dual GPON/XGS-PON
+   * chassis the renewal replaces them with, hidden until the mode toggle.
+   * Not a plain UnitBuilder because it is the one unit that needs the node.
+   */
+  function buildOltUnit(bay: Bay, g: THREE.Object3D, w: number, y0: number, y1: number, front: number) {
+    const olts = (bay.olts ?? []).map((i) => n.olts[i]!).filter(Boolean);
+    const slot = (y1 - y0) / Math.max(1, olts.length);
+    olts.forEach((o, i) => {
+      const sub = new THREE.Group();
+      g.add(sub);
+      oldChassis.push(sub);
+      chassis(o, sub, w, y0 + i * slot + slot / 2, Math.min(slot - 0.12, 0.5), front);
+    });
+    if (!olts.length) return;
+    const nu = new THREE.Group();
+    g.add(nu);
+    nu.visible = false;
+    newChassis.push(nu);
+    const my = (y0 + y1) / 2, mh = Math.min(y1 - y0 - 0.1, 0.85);
+    box(w - 0.08, mh, 0.06, mat.chassisNew, 0, my, 0.3 * front, nu);
+    box(w - 0.08, 0.024, 0.08, fin.bezel, 0, my + mh / 2, 0.3 * front, nu);
+    for (let i = 0; i < 12; i++) {
+      portLed(-w / 2 + 0.09 + i * ((w - 0.18) / 11), my, 0.345 * front, nu, true);
+    }
+  }
 
   for (const bay of room.bays) {
     const g = new THREE.Group();
@@ -151,32 +240,26 @@ export function buildRoom(n: NetworkNode) {
         0, base + bay.h / 2, 0, g);
     }
 
-    if (bay.olts?.length) {
+    /* What this cabinet holds: the plan's own reading where the label names
+       more than one thing, otherwise the single unit `kind` implies. */
+    const units = (bay.units ?? [UNITS_OF_KIND[bay.kind] ?? '']).filter((u) => RACK_UNITS.has(u));
+
+    if (units.length) {
       rackFrame(g, faceW, bay.h, fz, base);
-      const olts = bay.olts.map((i) => n.olts[i]!).filter(Boolean);
-      const slot = (bay.h - 0.3) / olts.length;
-      olts.forEach((o, i) => {
-        const sub = new THREE.Group();
-        g.add(sub);
-        oldChassis.push(sub);
-        chassis(o, sub, faceW, 0.35 + i * slot + slot / 2, Math.min(slot - 0.12, 0.5), front);
-      });
-      /* the renewed view puts one dual GPON/XGS-PON chassis in the same footprint */
-      const nu = new THREE.Group();
-      g.add(nu);
-      nu.visible = false;
-      newChassis.push(nu);
-      box(faceW - 0.08, 0.85, 0.06, mat.chassisNew, 0, bay.h / 2, 0.3 * front, nu);
-      box(faceW - 0.08, 0.024, 0.08, fin.bezel, 0, bay.h / 2 + 0.425, 0.3 * front, nu);
-      for (let i = 0; i < 12; i++) {
-        portLed(-faceW / 2 + 0.09 + i * ((faceW - 0.18) / 11), bay.h / 2, 0.345 * front, nu, true);
+      /* share the rack's usable height between the units, by weight */
+      const y0 = base + 0.3, y1 = base + bay.h - 0.15;
+      const total = units.reduce((s, u) => s + (UNIT_WEIGHT[u] ?? 1), 0);
+      let y = y0;
+      for (const u of units) {
+        const top = y + ((y1 - y0) * (UNIT_WEIGHT[u] ?? 1)) / total;
+        if (u === 'olt') buildOltUnit(bay, g, faceW, y, top, front);
+        else UNIT_BUILDER[u]!(g, faceW, fz, y, top, front);
+        y = top;
       }
-    } else if (bay.kind === 'odf') {
-      romBay(g, faceW, bay.h, fz, base, front);
     } else if (bay.kind === 'cgbt') {
       cgbtBay(g, faceW, bay.h, faceD, fz, base);
-    } else if (bay.kind === 'transport' || bay.kind === 'splitter' || bay.kind === 'catv') {
-      transportBay(g, faceW, bay.h, fz, base);
+    } else if (bay.kind === 'acdist') {
+      acDistBay(g, faceW, bay.h, faceD, fz, base);
     } else if (bay.kind === 'power') {
       powerBay(g, faceW, bay.h, fz, base);
     } else if (bay.kind === 'battery') {
@@ -213,9 +296,25 @@ export function buildRoom(n: NetworkNode) {
     label(bay.label, Math.min(faceW * 0.95, 0.8), lo.x, lo.y, lo.z, rot, '#c8d4e2');
   }
 
-  /* ---- rejiband runs above each row of cabinets, as the plans mark them ---- */
-  {
-    const trayY = Math.min(H - 0.18, 2.18);
+  /* ---- rejiband ----
+     The plans draw the tray runs explicitly, and they are not one straight
+     length over each row: Felechosa and Navia ring the whole room, Tineo has
+     a branch down the middle and a run along the floor, Infiesto a «bajada».
+     Where a room's routes have been transcribed we draw those; the rooms
+     still to be read off keep the old per-row derivation as a stand-in. */
+  const trayY = Math.min(H - 0.18, 2.18);
+  if (room.trays?.length) {
+    for (const t of room.trays) {
+      const y = trayHeight(t.level, H);
+      const pts = t.pts.map(([x, z]) => [x - W / 2, y, z - D / 2] as [number, number, number]);
+      for (let i = 0; i + 1 < pts.length; i++) rejiband(pts[i]!, pts[i + 1]!, t.w);
+      /* a «bajada»: the same tray turned upright, linking two levels */
+      if (t.to !== undefined && pts[0]) {
+        const [dx, , dz] = pts[0];
+        rejiband([dx, y, dz], [dx, trayHeight(t.to, H), dz], t.w);
+      }
+    }
+  } else {
     const rows = new Map<number, { x0: number; x1: number; z: number }>();
     for (const bay of room.bays) {
       if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9) continue;
@@ -227,23 +326,29 @@ export function buildRoom(n: NetworkNode) {
       else rows.set(key, { x0, x1, z: cz });
     }
     for (const r of rows.values()) {
-      rejiband(r.x0 - 0.15, r.z, r.x1 + 0.15, r.z, trayY);
+      rejiband([r.x0 - 0.15, trayY, r.z], [r.x1 + 0.15, trayY, r.z]);
       /* a drop piece where the run meets the first cabinet of the row */
       box(0.06, 0.34, 0.22, fin.steel, r.x0 + 0.05, trayY - 0.2, r.z, scene);
     }
-    /* and a bundle dropping off the tray into each rack it passes over */
-    for (const bay of room.bays) {
-      if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9 || bay.h < 1.2) continue;
-      const cx = bay.x - W / 2 + bay.w / 2;
-      const cz = bay.z - D / 2 + bay.d / 2;
-      const top = (bay.y ?? 0) + bay.h;
-      if (top > trayY - 0.05) continue;
-      const m = bay.kind === 'power' || bay.kind === 'cgbt' ? fin.cableBlack : fin.fibre;
-      cord([[cx - 0.06, trayY - 0.06, cz],
-            [cx - 0.05, trayY - 0.16, cz + 0.05],
-            [cx - 0.03, top + 0.06, cz + 0.02],
-            [cx - 0.02, top - 0.02, cz]], scene, m, 0.009);
-    }
+  }
+  /* a bundle dropping off the ceiling tray into each rack it passes over */
+  for (const bay of room.bays) {
+    if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9 || bay.h < 1.2) continue;
+    const cx = bay.x - W / 2 + bay.w / 2;
+    const cz = bay.z - D / 2 + bay.d / 2;
+    const top = (bay.y ?? 0) + bay.h;
+    if (top > trayY - 0.05) continue;
+    const m = bay.kind === 'power' || bay.kind === 'cgbt' || bay.kind === 'acdist'
+      ? fin.cableBlack : fin.fibre;
+    cord([[cx - 0.06, trayY - 0.06, cz],
+          [cx - 0.05, trayY - 0.16, cz + 0.05],
+          [cx - 0.03, top + 0.06, cz + 0.02],
+          [cx - 0.02, top - 0.02, cz]], scene, m, 0.009);
+  }
+
+  /* ---- «tapas»: the lift-off covers of the floor cable duct ---- */
+  for (const h of room.hatches ?? []) {
+    hatchRun(h.x - W / 2, h.z - D / 2, h.w, h.d, h.n ?? 1);
   }
 
   /* a fire extinguisher by the door, as the elevations show */

@@ -110,6 +110,17 @@ export interface Finishes {
   copper: THREE.MeshLambertMaterial;
   cableBlack: THREE.MeshLambertMaterial;
   cableBlue: THREE.MeshLambertMaterial;
+  /** lift-off cover of a floor cable duct («tapa»): chequer plate */
+  hatchPlate: THREE.MeshLambertMaterial;
+  /** the recess the covers sit in, seen through the joints */
+  hatchWell: THREE.MeshLambertMaterial;
+  /** ventilation louvre let into a wall («salida de aire», «hueco de A/A») */
+  louvre: THREE.MeshLambertMaterial;
+  /** body of a passive optical module: PLC splitters are white, not livery grey */
+  passive: THREE.MeshLambertMaterial;
+  /** the RF side of a video shelf: F connectors and their coax */
+  rfBody: THREE.MeshLambertMaterial;
+  coax: THREE.MeshLambertMaterial;
 }
 
 /** Extra finishes for the equipment detail (rails, cords, cell cases…). */
@@ -137,5 +148,37 @@ export function buildFinishes(): Finishes {
     copper: new THREE.MeshLambertMaterial({ color: 0xb87333 }),
     cableBlack: new THREE.MeshLambertMaterial({ color: 0x24262a }),
     cableBlue: new THREE.MeshLambertMaterial({ color: 0x2f5d9e }),
+    hatchPlate: new THREE.MeshLambertMaterial({ map: buildChequerTexture() }),
+    hatchWell: new THREE.MeshLambertMaterial({ color: 0x20242a }),
+    louvre: new THREE.MeshLambertMaterial({ color: 0x8f959c }),
+    passive: new THREE.MeshLambertMaterial({ color: 0xe3e7ea }),
+    rfBody: new THREE.MeshLambertMaterial({ color: 0x2a2d33 }),
+    coax: new THREE.MeshLambertMaterial({ color: 0x121417 }),
   };
+}
+
+/** Chequer plate, for the lift-off covers of the floor cable duct. The plans
+ *  draw the «tapas» cross-hatched; the caseta nodes are «PLANTA SIN SUELO», so
+ *  what is under them is the duct, not a raised-floor void. */
+function buildChequerTexture(): THREE.CanvasTexture {
+  const t = cv(128, 128, (g) => {
+    g.fillStyle = '#6f747b'; g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = 'rgba(255,255,255,.20)'; g.lineWidth = 5;
+    g.lineCap = 'round';
+    for (let i = -128; i < 128; i += 32) {
+      for (const [dx, dy] of [[1, 1], [1, -1]] as const) {
+        g.beginPath();
+        g.moveTo(i + 64, 64 - dy * 10);
+        g.lineTo(i + 64 + dx * 20, 64 + dy * 10);
+        g.stroke();
+      }
+    }
+    g.strokeStyle = 'rgba(24,27,32,.35)'; g.lineWidth = 3;
+    for (let i = 0; i <= 128; i += 32) {
+      g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 128); g.stroke();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(3, 3);
+  return t;
 }
