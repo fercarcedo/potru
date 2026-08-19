@@ -44,6 +44,12 @@ interface Bay {
    */
   enclosed?: boolean;
   /**
+   * What the plan draws inside an operator cage at the PAO, in the same plan
+   * metres as the cage itself. Without them every cage held the same generic
+   * half-rack and there was no telling one operator's from another's.
+   */
+  racks?: { x: number; z: number; w: number; d: number; label?: string }[];
+  /**
    * What the plan says this cabinet actually holds, when its label names more
    * than one thing («Repartidor FO + TX Cube», «GPON y vídeo», «DWDM y
    * splitter»). Each entry fills its own band of the rack; omitted, the
@@ -71,6 +77,10 @@ interface Hatch {
 interface Room {
   source: string;
   h: number;
+  /** the room has a raised access floor, as its plan rotulates */
+  raisedFloor?: boolean;
+  /** where the plan marks an extinguisher, in plan metres */
+  extinguishers?: [number, number][];
   outline: [number, number][];
   doors: { edge: number; at: number; width: number }[];
   vents?: Vent[];
@@ -153,7 +163,7 @@ export function buildRoom(n: NetworkNode) {
   const cam = new THREE.PerspectiveCamera(70, 1, 0.05, 100);
 
   /* ---- procedural textures, materials and equipment builders ---- */
-  const raisedFloor = n.id === 'blimea';
+  const raisedFloor = room.raisedFloor === true;
   const floorTex = buildFloorTexture(raisedFloor, W, D);
   const wallTex = buildWallTexture();
   const mat = buildMaterials(floorTex, wallTex);
@@ -190,6 +200,90 @@ export function buildRoom(n: NetworkNode) {
   }
 
   const orientOf = computeOrientations(room.bays, poly, solids, W, D);
+
+  /* Each cage gets its own accent, so «which one is Adamo?» is answerable
+     from across the room. The pliego carries no operator artwork — only the
+     names on the plan — so the cages are keyed by colour and wordmark, not by
+     anyone's logo. */
+  const CAGE_ACCENT = [0x41e3d2, 0xe8a33d, 0x7f8fe0, 0xe06f8f, 0x6fc36f, 0xd0d5db];
+  let cageIndex = 0;
+
+  /**
+   * An operator cage at the PAO: floor-to-ceiling posts, woven mesh panels, a
+   * gate onto the aisle carrying the operator's name, and the racks the plan
+   * actually draws inside it.
+   */
+  function buildCage(bay: Bay, g: THREE.Group, rot: number, idx: number) {
+    const gh = bay.h;
+    const accent = CAGE_ACCENT[idx % CAGE_ACCENT.length]!;
+    const accentMat = new THREE.MeshLambertMaterial({ color: accent });
+    /* the gate faces the aisle, i.e. the middle of the room */
+    const gateOnMinusZ = bay.z - D / 2 + bay.d / 2 > 0;
+    const gz = (gateOnMinusZ ? -1 : 1) * bay.d / 2;
+
+    for (const [px, pz] of [
+      [-bay.w / 2, -bay.d / 2], [bay.w / 2, -bay.d / 2],
+      [-bay.w / 2, bay.d / 2], [bay.w / 2, bay.d / 2],
+    ] as const) box(0.06, gh, 0.06, mat.alu, px, gh / 2, pz, g);
+    box(bay.w, 0.05, bay.d, mat.alu, 0, gh, 0, g);
+
+    /* mesh on the three closed sides, and on the gate above its name panel */
+    const panels: [number, number, number, number][] = [
+      [-bay.w / 2, 0, 0.02, bay.d], [bay.w / 2, 0, 0.02, bay.d],
+      [0, -gz, bay.w, 0.02],
+    ];
+    /* each panel needs its own texture: the mesh has to keep the same cell
+       size whatever the panel measures, and repeat lives on the map */
+    const meshPanel = (pw: number, ph: number) => {
+      const m = fin.mesh.clone();
+      m.map = fin.mesh.map!.clone();
+      m.map.needsUpdate = true;
+      m.map.wrapS = m.map.wrapT = THREE.RepeatWrapping;
+      m.map.repeat.set(Math.max(0.5, pw) * 16, Math.max(0.5, ph) * 16);
+      return m;
+    };
+    for (const [px, pz, pw, pd] of panels) {
+      box(pw, gh - 0.1, pd, meshPanel(Math.max(pw, pd), gh), px, gh / 2, pz, g);
+    }
+
+    /* the gate: an accent frame, the operator's name at eye level, mesh above */
+    box(bay.w, 0.06, 0.05, accentMat, 0, gh - 0.03, gz, g);
+    for (const sx of [-1, 1]) box(0.05, gh, 0.05, accentMat, sx * (bay.w / 2 - 0.03), gh / 2, gz, g);
+    /* the name plate sits at eye level, mesh above and below it */
+    const ny = 1.45, nh = 0.62;
+    box(bay.w - 0.1, gh - ny - nh / 2 - 0.05, 0.02,
+        meshPanel(bay.w, gh - ny - nh / 2), 0, (ny + nh / 2 + gh) / 2 - 0.02, gz, g);
+    box(bay.w - 0.1, ny - nh / 2 - 0.05, 0.02,
+        meshPanel(bay.w, ny - nh / 2), 0, (ny - nh / 2) / 2, gz, g);
+    box(bay.w - 0.1, nh, 0.03, accentMat, 0, ny, gz, g);
+    box(0.05, 0.2, 0.05, fin.steel, bay.w / 2 - 0.14, 1.02, gz * 1.12, g);   /* latch */
+
+    /* the name, big, on the gate and again over the top rail */
+    const name = bay.label.split('·').pop()!.trim();
+    const front = new THREE.Vector3(0, ny, gz * 1.06).applyAxisAngle(new THREE.Vector3(0, 1, 0), rot)
+      .add(g.position);
+    label(name.toUpperCase(), Math.min(bay.w * 0.78, 1.1), front.x, front.y, front.z,
+          rot + (gateOnMinusZ ? Math.PI : 0), '#0d1218');
+    label(bay.label, Math.min(bay.w * 0.9, 1.35), g.position.x, gh + 0.14, g.position.z, 0, '#c8d4e2');
+
+    /* what the plan draws inside */
+    for (const rk of bay.racks ?? []) {
+      const sub = new THREE.Group();
+      sub.position.set(rk.x - bay.x - bay.w / 2 + rk.w / 2, 0, rk.z - bay.z - bay.d / 2 + rk.d / 2);
+      g.add(sub);
+      const rh = 2.0;
+      box(rk.w, rh, rk.d, new THREE.MeshLambertMaterial({ color: COLOR['rack']! }), 0, rh / 2, 0, sub);
+      rackFrame(sub, rk.w, rh, rk.d / 2, 0);
+      for (let i = 0; i < 6; i++) {
+        box(rk.w - 0.13, 0.13, 0.04, fin.module, 0, 0.45 + i * 0.26, rk.d * 0.48, sub);
+        portLed(rk.w / 2 - 0.11, 0.45 + i * 0.26, rk.d * 0.52, sub, i % 3 !== 2, 'status');
+      }
+      if (rk.label) {
+        label(rk.label, Math.min(rk.w * 0.95, 0.7),
+              g.position.x + sub.position.x, rh + 0.09, g.position.z + sub.position.z, 0, '#93a6bf');
+      }
+    }
+  }
 
   /**
    * The OLT unit of a cabinet: the real line cards and lit GPON ports of every
@@ -231,20 +325,7 @@ export function buildRoom(n: NetworkNode) {
     const fz = faceD / 2;
 
     if (bay.kind === 'cage') {
-      /* operator cage: aluminium frame with glass/mesh panels */
-      const gh = bay.h;
-      box(bay.w, 0.05, bay.d, mat.alu, 0, gh, 0, g);
-      for (const [px, pz, pw, pd] of [
-        [0, -bay.d / 2, bay.w, 0.03], [0, bay.d / 2, bay.w, 0.03],
-        [-bay.w / 2, 0, 0.03, bay.d], [bay.w / 2, 0, 0.03, bay.d],
-      ] as const) box(pw, gh, pd, mat.glass, px, gh / 2, pz, g);
-      const inner = new THREE.Group();
-      inner.position.set(0, 0, 0);
-      g.add(inner);
-      box(0.5, 1.9, 0.5, new THREE.MeshLambertMaterial({ color: 0x2e3238 }), 0, 0.95, 0, inner);
-      rackFrame(inner, 0.5, 1.9, 0.26, 0);
-      for (let i = 0; i < 6; i++) box(0.42, 0.11, 0.03, fin.module, 0, 0.5 + i * 0.2, 0.27, inner);
-      label(bay.label, Math.min(bay.w * 0.8, 1.0), g.position.x, gh + 0.1, g.position.z, 0, '#c8d4e2');
+      buildCage(bay, g, rot, cageIndex++);
       continue;
     }
 
@@ -403,8 +484,16 @@ export function buildRoom(n: NetworkNode) {
     hatchRun(h.x - W / 2, h.z - D / 2, h.w, h.d, h.n ?? 1);
   }
 
-  /* a fire extinguisher by the door, as the elevations show */
-  if (room.doors[0]) {
+  /* fire extinguishers. Where the plan marks them — the PAO draws three —
+     that is where they go; elsewhere, one beside the door as the elevations
+     show. */
+  const extinguisher = (x: number, z: number) => {
+    box(0.11, 0.42, 0.11, fin.red, x, 0.68, z);
+    box(0.05, 0.09, 0.05, fin.rail, x, 0.93, z);
+  };
+  if (room.extinguishers?.length) {
+    for (const [x, z] of room.extinguishers) extinguisher(x - W / 2, z - D / 2);
+  } else if (room.doors[0]) {
     const d0 = room.doors[0];
     const [ax, az] = poly[d0.edge]!;
     const [bx, bz] = poly[(d0.edge + 1) % poly.length]!;
@@ -412,10 +501,7 @@ export function buildRoom(n: NetworkNode) {
     const t = d0.at + d0.width + 0.28;
     const ex = ax + Math.cos(ang) * t, ez = az + Math.sin(ang) * t;
     const inx = ex - Math.sin(ang) * -0.12, inz = ez + Math.cos(ang) * -0.12;
-    if (pointInPolygon(poly, inx, inz)) {
-      box(0.11, 0.42, 0.11, fin.red, inx, 0.68, inz);
-      box(0.05, 0.09, 0.05, fin.rail, inx, 0.93, inz);
-    }
+    if (pointInPolygon(poly, inx, inz)) extinguisher(inx, inz);
   }
 
   /* ---- legend ---- */

@@ -26,6 +26,7 @@ interface Bay {
   olts?: number[];
   units?: string[];
   enclosed?: boolean;
+  racks?: { x: number; z: number; w: number; d: number; label?: string }[];
 }
 interface Tray {
   level?: 'ceiling' | 'floor' | number;
@@ -50,6 +51,8 @@ interface Vent {
 interface Room {
   source: string;
   h: number;
+  raisedFloor?: boolean;
+  extinguishers?: [number, number][];
   outline: Point[];
   doors: Door[];
   vents?: Vent[];
@@ -162,6 +165,20 @@ describe('bays', () => {
         });
       }
 
+      if (bay.racks) {
+        it(`${id}: bay ${i} (${bay.label}) keeps its racks inside the cage`, () => {
+          expect(bay.kind).toBe('cage');
+          for (const rk of bay.racks!) {
+            expect(rk.w).toBeGreaterThan(0);
+            expect(rk.d).toBeGreaterThan(0);
+            expect(rk.x, rk.label).toBeGreaterThanOrEqual(bay.x - 1e-6);
+            expect(rk.x + rk.w, rk.label).toBeLessThanOrEqual(bay.x + bay.w + 1e-6);
+            expect(rk.z, rk.label).toBeGreaterThanOrEqual(bay.z - 1e-6);
+            expect(rk.z + rk.d, rk.label).toBeLessThanOrEqual(bay.z + bay.d + 1e-6);
+          }
+        });
+      }
+
       if (bay.units) {
         it(`${id}: bay ${i} (${bay.label}) lists units the viewer can build`, () => {
           expect(bay.units!.length).toBeGreaterThan(0);
@@ -173,6 +190,20 @@ describe('bays', () => {
           if (bay.units!.includes('olt')) expect(bay.olts?.length).toBeGreaterThan(0);
         });
       }
+    }
+  }
+});
+
+describe('extinguishers', () => {
+  for (const [id, room] of Object.entries(ROOMS)) {
+    const box = bbox(room.outline);
+    for (const [i, [x, z]] of (room.extinguishers ?? []).entries()) {
+      it(`${id}: extinguisher ${i} is inside the room`, () => {
+        expect(x).toBeGreaterThanOrEqual(box.minX);
+        expect(x).toBeLessThanOrEqual(box.maxX);
+        expect(z).toBeGreaterThanOrEqual(box.minZ);
+        expect(z).toBeLessThanOrEqual(box.maxZ);
+      });
     }
   }
 });

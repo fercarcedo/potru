@@ -121,6 +121,8 @@ export interface Finishes {
   /** the RF side of a video shelf: F connectors and their coax */
   rfBody: THREE.MeshLambertMaterial;
   coax: THREE.MeshLambertMaterial;
+  /** the woven mesh panel of an operator cage at the PAO */
+  mesh: THREE.MeshLambertMaterial;
 }
 
 /** Extra finishes for the equipment detail (rails, cords, cell cases…). */
@@ -154,7 +156,25 @@ export function buildFinishes(): Finishes {
     passive: new THREE.MeshLambertMaterial({ color: 0xe3e7ea }),
     rfBody: new THREE.MeshLambertMaterial({ color: 0x2a2d33 }),
     coax: new THREE.MeshLambertMaterial({ color: 0x121417 }),
+    mesh: new THREE.MeshLambertMaterial({
+      map: buildMeshTexture(), transparent: true, alphaTest: 0.35, side: THREE.DoubleSide,
+    }),
   };
+}
+
+/** Woven wire mesh: what the PAO's cages are actually panelled with, and what
+ *  lets you see whose kit is in which cage from the aisle. */
+function buildMeshTexture(): THREE.CanvasTexture {
+  const t = cv(64, 64, (g) => {
+    g.clearRect(0, 0, 64, 64);
+    g.strokeStyle = '#aeb5bd'; g.lineWidth = 4;
+    for (const i of [0, 32]) {
+      g.beginPath(); g.moveTo(i + 2, 0); g.lineTo(i + 2, 64); g.stroke();
+      g.beginPath(); g.moveTo(0, i + 2); g.lineTo(64, i + 2); g.stroke();
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
 }
 
 /** Chequer plate, for the lift-off covers of the floor cable duct. The plans

@@ -79,6 +79,14 @@ licitación en PLACSP.
     bastidores, y se habían transcrito como tres bastidores en mitad de la sala.
     Las cinco salas difíciles (Mieres, Tineo, Blimea, Pola de Lena y Cangas) se releyeron del PDF
     a 400 ppp; la escala de cada una se fijó con dos cotas independientes del propio plano.
+  - **El PAO**: se entra por la puerta doble de 1,40 m del muro izquierdo, que da al pasillo
+    central —estaba en el muro inferior, detrás de la Jaula 3—; el «falso suelo de PVC
+    estratificado» que rotula el plano cubre toda la sala (`raisedFloor`, que antes estaba
+    cableado por id de nodo para Blimea); cada jaula lleva dentro los bastidores que el plano le
+    rotula (`racks`) en vez de un medio bastidor genérico igual para las seis; y los tres
+    extintores van donde el plano los marca (`extinguishers`), no uno junto a la puerta. El color
+    de acento de cada jaula y el rótulo del portón son ayuda de lectura: el pliego da los nombres
+    de los operadores, no sus marcas gráficas.
   - **Detalle por armario remedido**: en Langreo y en Llanes el Repartidor F.O. tiene 0,6 m de
     fondo y sobresale 0,30 m de la fila —estaba a 0,33 como el resto, que es por qué se veía
     distinto—, Llanes tiene un tercer armario de «Baterías» (0,600 × 0,500) junto al Transporte
