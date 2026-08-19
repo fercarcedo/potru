@@ -14,6 +14,9 @@ test.describe('schematic map label placement', () => {
     // WHATWG-URL-style; './' keeps it, matching how the site is actually served.
     await page.goto('./');
     await page.waitForSelector('#astMap text.lbl-node');
+    // map.ts re-places the labels once IBM Plex Mono has loaded (getBBox()
+    // measures the fallback font until then); wait for that second pass.
+    await page.evaluate(() => document.fonts.ready);
   });
 
   test('places every node, secondary and town label inside the map viewBox', async ({ page }) => {
@@ -102,5 +105,87 @@ test.describe('schematic map label placement', () => {
     expect(result.found).toBe(true);
     expect(result.coanaNaviaOverlap).toBe(0);
     expect(result.oyancoMoredaOverlap).toBe(0);
+  });
+  /**
+   * The three checks below guard the geometry the placement pass cannot fix
+   * for itself. A town dot dropped on top of a trunk hides its own leader
+   * line (it runs along the cable) and pushes its name away from it, and a
+   * hand-placed trunk caption can drift until it captions the wrong cable —
+   * both had happened to several labels at once. The thresholds are the
+   * loosest ones today's map passes: the worst town label sits 6.4 units
+   * from its dot, the tightest dot clears the nearest cable by 9.1, and the
+   * furthest caption is 27.3 from one.
+   */
+  test('keeps every served-town label against its own dot', async ({ page }) => {
+    const far = await page.evaluate(() => {
+      const svg = document.getElementById('astMap')!;
+      const out: string[] = [];
+      for (const el of svg.querySelectorAll<SVGTextElement>('.lbl-town')) {
+        const ax = Number(el.dataset.ax), ay = Number(el.dataset.ay);
+        const b = el.getBBox();
+        const px = Math.max(b.x, Math.min(ax, b.x + b.width));
+        const py = Math.max(b.y, Math.min(ay, b.y + b.height));
+        const gap = Math.hypot(px - ax, py - ay);
+        if (gap > 8) out.push(`${el.textContent} (${gap.toFixed(1)})`);
+      }
+      return out;
+    });
+    expect(far).toEqual([]);
+  });
+
+  test('keeps every served-town dot clear of the trunks, so its leader line shows', async ({ page }) => {
+    const onCable = await page.evaluate(() => {
+      const svg = document.getElementById('astMap')!;
+      const cables = [...svg.querySelectorAll('path')].filter(
+        (p) => Number(p.getAttribute('stroke-width') ?? 0) >= 1.5 && (p.getTotalLength?.() ?? 0) > 0);
+      const out: string[] = [];
+      for (const el of svg.querySelectorAll<SVGTextElement>('.lbl-town')) {
+        const ax = Number(el.dataset.ax), ay = Number(el.dataset.ay);
+        let min = Infinity;
+        for (const p of cables) {
+          const len = p.getTotalLength();
+          for (let d = 0; d <= len; d += 2) {
+            const q = p.getPointAtLength(d);
+            min = Math.min(min, Math.hypot(q.x - ax, q.y - ay));
+          }
+        }
+        if (min < 8) out.push(`${el.textContent} (${min.toFixed(1)})`);
+      }
+      return out;
+    });
+    expect(onCable).toEqual([]);
+  });
+
+  test('keeps every trunk caption beside the cable it names, and off the other captions', async ({ page }) => {
+    const { adrift, crowded } = await page.evaluate(() => {
+      const svg = document.getElementById('astMap')!;
+      const captions = [...svg.querySelectorAll<SVGTextElement>('text[data-trunk]')]
+        .map((t) => ({ id: t.dataset.trunk!, name: t.textContent ?? '', b: t.getBBox() }));
+      /* distance from a point to a box, 0 when the point is inside it */
+      const away = (b: DOMRect, x: number, y: number) =>
+        Math.hypot(Math.max(b.x - x, 0, x - (b.x + b.width)), Math.max(b.y - y, 0, y - (b.y + b.height)));
+      const adrift: string[] = [];
+      for (const { id, name, b } of captions) {
+        const path = svg.querySelector<SVGPathElement>(`path[data-trunk="${id}"]`)!;
+        const len = path.getTotalLength();
+        let min = Infinity;
+        for (let d = 0; d <= len; d += 2) {
+          const q = path.getPointAtLength(d);
+          min = Math.min(min, away(b, q.x, q.y));
+        }
+        if (min > 30) adrift.push(`${name} (${min.toFixed(1)})`);
+      }
+      const crowded: string[] = [];
+      for (let i = 0; i < captions.length; i++)
+        for (let j = i + 1; j < captions.length; j++) {
+          const a = captions[i]!.b, c = captions[j]!.b;
+          const dx = Math.max(a.x - (c.x + c.width), c.x - (a.x + a.width), 0);
+          const dy = Math.max(a.y - (c.y + c.height), c.y - (a.y + a.height), 0);
+          if (Math.hypot(dx, dy) < 12) crowded.push(`${captions[i]!.name} × ${captions[j]!.name}`);
+        }
+      return { adrift, crowded };
+    });
+    expect(adrift).toEqual([]);
+    expect(crowded).toEqual([]);
   });
 });

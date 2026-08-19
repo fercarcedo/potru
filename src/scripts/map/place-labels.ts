@@ -1,5 +1,5 @@
 /**
- * Runs once, after every trunk/node/town/PAO element is already in the map's
+ * Runs after every trunk/node/town/PAO element is already in the map's
  * <svg>: measures every fixed obstacle and every trunk's path, then places
  * each .lbl-node/.lbl-sec/.lbl-town label near its own dot with
  * label-placement.ts's solver, adding a leader line when a label had to
@@ -14,6 +14,13 @@
  * obstacles too, not just other labels. Node names are placed first, so the
  * small print yields to them, and a label that ends up far from its dot gets
  * a leader line.
+ *
+ * It is idempotent, and has to be: getBBox() measures whatever font is in
+ * force at the time, so the pass that runs on load measures the fallback
+ * monospace until IBM Plex Mono has actually arrived, and map.ts runs it
+ * again once it has. Each label therefore remembers its as-drawn home in
+ * data-h*, instead of reading it back off its (possibly already moved) x/y,
+ * and the leader lines live in one group that is rebuilt from scratch.
  *
  * Split out of map.ts's initMap() verbatim. label-placement.ts's solver is
  * pure and lives in its own file so it is unit-testable without a renderer
@@ -58,7 +65,8 @@ export function placeMapLabels(svg: SVGSVGElement): void {
       width: +q.getAttribute('width')!, height: +q.getAttribute('height')!,
     }, 3));
 
-  const leaders = svgEl('g', {}, svg);
+  svg.querySelector('g[data-leaders]')?.remove();
+  const leaders = svgEl('g', { 'data-leaders': '' }, svg);
 
   for (const cls of ['.lbl-node', '.lbl-sec', '.lbl-town'])
     for (const el of svg.querySelectorAll<SVGTextElement>(cls)) {
@@ -66,10 +74,12 @@ export function placeMapLabels(svg: SVGSVGElement): void {
       /* a label may of course sit against its own dot */
       const others = obstacles.filter(
         (o) => !(ax > o.x && ax < o.x + o.w && ay > o.y && ay < o.y + o.h));
-      const home: Candidate = [
-        +el.getAttribute('x')! - ax, +el.getAttribute('y')! - ay,
-        el.getAttribute('text-anchor') as Anchor,
-      ];
+      if (el.dataset.hx === undefined) {
+        el.dataset.hx = `${+el.getAttribute('x')! - ax}`;
+        el.dataset.hy = `${+el.getAttribute('y')! - ay}`;
+        el.dataset.ha = el.getAttribute('text-anchor') ?? 'start';
+      }
+      const home: Candidate = [+el.dataset.hx, +el.dataset.hy!, el.dataset.ha as Anchor];
 
       const result = placeLabel({
         ax, ay, ar,
