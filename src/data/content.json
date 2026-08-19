@@ -229,7 +229,19 @@
     {
       "id": "red-completa",
       "viewBox": [0, 0, 1160, 470],
-      "trunks": ["occ", "occrent", "minera", "lena", "nalon", "morcin", "aller", "surocc", "suror", "orient", "redund"],
+      "trunks": [
+        "occ",
+        "occrent",
+        "minera",
+        "lena",
+        "nalon",
+        "morcin",
+        "aller",
+        "surocc",
+        "suror",
+        "orient",
+        "redund"
+      ],
       "node": null,
       "title": "La red completa, lista para los 10 Gbps",
       "text": "Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gbps extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha."

@@ -1,27 +1,118 @@
 /* Reset, page frame and the handful of primitives shared by every section:
    .wrap, .eyebrow, .lead, .mono and the .dot swatch used in both legends. */
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--ink);color:var(--txt);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16.5px;line-height:1.6;overflow-x:hidden}
-::selection{background:var(--xgs);color:var(--ink)}
-h1,h2,h3,.display{font-family:'Archivo Variable',sans-serif;font-stretch:125%;letter-spacing:-.01em}
-h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:700;margin-bottom:14px}
-.mono{font-family:'IBM Plex Mono',monospace}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-section{padding:88px 0}
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--xgs);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.eyebrow::before{content:"";width:26px;height:1px;background:var(--xgs)}
-.eyebrow.warm{color:var(--gpon)}.eyebrow.warm::before{background:var(--gpon)}
-.lead{color:var(--muted);max-width:66ch;font-size:1.02rem}
-.dot{width:9px;height:9px;border-radius:50%}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background: var(--ink);
+  color: var(--txt);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 16.5px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+::selection {
+  background: var(--xgs);
+  color: var(--ink);
+}
+h1,
+h2,
+h3,
+.display {
+  font-family: 'Archivo Variable', sans-serif;
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+section {
+  padding: 88px 0;
+}
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--xgs);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--xgs);
+}
+.eyebrow.warm {
+  color: var(--gpon);
+}
+.eyebrow.warm::before {
+  background: var(--gpon);
+}
+.lead {
+  color: var(--muted);
+  max-width: 66ch;
+  font-size: 1.02rem;
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
 /* Independence notice. Written independently into both Hero.astro and
    Layout.astro's footer, so it can't live in either component's scoped
    style — Astro's scoping wouldn't reach the other copy. */
-.disclaimer{display:inline-flex;align-items:flex-start;gap:8px;margin-top:20px;padding:9px 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-size:.76rem;line-height:1.5;max-width:64ch}
-.disclaimer b{color:var(--txt);font-weight:600}
-.disclaimer .i{color:var(--xgs);flex:none}
-@media(max-width:760px){
-  section{padding:56px 0}
-  .lead{font-size:1rem}
+.disclaimer {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  max-width: 64ch;
 }
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.disclaimer b {
+  color: var(--txt);
+  font-weight: 600;
+}
+.disclaimer .i {
+  color: var(--xgs);
+  flex: none;
+}
+@media (max-width: 760px) {
+  section {
+    padding: 56px 0;
+  }
+  .lead {
+    font-size: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

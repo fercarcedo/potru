@@ -55,8 +55,14 @@ export const ringSpots = (r: number): Candidate[] => {
   const out: Candidate[] = [];
   for (const pad of [4, 10, 17, 26])
     for (const [ux, uy] of [
-      [0, 1], [0, -1], [1, 0], [-1, 0],
-      [0.72, 0.72], [-0.72, 0.72], [0.72, -0.72], [-0.72, -0.72],
+      [0, 1],
+      [0, -1],
+      [1, 0],
+      [-1, 0],
+      [0.72, 0.72],
+      [-0.72, 0.72],
+      [0.72, -0.72],
+      [-0.72, -0.72],
     ] as const) {
       const anc: Anchor = ux > 0.1 ? 'start' : ux < -0.1 ? 'end' : 'middle';
       /* the baseline sits at the foot of the text, so below the dot it has to
@@ -123,10 +129,13 @@ export function placeLabel(input: PlaceLabelInput): PlaceLabelResult {
        then off the cables, then as close to home as possible. */
     const gap = Math.hypot(
       Math.max(m.raw.x, Math.min(ax, m.raw.x + m.raw.w)) - ax,
-      Math.max(m.raw.y, Math.min(ay, m.raw.y + m.raw.h)) - ay
+      Math.max(m.raw.y, Math.min(ay, m.raw.y + m.raw.h)) - ay,
     );
     const soft =
-      (gap > LEADER ? 500 : 0) + gap * 2 + i * 0.5 + cables.reduce((a, o) => a + overlapArea(m.padded, o), 0);
+      (gap > LEADER ? 500 : 0) +
+      gap * 2 +
+      i * 0.5 +
+      cables.reduce((a, o) => a + overlapArea(m.padded, o), 0);
     if (!clear || soft < clear.cost) clear = { dx, dy, anc, m, cost: soft };
   }
 

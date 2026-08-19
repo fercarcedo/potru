@@ -37,15 +37,48 @@ export type Vec3 = [number, number, number];
  * @param y0,y1 the band to fill, in the cabinet's local Y
  * @param front +1; kept so cord routing can mirror with the face
  */
-export type UnitBuilder =
-  (g: THREE.Object3D, w: number, fz: number, y0: number, y1: number, front: number) => void;
+export type UnitBuilder = (
+  g: THREE.Object3D,
+  w: number,
+  fz: number,
+  y0: number,
+  y1: number,
+  front: number,
+) => void;
 
+/* Every member is a plain closure, declared as a property rather than with
+   method shorthand: buildRoom() pulls them off this object by destructuring,
+   and method syntax would be claiming a `this` that none of them has. */
 export interface EquipmentBuilders {
-  box(w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number, parent?: THREE.Object3D): THREE.Mesh;
-  label(text: string, wm: number, x: number, y: number, z: number, ry: number, color?: string): THREE.Mesh;
-  portLed(x: number, y: number, z: number, parent: THREE.Object3D, on: boolean, role?: 'gpon-port' | 'status'): void;
-  cord(pts: Vec3[], parent: THREE.Object3D, m?: THREE.Material, r?: number): void;
-  rackFrame(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
+  box: (
+    w: number,
+    h: number,
+    d: number,
+    m: THREE.Material,
+    x: number,
+    y: number,
+    z: number,
+    parent?: THREE.Object3D,
+  ) => THREE.Mesh;
+  label: (
+    text: string,
+    wm: number,
+    x: number,
+    y: number,
+    z: number,
+    ry: number,
+    color?: string,
+  ) => THREE.Mesh;
+  portLed: (
+    x: number,
+    y: number,
+    z: number,
+    parent: THREE.Object3D,
+    on: boolean,
+    role?: 'gpon-port' | 'status',
+  ) => void;
+  cord: (pts: Vec3[], parent: THREE.Object3D, m?: THREE.Material, r?: number) => void;
+  rackFrame: (g: THREE.Object3D, w: number, h: number, fz: number, base: number) => void;
   /** ROM — Repartidor Óptico Modular: stacked splice/patch trays. */
   odfUnit: UnitBuilder;
   /** DWDM / WDM / Transmode transport: shelves of lit line modules. */
@@ -56,16 +89,16 @@ export interface EquipmentBuilders {
   videoUnit: UnitBuilder;
   /** «TX Cube» / «Transporte Cube»: one compact transport chassis. */
   txCubeUnit: UnitBuilder;
-  cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
+  cgbtBay: (g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) => void;
   /** «Dist. C.A.»: an AC distribution board, simpler than the CGBT. */
-  acDistBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number): void;
-  powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number): void;
-  batteryBay(g: THREE.Object3D, w: number, h: number, d: number, base: number): void;
-  chassis(o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number): void;
+  acDistBay: (g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) => void;
+  powerBay: (g: THREE.Object3D, w: number, h: number, fz: number, base: number) => void;
+  batteryBay: (g: THREE.Object3D, w: number, h: number, d: number, base: number) => void;
+  chassis: (o: Olt, g: THREE.Object3D, w: number, y: number, h: number, front: number) => void;
   /** Wire-mesh cable tray between two points in room space. */
-  rejiband(a: Vec3, b: Vec3, wTray?: number): THREE.Group | undefined;
+  rejiband: (a: Vec3, b: Vec3, wTray?: number) => THREE.Group | undefined;
   /** Lift-off covers over a floor cable duct («tapas»). */
-  hatchRun(x: number, z: number, w: number, d: number, n: number): void;
+  hatchRun: (x: number, z: number, w: number, d: number, n: number) => void;
   /** ports/status lamps portLed() lit, for the render loop to blink. */
   leds: Led[];
 }
@@ -73,24 +106,49 @@ export interface EquipmentBuilders {
 /** Builds every equipment-construction function for one room, bound to its
  *  scene, materials and finishes. Call once per buildRoom(); the returned
  *  `leds` array fills up as the bay loop calls portLed(). */
-export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, fin: Finishes): EquipmentBuilders {
+export function createEquipmentBuilders(
+  scene: THREE.Scene,
+  mat: RoomMaterials,
+  fin: Finishes,
+): EquipmentBuilders {
   const leds: Led[] = [];
 
-  function box(w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number, parent?: THREE.Object3D) {
+  function box(
+    w: number,
+    h: number,
+    d: number,
+    m: THREE.Material,
+    x: number,
+    y: number,
+    z: number,
+    parent?: THREE.Object3D,
+  ) {
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
     b.position.set(x, y, z);
     (parent ?? scene).add(b);
     return b;
   }
 
-  function label(text: string, wm: number, x: number, y: number, z: number, ry: number, color = '#20242a') {
+  function label(
+    text: string,
+    wm: number,
+    x: number,
+    y: number,
+    z: number,
+    ry: number,
+    color = '#20242a',
+  ) {
     const t = cv(512, 96, (g) => {
       g.clearRect(0, 0, 512, 96);
-      g.fillStyle = color; g.font = '600 40px monospace'; g.textAlign = 'center';
+      g.fillStyle = color;
+      g.font = '600 40px monospace';
+      g.textAlign = 'center';
       g.fillText(text, 256, 62, 500);
     });
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(wm, wm * 96 / 512),
-      new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }));
+    const p = new THREE.Mesh(
+      new THREE.PlaneGeometry(wm, (wm * 96) / 512),
+      new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }),
+    );
     p.position.set(x, y, z);
     p.rotation.y = ry;
     scene.add(p);
@@ -102,11 +160,19 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
    * — which must stay countable against the pliego — from the decorative status
    * lamps on the other equipment.
    */
-  function portLed(x: number, y: number, z: number, parent: THREE.Object3D, on: boolean,
-                   role: 'gpon-port' | 'status' = 'gpon-port') {
+  function portLed(
+    x: number,
+    y: number,
+    z: number,
+    parent: THREE.Object3D,
+    on: boolean,
+    role: 'gpon-port' | 'status' = 'gpon-port',
+  ) {
     /* DoubleSide: cabinets against the far wall present their face towards -Z */
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(0.016, 0.011),
-      new THREE.MeshBasicMaterial({ color: on ? 0x39ff88 : 0x0d1218, side: THREE.DoubleSide }));
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.016, 0.011),
+      new THREE.MeshBasicMaterial({ color: on ? 0x39ff88 : 0x0d1218, side: THREE.DoubleSide }),
+    );
     m.position.set(x, y, z);
     m.name = role;
     parent.add(m);
@@ -114,8 +180,7 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   }
 
   /** A slack fibre patch cord: a sagging tube through the given points. */
-  function cord(pts: Vec3[], parent: THREE.Object3D,
-                m: THREE.Material = fin.fibre, r = 0.0045) {
+  function cord(pts: Vec3[], parent: THREE.Object3D, m: THREE.Material = fin.fibre, r = 0.0045) {
     const curve = new THREE.CatmullRomCurve3(pts.map(([x, y, z]) => new THREE.Vector3(x, y, z)));
     parent.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 16, r, 5, false), m));
   }
@@ -128,7 +193,7 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     box(w, 0.05, 0.06, fin.bezel, 0, base + h - 0.03, zz, g);
     box(w, 0.05, 0.06, fin.bezel, 0, base + 0.03, zz, g);
     /* fan tray under the top cap */
-    box(w - 0.12, 0.06, 0.03, fin.module, 0, base + h - 0.10, zz, g);
+    box(w - 0.12, 0.06, 0.03, fin.module, 0, base + h - 0.1, zz, g);
   }
 
   /**
@@ -139,11 +204,11 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     const inner = w - 0.13;
     const usable = y1 - y0;
     const trays = Math.max(2, Math.min(11, Math.floor(usable / 0.115)));
-    const mx = -w / 2 + 0.075;            /* vertical cable manager, left side */
+    const mx = -w / 2 + 0.075; /* vertical cable manager, left side */
     box(0.055, usable, 0.05, fin.bezel, mx, (y0 + y1) / 2, fz * 0.96, g);
     for (let i = 0; i < trays; i++) {
       const y = y0 + 0.06 + i * 0.115;
-      box(inner, 0.10, 0.045, fin.trayFace, 0.03, y, fz * 0.96, g);
+      box(inner, 0.1, 0.045, fin.trayFace, 0.03, y, fz * 0.96, g);
       /* adapter row: SC/APC, alternating green and blue as the trays fill up */
       const n = 12;
       for (let j = 0; j < n; j++) {
@@ -154,14 +219,29 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       if (i % 2 === 0) {
         for (const j of [1, 5, 9]) {
           const ax = -inner / 2 + 0.055 + j * ((inner - 0.09) / (n - 1)) + 0.03;
-          cord([[ax, y, fz * 1.05], [ax - 0.05, y - 0.055, fz * 1.16 * front],
-                [mx + 0.02, y - 0.03, fz * 1.05], [mx, y - 0.01, fz * 0.98]], g);
+          cord(
+            [
+              [ax, y, fz * 1.05],
+              [ax - 0.05, y - 0.055, fz * 1.16 * front],
+              [mx + 0.02, y - 0.03, fz * 1.05],
+              [mx, y - 0.01, fz * 0.98],
+            ],
+            g,
+          );
         }
       }
     }
     /* the bundle running down the manager and out of the top of the unit */
-    cord([[mx, y0, fz * 1.0], [mx, (y0 + y1) / 2, fz * 1.08], [mx, y1, fz * 0.9]],
-         g, fin.fibre, 0.012);
+    cord(
+      [
+        [mx, y0, fz * 1.0],
+        [mx, (y0 + y1) / 2, fz * 1.08],
+        [mx, y1, fz * 0.9],
+      ],
+      g,
+      fin.fibre,
+      0.012,
+    );
   };
 
   /**
@@ -174,22 +254,36 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     const inner = w - 0.13;
     const shelves = Math.max(1, Math.min(5, Math.floor((y1 - y0) / 0.17)));
     for (let s = 0; s < shelves; s++) {
-      const y = y0 + 0.10 + s * 0.17;
+      const y = y0 + 0.1 + s * 0.17;
       box(inner, 0.13, 0.05, fin.passive, 0, y, fz * 0.96, g);
       box(inner, 0.012, 0.055, fin.bezel, 0, y + 0.065, fz * 0.96, g);
       /* the input port, hard left, and its feed */
       const ix = -inner / 2 + 0.035;
       box(0.021, 0.038, 0.024, fin.adapter, ix, y, fz * 1.03, g);
-      cord([[ix, y, fz * 1.06], [ix - 0.03, y + 0.07, fz * 1.14 * front],
-            [-w / 2 + 0.07, y + 0.12, fz * 1.0]], g);
+      cord(
+        [
+          [ix, y, fz * 1.06],
+          [ix - 0.03, y + 0.07, fz * 1.14 * front],
+          [-w / 2 + 0.07, y + 0.12, fz * 1.0],
+        ],
+        g,
+      );
       /* the 1:N fan-out: eight outputs, each with its pigtail dropping away */
       const n = 8;
       for (let j = 0; j < n; j++) {
-        const ax = -inner / 2 + 0.10 + j * ((inner - 0.14) / (n - 1));
+        const ax = -inner / 2 + 0.1 + j * ((inner - 0.14) / (n - 1));
         box(0.016, 0.032, 0.022, fin.adapterBlue, ax, y, fz * 1.03, g);
         if (j % 2 === 0) {
-          cord([[ax, y, fz * 1.06], [ax + 0.02, y - 0.06, fz * 1.13 * front],
-                [w / 2 - 0.07, y - 0.10, fz * 1.0]], g, fin.fibre, 0.0035);
+          cord(
+            [
+              [ax, y, fz * 1.06],
+              [ax + 0.02, y - 0.06, fz * 1.13 * front],
+              [w / 2 - 0.07, y - 0.1, fz * 1.0],
+            ],
+            g,
+            fin.fibre,
+            0.0035,
+          );
         }
       }
     }
@@ -212,8 +306,14 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     const ox = -inner / 2 + 0.06;
     box(0.09, h * 0.6, 0.03, fin.module, ox, y, fz * 1.02, g);
     box(0.018, 0.018, 0.02, fin.adapter, ox, y + h * 0.18, fz * 1.05, g);
-    cord([[ox, y + h * 0.18, fz * 1.08], [ox - 0.04, y + h * 0.5, fz * 1.16 * front],
-          [-w / 2 + 0.07, y + h * 0.62, fz * 1.0]], g);
+    cord(
+      [
+        [ox, y + h * 0.18, fz * 1.08],
+        [ox - 0.04, y + h * 0.5, fz * 1.16 * front],
+        [-w / 2 + 0.07, y + h * 0.62, fz * 1.0],
+      ],
+      g,
+    );
     box(0.05, 0.03, 0.02, fin.screen, ox, y - h * 0.2, fz * 1.05, g);
     portLed(ox + 0.03, y - h * 0.2, fz * 1.06, g, true, 'status');
     /* RF output stage: F connectors, each with its coax dropping out */
@@ -221,8 +321,16 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     for (let j = 0; j < n; j++) {
       const ax = inner / 2 - 0.05 - j * 0.055;
       box(0.026, 0.026, 0.03, fin.copper, ax, y, fz * 1.03, g);
-      cord([[ax, y, fz * 1.06], [ax, y - h * 0.55, fz * 1.14 * front],
-            [w / 2 - 0.07, y - h * 0.8, fz * 1.0]], g, fin.coax, 0.0075);
+      cord(
+        [
+          [ax, y, fz * 1.06],
+          [ax, y - h * 0.55, fz * 1.14 * front],
+          [w / 2 - 0.07, y - h * 0.8, fz * 1.0],
+        ],
+        g,
+        fin.coax,
+        0.0075,
+      );
     }
   };
 
@@ -243,8 +351,14 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     for (const s of [-1, 1]) {
       const lx = -inner / 2 + 0.04 + (s > 0 ? 0.032 : 0);
       box(0.018, 0.02, 0.022, fin.adapter, lx, y + h * 0.2, fz * 1.02, g);
-      cord([[lx, y + h * 0.2, fz * 1.05], [lx - 0.02, y + h * 0.6, fz * 1.12 * front],
-            [-w / 2 + 0.07, y + h * 0.9, fz * 1.0]], g);
+      cord(
+        [
+          [lx, y + h * 0.2, fz * 1.05],
+          [lx - 0.02, y + h * 0.6, fz * 1.12 * front],
+          [-w / 2 + 0.07, y + h * 0.9, fz * 1.0],
+        ],
+        g,
+      );
     }
     /* client SFP cage row, and the status lamps that make it a live box */
     for (let j = 0; j < 6; j++) {
@@ -258,12 +372,15 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   function cgbtBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) {
     box(w, h, d, fin.panel, 0, base + h / 2, 0, g);
     /* door with a smoked inspection window */
-    const wy = base + h * 0.62, wh = Math.min(h * 0.5, 0.42), ww = w - 0.12;
+    const wy = base + h * 0.62,
+      wh = Math.min(h * 0.5, 0.42),
+      ww = w - 0.12;
     box(ww, wh, 0.02, fin.smoked, 0, wy, fz * 1.03, g);
     box(ww + 0.03, 0.018, 0.03, fin.bezel, 0, wy + wh / 2, fz * 1.02, g);
     box(ww + 0.03, 0.018, 0.03, fin.bezel, 0, wy - wh / 2, fz * 1.02, g);
     /* two DIN rails of breakers behind the window */
-    const rows = 2, per = Math.max(6, Math.round(ww / 0.026));
+    const rows = 2,
+      per = Math.max(6, Math.round(ww / 0.026));
     for (let r = 0; r < rows; r++) {
       const ry = wy + (r === 0 ? wh * 0.22 : -wh * 0.22);
       box(ww - 0.02, 0.006, 0.012, fin.steel, 0, ry - 0.035, fz * 0.99, g);
@@ -287,7 +404,9 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   function acDistBay(g: THREE.Object3D, w: number, h: number, d: number, fz: number, base: number) {
     box(w, h, d, fin.panel, 0, base + h / 2, 0, g);
     /* plain door, with the flush lock the enclosure actually has */
-    const dy = base + h * 0.6, dh = Math.min(h * 0.7, 0.6), dw = w - 0.06;
+    const dy = base + h * 0.6,
+      dh = Math.min(h * 0.7, 0.6),
+      dw = w - 0.06;
     box(dw, dh, 0.018, fin.panel, 0, dy, fz * 1.02, g);
     box(dw + 0.02, 0.014, 0.026, fin.bezel, 0, dy + dh / 2, fz * 1.02, g);
     box(dw + 0.02, 0.014, 0.026, fin.bezel, 0, dy - dh / 2, fz * 1.02, g);
@@ -299,7 +418,16 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     for (let i = 0; i < per; i++) {
       const bx = -(dw - 0.08) / 2 + i * ((dw - 0.08) / (per - 1));
       box(0.02, 0.058, 0.016, fin.breaker, bx, dy + dh * 0.18, fz * 1.04, g);
-      box(0.012, 0.014, 0.017, fin.toggle, bx, dy + dh * 0.18 + (i % 2 ? 0.011 : -0.011), fz * 1.045, g);
+      box(
+        0.012,
+        0.014,
+        0.017,
+        fin.toggle,
+        bx,
+        dy + dh * 0.18 + (i % 2 ? 0.011 : -0.011),
+        fz * 1.045,
+        g,
+      );
     }
     /* the tag the boards carry, and the earth stud below it */
     box(dw * 0.4, 0.05, 0.005, fin.cellLabel, -dw * 0.2, dy - dh * 0.28, fz * 1.03, g);
@@ -318,14 +446,20 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       box(inner, 0.19, 0.05, fin.module, 0, y, fz * 0.96, g);
       /* three plug-in modules per shelf, each with a pair of optical ports */
       for (let m = 0; m < 3; m++) {
-        const mxp = -inner / 2 + inner * (m + 0.5) / 3;
+        const mxp = -inner / 2 + (inner * (m + 0.5)) / 3;
         box(inner / 3 - 0.02, 0.16, 0.03, fin.bezel, mxp, y, fz * 1.02, g);
         box(0.016, 0.016, 0.018, fin.adapterBlue, mxp - 0.02, y + 0.03, fz * 1.06, g);
         box(0.016, 0.016, 0.018, fin.adapterBlue, mxp + 0.02, y + 0.03, fz * 1.06, g);
         portLed(mxp, y - 0.045, fz * 1.07, g, (s + m) % 4 !== 3, 'status');
         if (m === 1) {
-          cord([[mxp - 0.02, y + 0.03, fz * 1.08], [mxp - 0.09, y - 0.05, fz * 1.2],
-                [-w / 2 + 0.07, y - 0.11, fz * 1.05]], g);
+          cord(
+            [
+              [mxp - 0.02, y + 0.03, fz * 1.08],
+              [mxp - 0.09, y - 0.05, fz * 1.2],
+              [-w / 2 + 0.07, y - 0.11, fz * 1.05],
+            ],
+            g,
+          );
         }
       }
     }
@@ -333,12 +467,12 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
 
   /** Rectifier / power shelf: plug-in modules with status LEDs. */
   function powerBay(g: THREE.Object3D, w: number, h: number, fz: number, base: number) {
-    const inner = w - 0.10;
+    const inner = w - 0.1;
     const n = Math.max(3, Math.min(5, Math.floor(h / 0.34)));
     for (let i = 0; i < n; i++) {
       const y = base + 0.22 + i * 0.3;
       for (let m = 0; m < 3; m++) {
-        const mxp = -inner / 2 + inner * (m + 0.5) / 3;
+        const mxp = -inner / 2 + (inner * (m + 0.5)) / 3;
         box(inner / 3 - 0.015, 0.24, 0.04, fin.module, mxp, y, fz * 0.99, g);
         box(inner / 3 - 0.07, 0.05, 0.02, fin.bezel, mxp, y + 0.08, fz * 1.03, g);
         portLed(mxp, y - 0.06, fz * 1.05, g, true, 'status');
@@ -359,8 +493,8 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       for (const sz of [-d / 2 + 0.03, d / 2 - 0.03])
         box(0.045, h, 0.045, fin.rail, sx, base + h / 2, sz, g);
     for (let r = 0; r < rows; r++) {
-      const shelfY = base + 0.08 + r * ((h - 0.10) / rows);
-      const cellH = Math.min(0.23, (h - 0.10) / rows - 0.10);
+      const shelfY = base + 0.08 + r * ((h - 0.1) / rows);
+      const cellH = Math.min(0.23, (h - 0.1) / rows - 0.1);
       box(w - 0.02, 0.025, d - 0.02, fin.steel, 0, shelfY, 0, g);
       const pitch = w / per;
       for (let i = 0; i < per; i++) {
@@ -370,8 +504,16 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
         box(cw, cellH, cellD, fin.cellCase, cx, cy, 0, g);
         /* lighter lid and the rating label on the front */
         box(cw, 0.018, cellD, fin.cellTop, cx, cy + cellH / 2, 0, g);
-        box(cw * 0.66, cellH * 0.34, 0.005, fin.cellLabel,
-            cx, cy + cellH * 0.06, cellD / 2 + 0.004, g);
+        box(
+          cw * 0.66,
+          cellH * 0.34,
+          0.005,
+          fin.cellLabel,
+          cx,
+          cy + cellH * 0.06,
+          cellD / 2 + 0.004,
+          g,
+        );
         /* the two posts, and the link bar bridging to the next cell */
         const ty = cy + cellH / 2 + 0.019;
         for (const s2 of [-1, 1])
@@ -381,12 +523,26 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       }
       /* string leads: red from the first post, black from the last */
       const ty = shelfY + 0.0125 + cellH + 0.019;
-      cord([[-w / 2 + pitch * 0.5 - (pitch - 0.016) * 0.3, ty, 0],
-            [-w / 2 + 0.06, ty + 0.05, cellD * 0.3],
-            [-w / 2 + 0.05, shelfY - 0.02, d / 2 - 0.05]], g, fin.red, 0.009);
-      cord([[w / 2 - pitch * 0.5 + (pitch - 0.016) * 0.3, ty, 0],
-            [w / 2 - 0.06, ty + 0.05, cellD * 0.3],
-            [w / 2 - 0.05, shelfY - 0.02, d / 2 - 0.05]], g, fin.cableBlack, 0.009);
+      cord(
+        [
+          [-w / 2 + pitch * 0.5 - (pitch - 0.016) * 0.3, ty, 0],
+          [-w / 2 + 0.06, ty + 0.05, cellD * 0.3],
+          [-w / 2 + 0.05, shelfY - 0.02, d / 2 - 0.05],
+        ],
+        g,
+        fin.red,
+        0.009,
+      );
+      cord(
+        [
+          [w / 2 - pitch * 0.5 + (pitch - 0.016) * 0.3, ty, 0],
+          [w / 2 - 0.06, ty + 0.05, cellD * 0.3],
+          [w / 2 - 0.05, shelfY - 0.02, d / 2 - 0.05],
+        ],
+        g,
+        fin.cableBlack,
+        0.009,
+      );
     }
   }
 
@@ -410,15 +566,21 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
       box(Math.min(step * 0.7, 0.05), 0.012, 0.014, fin.bezel, cx, y + h * 0.39, 0.34 * front, g);
       box(Math.min(step * 0.7, 0.05), 0.012, 0.014, fin.bezel, cx, y - h * 0.39, 0.34 * front, g);
       for (let p = 0; p < o.portsPerCard; p++) {
-        const py = y + h * 0.32 - (p + 0.5) * (h * 0.62 / o.portsPerCard);
+        const py = y + h * 0.32 - (p + 0.5) * ((h * 0.62) / o.portsPerCard);
         portLed(cx, py, 0.345 * front, g, lit++ < o.portsActive);
       }
     }
     /* patch cords leaving the lit ports towards the side manager */
     for (const frac of [0.2, 0.5, 0.8]) {
       const cx = -usable / 2 + usable * frac;
-      cord([[cx, y, 0.35 * front], [cx - 0.06, y - h * 0.5, 0.46 * front],
-            [-w / 2 + 0.06, y - h * 0.62, 0.34 * front]], g);
+      cord(
+        [
+          [cx, y, 0.35 * front],
+          [cx - 0.06, y - h * 0.5, 0.46 * front],
+          [-w / 2 + 0.06, y - h * 0.62, 0.34 * front],
+        ],
+        g,
+      );
     }
   }
 
@@ -442,8 +604,8 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     const hh = 0.055;
     /* the two side rails, each a pair of wires */
     for (const s of [-1, 1]) {
-      box(len, 0.012, 0.012, fin.steel, 0, hh, s * wTray / 2, g);
-      box(len, 0.012, 0.012, fin.steel, 0, -hh, s * wTray / 2, g);
+      box(len, 0.012, 0.012, fin.steel, 0, hh, (s * wTray) / 2, g);
+      box(len, 0.012, 0.012, fin.steel, 0, -hh, (s * wTray) / 2, g);
     }
     /* longitudinal bottom wires */
     for (const t of [-0.3, 0, 0.3]) {
@@ -453,9 +615,15 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
     const step = 0.05;
     const count = Math.max(2, Math.floor(len / step));
     const rung = new THREE.InstancedMesh(
-      new THREE.BoxGeometry(0.008, 0.008, wTray), fin.steel, count);
+      new THREE.BoxGeometry(0.008, 0.008, wTray),
+      fin.steel,
+      count,
+    );
     const up = new THREE.InstancedMesh(
-      new THREE.BoxGeometry(0.008, hh * 2, 0.008), fin.steel, count * 2);
+      new THREE.BoxGeometry(0.008, hh * 2, 0.008),
+      fin.steel,
+      count * 2,
+    );
     const m4 = new THREE.Matrix4();
     for (let i = 0; i < count; i++) {
       const px = -len / 2 + (i + 0.5) * (len / count);
@@ -467,8 +635,8 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
 
     /* the cable bundles the tray carries: fibre, a power run and a spare */
     const lay: [number, number, THREE.Material][] = [
-      [-0.30, 0.011, fin.fibre],
-      [-0.10, 0.008, fin.fibre],
+      [-0.3, 0.011, fin.fibre],
+      [-0.1, 0.008, fin.fibre],
       [0.12, 0.014, fin.cableBlack],
       [0.31, 0.007, fin.cableBlue],
     ];
@@ -508,8 +676,23 @@ export function createEquipmentBuilders(scene: THREE.Scene, mat: RoomMaterials, 
   }
 
   return {
-    box, label, portLed, cord, rackFrame,
-    odfUnit, dwdmUnit, splitterUnit, videoUnit, txCubeUnit,
-    cgbtBay, acDistBay, powerBay, batteryBay, chassis, rejiband, hatchRun, leds,
+    box,
+    label,
+    portLed,
+    cord,
+    rackFrame,
+    odfUnit,
+    dwdmUnit,
+    splitterUnit,
+    videoUnit,
+    txCubeUnit,
+    cgbtBay,
+    acDistBay,
+    powerBay,
+    batteryBay,
+    chassis,
+    rejiband,
+    hatchRun,
+    leds,
   };
 }

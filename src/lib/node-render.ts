@@ -36,7 +36,7 @@ export function renderOltTable(n: NetworkNode): string {
       (o) =>
         `<tr><td class="mono">${esc(o.code)}</td><td>${esc(o.vendor)}</td>` +
         `<td class="mono" title="${esc(o.note ?? '')}">${esc(cardLabel(o))}</td>` +
-        `<td class="mono">${o.portsActive} / ${o.portsTotal}</td><td class="mono">${o.onts}</td></tr>`
+        `<td class="mono">${o.portsActive} / ${o.portsTotal}</td><td class="mono">${o.onts}</td></tr>`,
     )
     .join('');
   const totalRow =
@@ -65,8 +65,14 @@ export function renderTownsBlock(n: NetworkNode): string {
         .map(
           (gr) =>
             '<div class="pon-group">' +
-            gr.map((p, i) => (i > 0 ? '<span class="lnk">─◆─</span>' : '') + `<span class="p">${esc(p)}</span>`).join('') +
-            '<span class="tag">MISMA PON</span></div>'
+            gr
+              .map(
+                (p, i) =>
+                  (i > 0 ? '<span class="lnk">─◆─</span>' : '') +
+                  `<span class="p">${esc(p)}</span>`,
+              )
+              .join('') +
+            '<span class="tag">MISMA PON</span></div>',
         )
         .join('') +
       `</div><div class="town-note" style="border-left-color:var(--pon)">${esc(n.ponGroups.note)}</div>`

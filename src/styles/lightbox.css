@@ -1,0 +1,284 @@
+/* Full-size plan view (Lightbox.astro + scripts/lightbox.ts). Sits above the
+   node record (z-index 100) and below the 3D viewer (200), which is the only
+   thing that ever replaces the whole screen. */
+.lb-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 12, 0.94);
+  backdrop-filter: blur(6px);
+  z-index: 150;
+  display: none;
+  flex-direction: column;
+}
+.lb-bg.open {
+  display: flex;
+}
+.lb-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(6, 11, 20, 0.9);
+}
+.lb-cap {
+  flex: 1;
+  min-width: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--xgs);
+  white-space: nowrap;
+}
+/* announced, never shown: the counter beside it already says this on screen */
+.lb-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.lb-open {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.lb-open:hover {
+  color: var(--xgs);
+}
+.lb-close {
+  background: var(--ink);
+  color: var(--txt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 13px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.lb-close:hover {
+  border-color: var(--xgs);
+  color: var(--xgs);
+}
+
+/* the stage carries the plan and the two step-through arrows over it */
+.lb-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* fit to the screen by default; .zoomed swaps to the image's own pixels and
+   lets the figure scroll, which is the only way the annotations are legible */
+.lb-fig {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 14px;
+  background: #fff;
+}
+.lb-fig img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  cursor: zoom-in;
+}
+.lb-fig.zoomed {
+  align-items: flex-start;
+  justify-content: flex-start;
+  cursor: grab;
+}
+.lb-fig.zoomed img {
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
+  cursor: zoom-out;
+}
+.lb-fig.dragging {
+  cursor: grabbing;
+}
+.lb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 11, 20, 0.72);
+  border: 1px solid var(--line);
+  color: var(--txt);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.7rem;
+  line-height: 1;
+  backdrop-filter: blur(4px);
+  opacity: 0.55;
+  transition:
+    opacity 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+.lb-nav:hover,
+.lb-nav:focus-visible {
+  opacity: 1;
+  border-color: var(--xgs);
+  color: var(--xgs);
+}
+.lb-nav.prev {
+  left: 10px;
+}
+.lb-nav.next {
+  right: 10px;
+}
+
+/* the strip of the node's other plans. It is part of the layout, not an
+   overlay, so it never covers the drawing — and it steps aside once you zoom
+   in, which is the point at which you have committed to reading just one. */
+.lb-bottom {
+  border-top: 1px solid var(--line);
+  background: rgba(6, 11, 20, 0.9);
+}
+.lb-thumbs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 10px 14px 4px;
+  max-height: 88px;
+  transition:
+    max-height 0.22s,
+    padding 0.22s,
+    opacity 0.18s;
+}
+.lb-thumbs button {
+  flex: 0 0 auto;
+  width: 86px;
+  height: 60px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  opacity: 0.55;
+  transition: all 0.18s;
+}
+.lb-thumbs button:hover,
+.lb-thumbs button:focus-visible {
+  opacity: 1;
+  border-color: var(--muted);
+}
+.lb-thumbs button.on {
+  opacity: 1;
+  border-color: var(--xgs);
+  box-shadow: 0 0 0 1px var(--xgs);
+}
+/* the tiles are cut to the plans' own 1891:1310, so `contain` fills them
+   without letterboxing and without cropping anything away */
+.lb-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.lb-bg.reading .lb-thumbs {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.lb-help {
+  padding: 9px 16px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* the plans themselves, wherever they are shown */
+.plan-link {
+  display: block;
+  position: relative;
+  cursor: zoom-in;
+}
+.plan-link::after {
+  /* bottom right: the record's close button owns the top right of a plan,
+     its gallery tabs the bottom left, and its interior badge the top left */
+  content: '⤢';
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(6, 11, 20, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1;
+  padding: 5px 7px;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+.plan-link:hover::after,
+.plan-link:focus-visible::after {
+  opacity: 1;
+  color: var(--xgs);
+  border-color: var(--xgs);
+}
+
+@media (max-width: 760px) {
+  .lb-top {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .lb-cap {
+    font-size: 0.64rem;
+  }
+  .lb-open {
+    display: none;
+  }
+  .lb-help {
+    font-size: 0.6rem;
+    padding: 8px 10px;
+  }
+  /* thumb-sized arrows would fight the drag-to-pan gesture; the strip and a
+     swipe of the thumbs are how you change plan on a phone */
+  .lb-nav {
+    width: 34px;
+    height: 58px;
+    font-size: 1.3rem;
+  }
+  .lb-thumbs {
+    justify-content: flex-start;
+  }
+  .lb-thumbs button {
+    width: 66px;
+    height: 46px;
+  }
+}

@@ -66,8 +66,22 @@ const ROOMS = rooms as unknown as Record<string, Room>;
 // Kinds src/scripts/viewer3d.ts actually renders (either a dedicated mesh
 // branch, or the generic boxed-cabinet fallback with a COLOR table entry).
 const KNOWN_BAY_KINDS = new Set([
-  'cabinet', 'power', 'olt', 'splitter', 'odf', 'transport',
-  'cgbt', 'acdist', 'empty', 'rack', 'battery', 'ac', 'ups', 'catv', 'cage', 'void',
+  'cabinet',
+  'power',
+  'olt',
+  'splitter',
+  'odf',
+  'transport',
+  'cgbt',
+  'acdist',
+  'empty',
+  'rack',
+  'battery',
+  'ac',
+  'ups',
+  'catv',
+  'cage',
+  'void',
 ]);
 
 // The rack-mounted units a cabinet can hold, mirroring viewer3d.ts's
@@ -88,7 +102,12 @@ function polygonArea(pts: Point[]): number {
 function bbox(pts: Point[]) {
   const xs = pts.map((p) => p[0]);
   const zs = pts.map((p) => p[1]);
-  return { minX: Math.min(...xs), maxX: Math.max(...xs), minZ: Math.min(...zs), maxZ: Math.max(...zs) };
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minZ: Math.min(...zs),
+    maxZ: Math.max(...zs),
+  };
 }
 
 describe('room roster', () => {
@@ -210,7 +229,9 @@ describe('extinguishers', () => {
 
 describe('rejiband runs', () => {
   it('every room has its runs transcribed, none left to be guessed', () => {
-    const bare = Object.entries(ROOMS).filter(([, r]) => !r.trays?.length).map(([id]) => id);
+    const bare = Object.entries(ROOMS)
+      .filter(([, r]) => !r.trays?.length)
+      .map(([id]) => id);
     expect(bare, `no rejiband transcribed for: ${bare.join(', ')}`).toEqual([]);
   });
 
@@ -230,7 +251,8 @@ describe('rejiband runs', () => {
 
       it(`${id}: tray ${i} has no zero-length segment`, () => {
         for (let j = 0; j + 1 < tray.pts.length; j++) {
-          const a = tray.pts[j]!, b = tray.pts[j + 1]!;
+          const a = tray.pts[j]!,
+            b = tray.pts[j + 1]!;
           expect(Math.hypot(b[0] - a[0], b[1] - a[1])).toBeGreaterThan(0.05);
         }
       });
@@ -261,8 +283,11 @@ describe('floor duct covers («tapas»)', () => {
 
       it(`${id}: hatch ${i} is in the aisle, not under a cabinet`, () => {
         for (const bay of room.bays) {
-          const clear = hatch.x + runW <= bay.x + 1e-6 || bay.x + bay.w <= hatch.x + 1e-6
-            || hatch.z + hatch.d <= bay.z + 1e-6 || bay.z + bay.d <= hatch.z + 1e-6;
+          const clear =
+            hatch.x + runW <= bay.x + 1e-6 ||
+            bay.x + bay.w <= hatch.x + 1e-6 ||
+            hatch.z + hatch.d <= bay.z + 1e-6 ||
+            bay.z + bay.d <= hatch.z + 1e-6;
           expect(clear, `overlaps "${bay.label}"`).toBe(true);
         }
       });
@@ -287,8 +312,8 @@ describe('wall vents', () => {
       it(`${id}: vent ${i} does not sit in a doorway`, () => {
         for (const door of room.doors) {
           if (door.edge !== vent.edge) continue;
-          const clear = vent.at + vent.w <= door.at + 1e-6
-            || door.at + door.width <= vent.at + 1e-6;
+          const clear =
+            vent.at + vent.w <= door.at + 1e-6 || door.at + door.width <= vent.at + 1e-6;
           expect(clear, `vent ${i} overlaps a door on edge ${vent.edge}`).toBe(true);
         }
       });

@@ -8,18 +8,37 @@
  */
 import { DOM } from '../../lib/dom-ids';
 
-const HOME_W = 1160, HOME_H = 470, MIN_W = 240;
+const HOME_W = 1160,
+  HOME_H = 470,
+  MIN_W = 240;
+
+/** An SVG viewBox, as its four numbers. */
+export type ViewBox = [number, number, number, number];
+
+/**
+ * The map's current viewBox. The attribute is always the four numbers this
+ * module and the guided tour write, so the cast is the shape of that
+ * agreement rather than a hope — and having it in one place is what keeps
+ * `noUncheckedIndexedAccess` from turning every reader into `x!`.
+ */
+export function readViewBox(svg: SVGSVGElement): ViewBox {
+  return svg.getAttribute('viewBox')!.split(' ').map(Number) as ViewBox;
+}
 
 /** Wires zoom and pan for the map. Call once, after the map's <svg> has its
  *  initial viewBox set. */
 export function initViewport(svg: SVGSVGElement): void {
   /** Zooms about the middle of the current view, keeping its aspect ratio. */
   function zoomMap(factor: number) {
-    const [x, y, w, h] = svg.getAttribute('viewBox')!.split(' ').map(Number) as [number, number, number, number];
-    const cx = x + w / 2, cy = y + h / 2;
+    const [x, y, w, h] = readViewBox(svg);
+    const cx = x + w / 2,
+      cy = y + h / 2;
     let nw = Math.max(MIN_W, Math.min(HOME_W, w * factor));
     let nh = h * (nw / w);
-    if (nh > HOME_H) { nh = HOME_H; nw = w * (nh / h); }
+    if (nh > HOME_H) {
+      nh = HOME_H;
+      nw = w * (nh / h);
+    }
     const nx = Math.max(0, Math.min(HOME_W - nw, cx - nw / 2));
     const ny = Math.max(0, Math.min(HOME_H - nh, cy - nh / 2));
     const r2 = (v: number) => Math.round(v * 100) / 100;
@@ -30,7 +49,7 @@ export function initViewport(svg: SVGSVGElement): void {
   zoomIn?.addEventListener('click', () => zoomMap(0.72));
   zoomOut?.addEventListener('click', () => zoomMap(1 / 0.72));
 
-  const vb = () => svg.getAttribute('viewBox')!.split(' ').map(Number) as [number, number, number, number];
+  const vb = () => readViewBox(svg);
 
   /**
    * Keeps the pad honest: grey out whichever button can no longer do anything,
@@ -55,7 +74,7 @@ export function initViewport(svg: SVGSVGElement): void {
   let pan: { x: number; y: number; vx: number; vy: number; moved: number } | null = null;
   svg.addEventListener('pointerdown', (e: PointerEvent) => {
     const [x, y, w, h] = vb();
-    if (w >= HOME_W - 0.5 && h >= HOME_H - 0.5) return;   /* nothing to pan */
+    if (w >= HOME_W - 0.5 && h >= HOME_H - 0.5) return; /* nothing to pan */
     pan = { x: e.clientX, y: e.clientY, vx: x, vy: y, moved: 0 };
     svg.setPointerCapture(e.pointerId);
     svg.style.cursor = 'grabbing';
@@ -64,7 +83,8 @@ export function initViewport(svg: SVGSVGElement): void {
     if (!pan) return;
     const [, , w, h] = vb();
     const rect = svg.getBoundingClientRect();
-    const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+    const dx = e.clientX - pan.x,
+      dy = e.clientY - pan.y;
     pan.moved = Math.max(pan.moved, Math.hypot(dx, dy));
     /* screen pixels → viewBox units */
     const nx = Math.max(0, Math.min(HOME_W - w, pan.vx - dx * (w / rect.width)));
@@ -82,10 +102,14 @@ export function initViewport(svg: SVGSVGElement): void {
   svg.addEventListener('pointerup', endPan);
   svg.addEventListener('pointercancel', endPan);
   /* a drag that ends over a node must not also open its record */
-  svg.addEventListener('click', (e: Event) => {
-    if (!dragged) return;
-    dragged = false;
-    e.stopPropagation();
-    e.preventDefault();
-  }, true);
+  svg.addEventListener(
+    'click',
+    (e: Event) => {
+      if (!dragged) return;
+      dragged = false;
+      e.stopPropagation();
+      e.preventDefault();
+    },
+    true,
+  );
 }

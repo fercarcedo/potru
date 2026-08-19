@@ -35,9 +35,9 @@ const viewBox = ganttViewBox(NODES);
         <div class="dur">SEMANAS 13–58 · 46 SEMANAS</div>
         <p>
           Instalación del nuevo equipamiento nodo a nodo, comenzando por Muros de Nalón como piloto
-          y siguiendo por los nodos cabecera de cada área. GIT migra a los usuarios; el adjudicatario
-          suministra las ONT GPON de sustitución y los repuestos. La duración por nodo depende de las
-          ONT en servicio:
+          y siguiendo por los nodos cabecera de cada área. GIT migra a los usuarios; el
+          adjudicatario suministra las ONT GPON de sustitución y los repuestos. La duración por nodo
+          depende de las ONT en servicio:
         </p>
         <div class="node-times">
           <div class="nt"><b>≤ 512 ONT</b>5 semanas · 3 instalación + 2 migración</div>
@@ -47,11 +47,16 @@ const viewBox = ganttViewBox(NODES);
         <h4 style="margin:26px 0 4px;font-size:.95rem">
           Calendario de migración por nodo <span
             class="mono"
-            style="font-size:.7rem;color:var(--muted)">(planificación inicial · pulsa una barra)</span
+            style="font-size:.7rem;color:var(--muted)"
+            >(planificación inicial · pulsa una barra)</span
           >
         </h4>
         <div class="gantt-shell">
-          <svg id={DOM.gantt} viewBox={viewBox} role="img" aria-label="Gantt de migración de nodos"
+          <svg
+            id={DOM.gantt}
+            viewBox={viewBox}
+            role="img"
+            aria-label="Gantt de migración de nodos"
             set:html={bars}
           />
           <div class="gantt-note">
@@ -65,8 +70,8 @@ const viewBox = ganttViewBox(NODES);
         <div class="dur">SOLAPADA CON FASE 2 → FIN DE CONTRATO</div>
         <p>
           Activación de la parte variable: licencias de uso, servicio de reparación y sustitución de
-          averías, hasta 5 nodos nuevos, ampliaciones de capacidad, consultas y asesoramiento técnico
-          de nivel 3, y suministro de ONT GPON adicionales y ONT XGS-PON.
+          averías, hasta 5 nodos nuevos, ampliaciones de capacidad, consultas y asesoramiento
+          técnico de nivel 3, y suministro de ONT GPON adicionales y ONT XGS-PON.
         </p>
       </div>
     </div>

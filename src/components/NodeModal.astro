@@ -12,7 +12,9 @@ import { DOM } from '../lib/dom-ids';
       <span class="interior-badge" id={DOM.mBadge} style="display:none"
         >VISTA INTERIOR · PLANOS DEL PLIEGO</span
       >
-      <img id={DOM.mImg} alt="Plano del nodo" />
+      <a class="plan-link" id={DOM.mImgLink} data-plan href="#" target="_blank" rel="noopener">
+        <img id={DOM.mImg} alt="Plano del nodo" />
+      </a>
       <div class="gal-tabs" id={DOM.mTabs}></div>
       <button class="close" id={DOM.mClose} aria-label="Cerrar">✕</button>
     </div>
@@ -31,8 +33,11 @@ import { DOM } from '../lib/dom-ids';
       >
       <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
       <div class="act-links" id={DOM.mActs}></div>
-      <a class="mono" id={DOM.mPerma} href="#" style="display:block;margin-top:16px;font-size:.72rem"
-        >↗ Abrir la ficha completa</a
+      <a
+        class="mono"
+        id={DOM.mPerma}
+        href="#"
+        style="display:block;margin-top:16px;font-size:.72rem">↗ Abrir la ficha completa</a
       >
     </div>
   </div>

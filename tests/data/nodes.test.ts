@@ -25,7 +25,7 @@ const PUBLIC_DIR = path.resolve(__dirname, '../../public');
 const KNOWN_PLIEGO_CONTRADICTIONS = new Set(['NVI/1C', 'BLI/1B', 'BLI/9B']);
 
 const allOlts: { node: NetworkNode; olt: Olt }[] = ALL.flatMap((node) =>
-  node.olts.map((olt) => ({ node, olt }))
+  node.olts.map((olt) => ({ node, olt })),
 );
 
 describe('node roster', () => {
@@ -65,7 +65,9 @@ describe('OLT port and card arithmetic', () => {
       if (isKnownContradiction) {
         // The contradiction must still be real, and must still be annotated —
         // this direction of the test stops the exception list from going stale.
-        expect(olt.portsActive > olt.portsTotal || olt.cards * olt.portsPerCard !== olt.portsTotal).toBe(true);
+        expect(
+          olt.portsActive > olt.portsTotal || olt.cards * olt.portsPerCard !== olt.portsTotal,
+        ).toBe(true);
         expect(olt.note).toBeTruthy();
       } else {
         expect(olt.portsActive).toBeLessThanOrEqual(olt.portsTotal);
@@ -92,7 +94,9 @@ describe('OLT port and card arithmetic', () => {
     for (const { olt } of allOlts) {
       if (KNOWN_PLIEGO_CONTRADICTIONS.has(olt.code)) continue;
       expect(olt.portsActive, `${olt.code} active > total`).toBeLessThanOrEqual(olt.portsTotal);
-      expect(olt.cards * olt.portsPerCard, `${olt.code} cards*portsPerCard != portsTotal`).toBe(olt.portsTotal);
+      expect(olt.cards * olt.portsPerCard, `${olt.code} cards*portsPerCard != portsTotal`).toBe(
+        olt.portsTotal,
+      );
     }
   });
 });
@@ -126,7 +130,10 @@ describe('shared PON groups', () => {
       if (!n.ponGroups) continue;
       for (const group of n.ponGroups.groups) {
         for (const town of group) {
-          expect(knownTowns.has(town), `${n.id}: ponGroups town "${town}" is not in any node's towns[]`).toBe(true);
+          expect(
+            knownTowns.has(town),
+            `${n.id}: ponGroups town "${town}" is not in any node's towns[]`,
+          ).toBe(true);
         }
       }
     }
@@ -158,9 +165,10 @@ describe('gallery assets', () => {
         expect(g.w).toBeGreaterThan(0);
         expect(g.h).toBeGreaterThan(0);
         if (g.thumb) {
-          expect(fs.existsSync(path.join(PUBLIC_DIR, g.thumb.src)), `${n.id}: missing thumb ${g.thumb.src}`).toBe(
-            true
-          );
+          expect(
+            fs.existsSync(path.join(PUBLIC_DIR, g.thumb.src)),
+            `${n.id}: missing thumb ${g.thumb.src}`,
+          ).toBe(true);
           expect(g.thumb.w).toBeGreaterThan(0);
           expect(g.thumb.h).toBeGreaterThan(0);
           expect(g.thumb.w).toBeLessThanOrEqual(g.w);

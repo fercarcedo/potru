@@ -27,6 +27,8 @@ npm run dev       # dev server
 npm run build     # static site into dist/
 npm run preview   # serve dist/ as it will be published
 npm run check     # astro check — types and templates
+npm run format    # prettier over the repo — see the formatting note below
+npm run lint      # eslint (typescript-eslint), the part a formatter can't see
 npm run test      # vitest: data, lib and script unit tests (tests/data, tests/lib, tests/scripts)
 npm run test:e2e  # playwright: builds + previews dist/, then drives it in Chromium (tests/e2e)
 npm run verify    # check + test + build + test:e2e, in that order
@@ -115,7 +117,7 @@ versioned.
   `import.meta.env.BASE_URL` (or `asset()` from `src/lib/data.ts`).
 - **Language**: code, comments and identifiers in English; all user-facing copy, URLs (`/nodos/…`)
   and data in Spanish.
-- **Branding**: the project is *Potru*. Never use "asturcon" as a brand or domain name — the network
+- **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.
 - **No `localStorage` / `sessionStorage`** anywhere.
 - Honour `prefers-reduced-motion` (there is a global CSS rule, and `tour.ts` checks it).
@@ -128,7 +130,7 @@ versioned.
     component's own template — no `set:html`, no child component, nothing a client island rewrites.
     Astro tags each of the component's own elements with a `data-astro-cid-*` attribute and adds it
     to the compiled selector, so the rule is automatically more specific than anything global and
-    can never be shadowed by import order. A selector that needs to reach *into* a child component
+    can never be shadowed by import order. A selector that needs to reach _into_ a child component
     (e.g. `.card .affected`, where `.affected` is a child component's root element) cannot be scoped
     this way — scoping does not propagate across a component boundary — so either restyle from the
     child's own `<style>` instead (preferred; see `AffectedNodes.astro`) or fall back to
@@ -144,6 +146,26 @@ versioned.
     partial** (global rules have no scope attribute to fall back on, so equal-specificity overrides
     only win if they come later in the cascade), and add a new partial to `global.css`'s import list
     when it needs a place in that order.
+- **Formatting is prettier's**, over the whole repo (`npm run format`, `format:check` in the gate).
+  Nothing is hand-aligned: `src/styles/` used to be written one rule per line with the spaces
+  squeezed out, and that bought nothing — Astro minifies the stylesheet at build time either way,
+  so how the source is written never reaches the wire. `.astro` files included, via
+  `prettier-plugin-astro`.
+- **Linting is eslint's**, `src/` and `tests/` TypeScript only, on typescript-eslint's
+  `recommendedTypeChecked` — type-aware, so it catches the failures this codebase is actually
+  exposed to and review is not: a dropped promise from a dynamic import that never resolves, an
+  assertion that has stopped telling the compiler anything. It has to be scoped to `.ts`; the
+  config files at the root are plain JS with no program behind them, so the same rules there fail
+  to load rather than fail to find anything.
+- `noUncheckedIndexedAccess` is **on**, and it is what makes the `arr[i]!` idiom honest. Without
+  it those assertions are dead weight — `no-unnecessary-type-assertion` reported 80 of them — and
+  deleting them would have been the wrong fix, because the moment the flag went on they would all
+  be needed again. With it on, 80 became 1. Index into an array and either assert or handle the
+  `undefined`; do not reach for `as`.
+- Interfaces whose members are **plain closures declare them as properties**, not with method
+  shorthand (`openNode: (id: string) => void`, not `openNode(id: string): void`). `ModalApi` and
+  `EquipmentBuilders` are both destructured by their callers, and method syntax claims a `this`
+  that none of these functions has — which is exactly what `unbound-method` reports.
 - Commits are **in English**, conventional-commit style with a scope (`fix(map): …`,
   `feat(data): …`), and a body explaining what was wrong and why the fix works.
 - The pliego's drawings and data are excluded from the repo's MIT licence (authorship: GIT). Keep

@@ -75,7 +75,10 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
     const door = doors.find((d) => d.edge === i);
     /* a door splits its wall into the two stretches either side of the opening */
     const spans: [number, number][] = door
-      ? [[0, door.at], [door.at + door.width, len]]
+      ? [
+          [0, door.at],
+          [door.at + door.width, len],
+        ]
       : [[0, len]];
     for (const [from, to] of spans) {
       if (to - from < 0.02) continue;
@@ -87,7 +90,8 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
     }
     if (door) {
       const mid = door.at + door.width / 2;
-      const dx = x1 + Math.cos(ang) * mid, dz = z1 + Math.sin(ang) * mid;
+      const dx = x1 + Math.cos(ang) * mid,
+        dz = z1 + Math.sin(ang) * mid;
       const frame = new THREE.Mesh(new THREE.PlaneGeometry(door.width, 2.05), mat.door);
       frame.position.set(dx, 1.025, dz);
       frame.rotation.y = -ang;
@@ -102,9 +106,11 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
     const [x2, z2] = poly[(v.edge + 1) % poly.length]!;
     const ang = Math.atan2(z2 - z1, x2 - x1);
     const mid = v.at + v.w / 2;
-    const px = x1 + Math.cos(ang) * mid, pz = z1 + Math.sin(ang) * mid;
+    const px = x1 + Math.cos(ang) * mid,
+      pz = z1 + Math.sin(ang) * mid;
     /* step off the wall towards whichever side is inside the room */
-    const nx = -Math.sin(ang), nz = Math.cos(ang);
+    const nx = -Math.sin(ang),
+      nz = Math.cos(ang);
     const sign = pointInPolygon(poly, px + nx * 0.1, pz + nz * 0.1) ? 1 : -1;
     const h = v.h ?? 0.3;
     const y = v.y ?? H - 0.45;
@@ -129,8 +135,15 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
     const t = (i + 0.5) / Math.max(2, Math.round((along ? W : D) / 1.8));
     const x = along ? -W / 2 + t * W : 0;
     const z = along ? 0 : -D / 2 + t * D;
-    box(along ? 1.1 : 0.16, 0.05, along ? 0.16 : 1.1,
-      new THREE.MeshBasicMaterial({ color: 0xeef6f4 }), x, H - 0.04, z);
+    box(
+      along ? 1.1 : 0.16,
+      0.05,
+      along ? 0.16 : 1.1,
+      new THREE.MeshBasicMaterial({ color: 0xeef6f4 }),
+      x,
+      H - 0.04,
+      z,
+    );
   }
   scene.add(new THREE.AmbientLight(0xf2f4f6, 0.66 * LX));
   const dl = new THREE.DirectionalLight(0xffffff, 0.42 * LX);

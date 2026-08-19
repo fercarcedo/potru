@@ -22,11 +22,21 @@ test.describe('schematic map label placement', () => {
   test('places every node, secondary and town label inside the map viewBox', async ({ page }) => {
     const overflow = await page.evaluate(() => {
       const svg = document.getElementById('astMap') as unknown as SVGSVGElement;
-      const [vx, vy, vw, vh] = svg.getAttribute('viewBox')!.split(' ').map(Number);
+      const [vx, vy, vw, vh] = svg.getAttribute('viewBox')!.split(' ').map(Number) as [
+        number,
+        number,
+        number,
+        number,
+      ];
       const out: string[] = [];
       for (const el of svg.querySelectorAll('.lbl-node, .lbl-sec, .lbl-town')) {
         const b = (el as SVGGraphicsElement).getBBox();
-        if (b.x < vx - 2 || b.y < vy - 2 || b.x + b.width > vx + vw + 2 || b.y + b.height > vy + vh + 2) {
+        if (
+          b.x < vx - 2 ||
+          b.y < vy - 2 ||
+          b.x + b.width > vx + vw + 2 ||
+          b.y + b.height > vy + vh + 2
+        ) {
           out.push(el.textContent || '(sin texto)');
         }
       }
@@ -48,13 +58,16 @@ test.describe('schematic map label placement', () => {
         Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
       for (let i = 0; i < boxes.length; i++)
         for (let j = i + 1; j < boxes.length; j++)
-          if (overlapArea(boxes[i]!.b, boxes[j]!.b) > 0.5) hits.push(`${boxes[i]!.name} × ${boxes[j]!.name}`);
+          if (overlapArea(boxes[i]!.b, boxes[j]!.b) > 0.5)
+            hits.push(`${boxes[i]!.name} × ${boxes[j]!.name}`);
       return hits;
     });
     expect(overlaps).toEqual([]);
   });
 
-  test('draws a leader line only for labels the solver actually moved away from their dot', async ({ page }) => {
+  test('draws a leader line only for labels the solver actually moved away from their dot', async ({
+    page,
+  }) => {
     const { leaderCount, farLabels } = await page.evaluate(() => {
       const svg = document.getElementById('astMap')!;
       const leaderCount = svg.querySelectorAll('g > line[stroke="#5a6f8d"]').length;
@@ -81,7 +94,9 @@ test.describe('schematic map label placement', () => {
     const result = await page.evaluate(() => {
       const svg = document.getElementById('astMap')!;
       const byText = (t: string) =>
-        [...svg.querySelectorAll('.lbl-node, .lbl-sec, .lbl-town')].find((el) => el.textContent === t);
+        [...svg.querySelectorAll('.lbl-node, .lbl-sec, .lbl-town')].find(
+          (el) => el.textContent === t,
+        );
       const overlapArea = (a: DOMRect, b: DOMRect) =>
         Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) *
         Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
@@ -94,11 +109,11 @@ test.describe('schematic map label placement', () => {
         found: true,
         coanaNaviaOverlap: overlapArea(
           (coana as unknown as SVGGraphicsElement).getBBox(),
-          (navia as unknown as SVGGraphicsElement).getBBox()
+          (navia as unknown as SVGGraphicsElement).getBBox(),
         ),
         oyancoMoredaOverlap: overlapArea(
           (oyanco as unknown as SVGGraphicsElement).getBBox(),
-          (moreda as unknown as SVGGraphicsElement).getBBox()
+          (moreda as unknown as SVGGraphicsElement).getBBox(),
         ),
       };
     });
@@ -121,7 +136,8 @@ test.describe('schematic map label placement', () => {
       const svg = document.getElementById('astMap')!;
       const out: string[] = [];
       for (const el of svg.querySelectorAll<SVGTextElement>('.lbl-town')) {
-        const ax = Number(el.dataset.ax), ay = Number(el.dataset.ay);
+        const ax = Number(el.dataset.ax),
+          ay = Number(el.dataset.ay);
         const b = el.getBBox();
         const px = Math.max(b.x, Math.min(ax, b.x + b.width));
         const py = Math.max(b.y, Math.min(ay, b.y + b.height));
@@ -133,14 +149,19 @@ test.describe('schematic map label placement', () => {
     expect(far).toEqual([]);
   });
 
-  test('keeps every served-town dot clear of the trunks, so its leader line shows', async ({ page }) => {
+  test('keeps every served-town dot clear of the trunks, so its leader line shows', async ({
+    page,
+  }) => {
     const onCable = await page.evaluate(() => {
       const svg = document.getElementById('astMap')!;
       const cables = [...svg.querySelectorAll('path')].filter(
-        (p) => Number(p.getAttribute('stroke-width') ?? 0) >= 1.5 && (p.getTotalLength?.() ?? 0) > 0);
+        (p) =>
+          Number(p.getAttribute('stroke-width') ?? 0) >= 1.5 && (p.getTotalLength?.() ?? 0) > 0,
+      );
       const out: string[] = [];
       for (const el of svg.querySelectorAll<SVGTextElement>('.lbl-town')) {
-        const ax = Number(el.dataset.ax), ay = Number(el.dataset.ay);
+        const ax = Number(el.dataset.ax),
+          ay = Number(el.dataset.ay);
         let min = Infinity;
         for (const p of cables) {
           const len = p.getTotalLength();
@@ -156,14 +177,22 @@ test.describe('schematic map label placement', () => {
     expect(onCable).toEqual([]);
   });
 
-  test('keeps every trunk caption beside the cable it names, and off the other captions', async ({ page }) => {
+  test('keeps every trunk caption beside the cable it names, and off the other captions', async ({
+    page,
+  }) => {
     const { adrift, crowded } = await page.evaluate(() => {
       const svg = document.getElementById('astMap')!;
-      const captions = [...svg.querySelectorAll<SVGTextElement>('text[data-trunk]')]
-        .map((t) => ({ id: t.dataset.trunk!, name: t.textContent ?? '', b: t.getBBox() }));
+      const captions = [...svg.querySelectorAll<SVGTextElement>('text[data-trunk]')].map((t) => ({
+        id: t.dataset.trunk!,
+        name: t.textContent ?? '',
+        b: t.getBBox(),
+      }));
       /* distance from a point to a box, 0 when the point is inside it */
       const away = (b: DOMRect, x: number, y: number) =>
-        Math.hypot(Math.max(b.x - x, 0, x - (b.x + b.width)), Math.max(b.y - y, 0, y - (b.y + b.height)));
+        Math.hypot(
+          Math.max(b.x - x, 0, x - (b.x + b.width)),
+          Math.max(b.y - y, 0, y - (b.y + b.height)),
+        );
       const adrift: string[] = [];
       for (const { id, name, b } of captions) {
         const path = svg.querySelector<SVGPathElement>(`path[data-trunk="${id}"]`)!;
@@ -178,7 +207,8 @@ test.describe('schematic map label placement', () => {
       const crowded: string[] = [];
       for (let i = 0; i < captions.length; i++)
         for (let j = i + 1; j < captions.length; j++) {
-          const a = captions[i]!.b, c = captions[j]!.b;
+          const a = captions[i]!.b,
+            c = captions[j]!.b;
           const dx = Math.max(a.x - (c.x + c.width), c.x - (a.x + a.width), 0);
           const dy = Math.max(a.y - (c.y + c.height), c.y - (a.y + a.height), 0);
           if (Math.hypot(dx, dy) < 12) crowded.push(`${captions[i]!.name} × ${captions[j]!.name}`);

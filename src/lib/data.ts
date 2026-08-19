@@ -70,7 +70,7 @@ export const PAO_NODE: NetworkNode = data.pao;
 export const ALL_NODES: NetworkNode[] = [...NODES, PAO_NODE];
 
 export const byId: Record<string, NetworkNode> = Object.fromEntries(
-  ALL_NODES.map((n) => [n.id, n])
+  ALL_NODES.map((n) => [n.id, n]),
 );
 
 /** [pill class, description, anchor of the matching card] */
@@ -97,11 +97,16 @@ export const AREAS: { name: string; color: string }[] = (() => {
   return [...seen].map(([name, color]) => ({ name, color }));
 })();
 
+/* Both totals need nothing from a node but its OLTs, and saying so lets a
+   caller — a test, a partial record — hand over just that without a cast. */
+
 /** Total ONTs in service on a node, across all its OLTs. */
-export const ontCount = (n: NetworkNode): number => n.olts.reduce((a, o) => a + o.onts, 0);
+export const ontCount = (n: Pick<NetworkNode, 'olts'>): number =>
+  n.olts.reduce((a, o) => a + o.onts, 0);
 
 /** Total line cards fitted across a node's OLTs. */
-export const cardCount = (n: NetworkNode): number => n.olts.reduce((a, o) => a + o.cards, 0);
+export const cardCount = (n: Pick<NetworkNode, 'olts'>): number =>
+  n.olts.reduce((a, o) => a + o.cards, 0);
 
 /** "16 × GLT2A (2 puertos)" / "4 tarjetas de 8 puertos" — how a card set reads in the UI. */
 export const cardLabel = (o: Olt): string =>

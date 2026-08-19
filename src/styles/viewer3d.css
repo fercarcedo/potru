@@ -1,26 +1,149 @@
 /* 3D room viewer (viewer3d.ts). The whole overlay is inert until the visitor
    presses «Recorrer el interior en 3D», which is when three is imported. */
-.sv-bg{position:fixed;inset:0;background:#03060c;z-index:200;display:none;flex-direction:column}
-.sv-bg.open{display:flex}
-#svCanvas{flex:1;width:100%;touch-action:none;cursor:grab}
-#svCanvas:active{cursor:grabbing}
-.sv-top{display:flex;align-items:center;gap:14px;padding:12px 18px;background:rgba(6,11,20,.92);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.sv-top h4{font-family:'Archivo Variable',sans-serif;font-stretch:125%;font-size:1rem}
-.sv-warn{background:rgba(255,180,84,.14);border:1px solid rgba(255,180,84,.5);color:var(--gpon);border-radius:6px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.06em;line-height:1.4;max-width:520px}
-.sv-exit{margin-left:auto;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 16px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.76rem}
-.sv-exit:hover{border-color:var(--xgs);color:var(--xgs)}
-.sv-help{position:absolute;left:18px;bottom:98px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.04em;background:rgba(6,11,20,.7);padding:8px 12px;border-radius:8px;pointer-events:none}
-.sv-wm{position:absolute;top:74px;left:50%;transform:translateX(-50%);color:rgba(255,180,84,.85);font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.24em;pointer-events:none;text-transform:uppercase;background:rgba(6,11,20,.55);padding:5px 14px;border-radius:99px;border:1px solid rgba(255,180,84,.3)}
-.sv-pad{position:absolute;right:18px;bottom:20px;display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:8px}
-.sv-pad button{background:rgba(12,21,36,.9);border:1px solid var(--line);color:var(--txt);border-radius:12px;font-size:1.2rem;cursor:pointer;user-select:none;-webkit-user-select:none}
-.sv-pad button:active{background:var(--xgs);color:var(--ink)}
-.sv-pad .up{grid-column:2}
-.sv-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--xgs);font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.14em}
-@media(max-width:760px){
-  .sv-warn{font-size:.6rem;max-width:100%}
-  .sv-top{gap:8px;padding:10px 12px}
-  .sv-help{display:none}
+.sv-bg {
+  position: fixed;
+  inset: 0;
+  background: #03060c;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+}
+.sv-bg.open {
+  display: flex;
+}
+#svCanvas {
+  flex: 1;
+  width: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+#svCanvas:active {
+  cursor: grabbing;
+}
+.sv-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(6, 11, 20, 0.92);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.sv-top h4 {
+  font-family: 'Archivo Variable', sans-serif;
+  font-stretch: 125%;
+  font-size: 1rem;
+}
+.sv-warn {
+  background: rgba(255, 180, 84, 0.14);
+  border: 1px solid rgba(255, 180, 84, 0.5);
+  color: var(--gpon);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  max-width: 520px;
+}
+.sv-exit {
+  margin-left: auto;
+  background: var(--panel);
+  color: var(--txt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+}
+.sv-exit:hover {
+  border-color: var(--xgs);
+  color: var(--xgs);
+}
+.sv-help {
+  position: absolute;
+  left: 18px;
+  bottom: 98px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  background: rgba(6, 11, 20, 0.7);
+  padding: 8px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+.sv-wm {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 180, 84, 0.85);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  pointer-events: none;
+  text-transform: uppercase;
+  background: rgba(6, 11, 20, 0.55);
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 180, 84, 0.3);
+}
+.sv-pad {
+  position: absolute;
+  right: 18px;
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(2, 52px);
+  gap: 8px;
+}
+.sv-pad button {
+  background: rgba(12, 21, 36, 0.9);
+  border: 1px solid var(--line);
+  color: var(--txt);
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sv-pad button:active {
+  background: var(--xgs);
+  color: var(--ink);
+}
+.sv-pad .up {
+  grid-column: 2;
+}
+.sv-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--xgs);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+}
+@media (max-width: 760px) {
+  .sv-warn {
+    font-size: 0.6rem;
+    max-width: 100%;
+  }
+  .sv-top {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .sv-help {
+    display: none;
+  }
   /* en móvil la leyenda del visor va debajo del mando de zoom. Viewer3D.astro
      posiciona #svLegend con un style inline, así que sólo !important gana */
-  #svLegend{top:104px!important;max-width:210px!important;font-size:.62rem!important}
+  #svLegend {
+    top: 104px !important;
+    max-width: 210px !important;
+    font-size: 0.62rem !important;
+  }
 }

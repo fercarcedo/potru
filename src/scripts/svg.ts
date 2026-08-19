@@ -21,7 +21,7 @@ export type SvgAttrs = Record<string, string | number>;
 export function svgEl<K extends keyof SVGElementTagNameMap>(
   tag: K,
   attrs: SvgAttrs = {},
-  parent?: Element
+  parent?: Element,
 ): SVGElementTagNameMap[K] {
   const el = document.createElementNS(SVG_NS, tag);
   for (const k in attrs) el.setAttribute(k, String(attrs[k]));

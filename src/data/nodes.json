@@ -23,16 +23,8 @@
       "weekFrom": 13,
       "weekTo": 17,
       "extra": "Nodo piloto: primer nodo de la Fase 2 y cabecera CWDM del área Occidental (canales hacia Luarca, Navia, Tapia, Castropol y Hospital de Jarrio). Su migración valida el procedimiento para el resto.",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Muros de Nalón",
-        "Soto del Barco",
-        "San Esteban de Pravia"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Muros de Nalón", "Soto del Barco", "San Esteban de Pravia"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -98,14 +90,8 @@
       "weekFrom": 15,
       "weekTo": 19,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Luarca"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Luarca"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -172,16 +158,8 @@
       "weekFrom": 17,
       "weekTo": 21,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Navia",
-        "Puerto de Vega",
-        "Polígono de Coaña"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Navia", "Puerto de Vega", "Polígono de Coaña"],
       "townsNote": "Puerto de Vega se conecta segregando los tubos 4–8 del cable de 64 ff.oo. Castropol–Cudillero.",
       "gallery": [
         {
@@ -248,29 +226,13 @@
       "weekFrom": 19,
       "weekTo": 23,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Castropol",
-        "Barres",
-        "Figueras",
-        "Piantón",
-        "Vegadeo"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Castropol", "Barres", "Figueras", "Piantón", "Vegadeo"],
       "townsNote": "Figueras cuelga del cable de 64 ff.oo. Castropol–Cudillero (tubos 4–8) y Vegadeo del cable de 96 ff.oo. Castropol–Vegadeo.",
       "ponGroups": {
         "groups": [
-          [
-            "Figueras",
-            "Piantón"
-          ],
-          [
-            "Vegadeo",
-            "Barres"
-          ]
+          ["Figueras", "Piantón"],
+          ["Vegadeo", "Barres"]
         ],
         "note": "La red de acceso de Figueras incluye la de Piantón; la de Vegadeo incluye la de Barres: comparten los mismos árboles ópticos pasivos."
       },
@@ -339,15 +301,8 @@
       "weekFrom": 21,
       "weekTo": 24,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Tapia de Casariego",
-        "La Caridad (El Franco)"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Tapia de Casariego", "La Caridad (El Franco)"],
       "townsNote": "La Caridad se conecta segregando los tubos 4–8 del cable de 64 ff.oo. Castropol–Cudillero.",
       "gallery": [
         {
@@ -414,15 +369,8 @@
       "weekFrom": 23,
       "weekTo": 26,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Tineo",
-        "Polígono de La Curiscada"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Tineo", "Polígono de La Curiscada"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -498,14 +446,8 @@
       "weekFrom": 25,
       "weekTo": 29,
       "extra": "Dos OLT Alcatel en el mismo nodo. Su relación de splitter 1:32 condiciona el dimensionado de puertos de la nueva OLT.",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Cangas del Narcea"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Cangas del Narcea"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -601,19 +543,8 @@
       "weekFrom": 27,
       "weekTo": 35,
       "extra": "Aquí se instala en Fase 1 uno de los dos enrutadores nuevos del contrato (PF-2), interconectado con el PAO de Gijón para repartir la carga de las nuevas OLT.",
-      "actions": [
-        "PF-1",
-        "PF-2",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Figaredo",
-        "Rioturbio",
-        "Santa Cruz de Mieres",
-        "Turón",
-        "Ujo"
-      ],
+      "actions": ["PF-1", "PF-2", "PV-1", "PV-2"],
+      "towns": ["Figaredo", "Rioturbio", "Santa Cruz de Mieres", "Turón", "Ujo"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -689,15 +620,8 @@
       "weekFrom": 30,
       "weekTo": 37,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Pola de Lena",
-        "Villallana"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Pola de Lena", "Villallana"],
       "townsNote": "Villallana se conecta por el cable de 32 ff.oo. Mieres–Pola de Lena.",
       "gallery": [
         {
@@ -764,14 +688,8 @@
       "weekFrom": 32,
       "weekTo": 38,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Santa Eulalia de Morcín"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Santa Eulalia de Morcín"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -847,17 +765,8 @@
       "weekFrom": 34,
       "weekTo": 40,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Caborana",
-        "Moreda",
-        "Oyanco",
-        "Villanueva"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Caborana", "Moreda", "Oyanco", "Villanueva"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -923,15 +832,8 @@
       "weekFrom": 36,
       "weekTo": 41,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Cabañaquinta",
-        "Corigos"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Cabañaquinta", "Corigos"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -997,14 +899,8 @@
       "weekFrom": 38,
       "weekTo": 42,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Felechosa"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Felechosa"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1142,18 +1038,8 @@
       "weekFrom": 40,
       "weekTo": 47,
       "extra": "La consolidación de 8 OLT antiguas en una sola plataforma dual es uno de los mayores retos de dimensionado del contrato.",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Barredos",
-        "Blimea",
-        "El Entrego",
-        "Pola de Laviana",
-        "Sotrondio"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Barredos", "Blimea", "El Entrego", "Pola de Laviana", "Sotrondio"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1219,14 +1105,8 @@
       "weekFrom": 43,
       "weekTo": 48,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Tuilla (a 3,6 km del nodo)"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Tuilla (a 3,6 km del nodo)"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1292,14 +1172,8 @@
       "weekFrom": 45,
       "weekTo": 49,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Arriondas"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Arriondas"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1365,17 +1239,8 @@
       "weekFrom": 47,
       "weekTo": 51,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Infiesto",
-        "Santa Eulalia de Cabranes",
-        "Sevares",
-        "Villamayor"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Infiesto", "Santa Eulalia de Cabranes", "Sevares", "Villamayor"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1441,14 +1306,8 @@
       "weekFrom": 48,
       "weekTo": 52,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Nava"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Nava"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1524,29 +1383,13 @@
       "weekFrom": 51,
       "weekTo": 57,
       "extra": "",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Llanes",
-        "Barro",
-        "Celorio",
-        "Porrúa",
-        "Posada de Llanes"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Llanes", "Barro", "Celorio", "Porrúa", "Posada de Llanes"],
       "townsNote": "Barro, Celorio, Porrúa y Posada comparten redes FTTH entre sí.",
       "ponGroups": {
         "groups": [
-          [
-            "Barro",
-            "Posada de Llanes"
-          ],
-          [
-            "Celorio",
-            "Porrúa"
-          ]
+          ["Barro", "Posada de Llanes"],
+          ["Celorio", "Porrúa"]
         ],
         "note": "Posada comparte parcialmente sus árboles con Barro, Celorio y Porrúa: cuatro poblaciones entrelazadas sobre las mismas PON."
       },
@@ -1615,14 +1458,8 @@
       "weekFrom": 54,
       "weekTo": 58,
       "extra": "Último nodo de la Fase 2: su migración cierra la renovación de la red en la semana 58.",
-      "actions": [
-        "PF-1",
-        "PV-1",
-        "PV-2"
-      ],
-      "towns": [
-        "Colombres"
-      ],
+      "actions": ["PF-1", "PV-1", "PV-2"],
+      "towns": ["Colombres"],
       "gallery": [
         {
           "label": "Ubicación",
@@ -1678,9 +1515,7 @@
     "weekFrom": 1,
     "weekTo": 12,
     "extra": "En la Fase 1 (semanas 1–12) se instala aquí uno de los dos enrutadores nuevos (PF-2), conectado al 7750 existente. No hay migración de usuarios: es la puerta de la red hacia los operadores.",
-    "actions": [
-      "PF-2"
-    ],
+    "actions": ["PF-2"],
     "towns": [],
     "gallery": [
       {

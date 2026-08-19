@@ -6,7 +6,18 @@
  */
 import { Window } from 'happy-dom';
 import { describe, expect, it } from 'vitest';
-import { CW8, LCOL, TIA, TIAN, gantt, ganttViewBox, mkCWDM, mkPAO, mkSection, occRow } from '../../src/lib/graphics';
+import {
+  CW8,
+  LCOL,
+  TIA,
+  TIAN,
+  gantt,
+  ganttViewBox,
+  mkCWDM,
+  mkPAO,
+  mkSection,
+  occRow,
+} from '../../src/lib/graphics';
 import { NODES, PAO_TRANSPORT } from '../../src/lib/data';
 import type { Chan } from '../../src/lib/graphics';
 
@@ -77,11 +88,9 @@ describe('mkSection', () => {
   });
 
   it('rings an access tube in cyan', () => {
-    const doc = parseSvg(
-      mkSection('Título', 8, { access: [3] }, [], '')
-    );
+    const doc = parseSvg(mkSection('Título', 8, { access: [3] }, [], ''));
     const accessRing = [...doc.querySelectorAll('circle')].filter(
-      (c) => c.getAttribute('stroke') === '#41e3d2' && c.getAttribute('fill') === 'none'
+      (c) => c.getAttribute('stroke') === '#41e3d2' && c.getAttribute('fill') === 'none',
     );
     expect(accessRing.length).toBeGreaterThan(0);
   });
@@ -108,14 +117,18 @@ describe('occRow', () => {
 
   it('reports the free count in the trailing label when there is room left', () => {
     const doc = parseSvg(occRow('Canal', 8, 5));
-    const label = [...doc.querySelectorAll('text')].find((t) => (t.textContent || '').includes('libres'));
+    const label = [...doc.querySelectorAll('text')].find((t) =>
+      (t.textContent || '').includes('libres'),
+    );
     expect(label?.textContent).toContain('5/8');
     expect(label?.textContent).toContain('3 libres');
   });
 
   it('reports "sin vacantes" when fully occupied', () => {
     const doc = parseSvg(occRow('Canal', 4, 4));
-    const label = [...doc.querySelectorAll('text')].find((t) => (t.textContent || '').includes('vacantes'));
+    const label = [...doc.querySelectorAll('text')].find((t) =>
+      (t.textContent || '').includes('vacantes'),
+    );
     expect(label?.textContent).toContain('sin vacantes');
   });
 });
@@ -123,7 +136,9 @@ describe('occRow', () => {
 describe('mkPAO', () => {
   it('renders without throwing and includes the transport-router warning', () => {
     const doc = parseSvg(mkPAO(PAO_TRANSPORT));
-    const warn = [...doc.querySelectorAll('text')].find((t) => (t.textContent || '').includes('7750SR-7'));
+    const warn = [...doc.querySelectorAll('text')].find((t) =>
+      (t.textContent || '').includes('7750SR-7'),
+    );
     expect(warn).toBeTruthy();
   });
 });

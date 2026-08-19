@@ -8,9 +8,14 @@
 import * as THREE from 'three';
 
 /** Draws into an offscreen canvas and wraps it as a THREE texture. */
-export function cv(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void): THREE.CanvasTexture {
+export function cv(
+  w: number,
+  h: number,
+  draw: (g: CanvasRenderingContext2D) => void,
+): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = w; c.height = h;
+  c.width = w;
+  c.height = h;
   draw(c.getContext('2d')!);
   const t = new THREE.CanvasTexture(c);
   t.anisotropy = 4;
@@ -21,26 +26,45 @@ export function cv(w: number, h: number, draw: (g: CanvasRenderingContext2D) => 
  *  node gets a plain speckled floor. */
 export function buildFloorTexture(raisedFloor: boolean, W: number, D: number): THREE.CanvasTexture {
   const floorTex = cv(512, 512, (g) => {
-    if (raisedFloor) { /* falso suelo practicable: 60×60 tiles */
-      g.fillStyle = '#7d8289'; g.fillRect(0, 0, 512, 512);
-      g.strokeStyle = '#3a3f47'; g.lineWidth = 4;
+    if (raisedFloor) {
+      /* falso suelo practicable: 60×60 tiles */
+      g.fillStyle = '#7d8289';
+      g.fillRect(0, 0, 512, 512);
+      g.strokeStyle = '#3a3f47';
+      g.lineWidth = 4;
       for (let i = 0; i <= 4; i++) {
-        g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, 512); g.stroke();
-        g.beginPath(); g.moveTo(0, i * 128); g.lineTo(512, i * 128); g.stroke();
+        g.beginPath();
+        g.moveTo(i * 128, 0);
+        g.lineTo(i * 128, 512);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(0, i * 128);
+        g.lineTo(512, i * 128);
+        g.stroke();
       }
-      for (let x = 64; x < 512; x += 128) for (let y = 64; y < 512; y += 128) {
-        g.fillStyle = '#6d7279'; g.fillRect(x - 6, y - 6, 12, 12);
-      }
+      for (let x = 64; x < 512; x += 128)
+        for (let y = 64; y < 512; y += 128) {
+          g.fillStyle = '#6d7279';
+          g.fillRect(x - 6, y - 6, 12, 12);
+        }
     } else {
-      g.fillStyle = '#8d9199'; g.fillRect(0, 0, 512, 512);
+      g.fillStyle = '#8d9199';
+      g.fillRect(0, 0, 512, 512);
       for (let i = 0; i < 2400; i++) {
-        g.fillStyle = `rgba(${60 + Math.random() * 40 | 0},${60 + Math.random() * 40 | 0},${70 + Math.random() * 40 | 0},.15)`;
+        g.fillStyle = `rgba(${(60 + Math.random() * 40) | 0},${(60 + Math.random() * 40) | 0},${(70 + Math.random() * 40) | 0},.15)`;
         g.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
       }
-      g.strokeStyle = 'rgba(40,44,52,.4)'; g.lineWidth = 2;
+      g.strokeStyle = 'rgba(40,44,52,.4)';
+      g.lineWidth = 2;
       for (let i = 0; i <= 4; i++) {
-        g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, 512); g.stroke();
-        g.beginPath(); g.moveTo(0, i * 128); g.lineTo(512, i * 128); g.stroke();
+        g.beginPath();
+        g.moveTo(i * 128, 0);
+        g.lineTo(i * 128, 512);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(0, i * 128);
+        g.lineTo(512, i * 128);
+        g.stroke();
       }
     }
   });
@@ -51,7 +75,8 @@ export function buildFloorTexture(raisedFloor: boolean, W: number, D: number): T
 
 export function buildWallTexture(): THREE.CanvasTexture {
   return cv(256, 256, (g) => {
-    g.fillStyle = '#d4d7db'; g.fillRect(0, 0, 256, 256);
+    g.fillStyle = '#d4d7db';
+    g.fillRect(0, 0, 256, 256);
     g.fillStyle = 'rgba(150,158,166,.35)';
     for (let x = 0; x < 256; x += 32) g.fillRect(x, 0, 3, 256);
   });
@@ -82,7 +107,12 @@ export function buildMaterials(floorTex: THREE.Texture, wallTex: THREE.Texture):
     chassisEricsson: new THREE.MeshLambertMaterial({ color: 0x3a4d6e }),
     chassisNew: new THREE.MeshLambertMaterial({ color: 0x11313a }),
     card: new THREE.MeshLambertMaterial({ color: 0x59626f }),
-    glass: new THREE.MeshLambertMaterial({ color: 0xaad4e8, transparent: true, opacity: 0.16, side: THREE.DoubleSide }),
+    glass: new THREE.MeshLambertMaterial({
+      color: 0xaad4e8,
+      transparent: true,
+      opacity: 0.16,
+      side: THREE.DoubleSide,
+    }),
     tray: new THREE.MeshLambertMaterial({ color: 0x8a9099 }),
   };
 }
@@ -157,7 +187,10 @@ export function buildFinishes(): Finishes {
     rfBody: new THREE.MeshLambertMaterial({ color: 0x2a2d33 }),
     coax: new THREE.MeshLambertMaterial({ color: 0x121417 }),
     mesh: new THREE.MeshLambertMaterial({
-      map: buildMeshTexture(), transparent: true, alphaTest: 0.35, side: THREE.DoubleSide,
+      map: buildMeshTexture(),
+      transparent: true,
+      alphaTest: 0.35,
+      side: THREE.DoubleSide,
     }),
   };
 }
@@ -167,10 +200,17 @@ export function buildFinishes(): Finishes {
 function buildMeshTexture(): THREE.CanvasTexture {
   const t = cv(64, 64, (g) => {
     g.clearRect(0, 0, 64, 64);
-    g.strokeStyle = '#aeb5bd'; g.lineWidth = 4;
+    g.strokeStyle = '#aeb5bd';
+    g.lineWidth = 4;
     for (const i of [0, 32]) {
-      g.beginPath(); g.moveTo(i + 2, 0); g.lineTo(i + 2, 64); g.stroke();
-      g.beginPath(); g.moveTo(0, i + 2); g.lineTo(64, i + 2); g.stroke();
+      g.beginPath();
+      g.moveTo(i + 2, 0);
+      g.lineTo(i + 2, 64);
+      g.stroke();
+      g.beginPath();
+      g.moveTo(0, i + 2);
+      g.lineTo(64, i + 2);
+      g.stroke();
     }
   });
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -182,20 +222,29 @@ function buildMeshTexture(): THREE.CanvasTexture {
  *  what is under them is the duct, not a raised-floor void. */
 function buildChequerTexture(): THREE.CanvasTexture {
   const t = cv(128, 128, (g) => {
-    g.fillStyle = '#6f747b'; g.fillRect(0, 0, 128, 128);
-    g.strokeStyle = 'rgba(255,255,255,.20)'; g.lineWidth = 5;
+    g.fillStyle = '#6f747b';
+    g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = 'rgba(255,255,255,.20)';
+    g.lineWidth = 5;
     g.lineCap = 'round';
     for (let i = -128; i < 128; i += 32) {
-      for (const [dx, dy] of [[1, 1], [1, -1]] as const) {
+      for (const [dx, dy] of [
+        [1, 1],
+        [1, -1],
+      ] as const) {
         g.beginPath();
         g.moveTo(i + 64, 64 - dy * 10);
         g.lineTo(i + 64 + dx * 20, 64 + dy * 10);
         g.stroke();
       }
     }
-    g.strokeStyle = 'rgba(24,27,32,.35)'; g.lineWidth = 3;
+    g.strokeStyle = 'rgba(24,27,32,.35)';
+    g.lineWidth = 3;
     for (let i = 0; i <= 128; i += 32) {
-      g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 128); g.stroke();
+      g.beginPath();
+      g.moveTo(i, 0);
+      g.lineTo(i, 128);
+      g.stroke();
     }
   });
   t.wrapS = t.wrapT = THREE.RepeatWrapping;

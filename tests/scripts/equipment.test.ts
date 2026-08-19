@@ -17,10 +17,13 @@ import type { Finishes, RoomMaterials } from '../../src/scripts/viewer3d/texture
 /** any finish/material name resolves to the same plain stub */
 const proxy = <T extends object>() => {
   const made: Record<string, THREE.Material> = {};
-  return new Proxy({}, {
-    get: (_t, k: string | symbol) =>
-      (made[String(k)] ??= new THREE.MeshLambertMaterial({ color: 0x888888 })),
-  }) as T;
+  return new Proxy(
+    {},
+    {
+      get: (_t, k: string | symbol) =>
+        (made[String(k)] ??= new THREE.MeshLambertMaterial({ color: 0x888888 })),
+    },
+  ) as T;
 };
 
 function builders() {
@@ -31,7 +34,9 @@ function builders() {
 /** every mesh under the group, however deeply nested */
 function meshes(o: THREE.Object3D): THREE.Object3D[] {
   const out: THREE.Object3D[] = [];
-  o.traverse((c) => { if ((c as THREE.Mesh).isMesh) out.push(c); });
+  o.traverse((c) => {
+    if ((c as THREE.Mesh).isMesh) out.push(c);
+  });
   return out;
 }
 
@@ -79,13 +84,22 @@ describe('rack units', () => {
 describe('rejiband', () => {
   it('runs between two points at any angle, horizontal or vertical', () => {
     for (const [a, b2] of [
-      [[0, 2.2, 0], [3, 2.2, 0]],
-      [[0, 2.2, 0], [0, 2.2, 2]],
-      [[1, 2.2, 1], [1, 0.1, 1]],          /* a «bajada»: straight down */
+      [
+        [0, 2.2, 0],
+        [3, 2.2, 0],
+      ],
+      [
+        [0, 2.2, 0],
+        [0, 2.2, 2],
+      ],
+      [
+        [1, 2.2, 1],
+        [1, 0.1, 1],
+      ] /* a «bajada»: straight down */,
     ] as const) {
       const { b } = builders();
       const g = b.rejiband([...a], [...b2]);
-      expect(g, `${a} → ${b2}`).toBeTruthy();
+      expect(g, `${a.join(',')} → ${b2.join(',')}`).toBeTruthy();
       expect(meshes(g!).length).toBeGreaterThan(4);
     }
   });

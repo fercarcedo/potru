@@ -45,7 +45,13 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
           >
         </div>
         <ul>
-          {nav.map(([href, label]) => <li><a href={`${anchorPrefix}${href}`}>{label}</a></li>)}
+          {
+            nav.map(([href, label]) => (
+              <li>
+                <a href={`${anchorPrefix}${href}`}>{label}</a>
+              </li>
+            ))
+          }
         </ul>
       </div>
     </nav>
@@ -56,13 +62,13 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       <div class="wrap">
         <span class="disclaimer"
           ><span class="i">ⓘ</span><span
-            ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias ·
-            fuente: pliego público CON 06/2025</span
+            ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias · fuente:
+            pliego público CON 06/2025</span
           ></span
         >
         <span
-          >Fuente: Pliego de Condiciones Técnicas · EXPTE CON 06/2025 · aprobado 22-12-2025 ·
-          Datos, planos y calendario extraídos del propio pliego</span
+          >Fuente: Pliego de Condiciones Técnicas · EXPTE CON 06/2025 · aprobado 22-12-2025 · Datos,
+          planos y calendario extraídos del propio pliego</span
         >
         <span class="mono"
           >GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de

@@ -25,12 +25,21 @@ import { createEquipmentBuilders, type UnitBuilder } from './viewer3d/equipment'
 import { pointInPolygon } from './viewer3d/geometry';
 import { computeOrientations } from './viewer3d/orientation';
 import { LX, buildShell, type Vent } from './viewer3d/shell';
-import { buildFinishes, buildFloorTexture, buildMaterials, buildWallTexture } from './viewer3d/textures';
+import {
+  buildFinishes,
+  buildFloorTexture,
+  buildMaterials,
+  buildWallTexture,
+} from './viewer3d/textures';
 
 THREE.ColorManagement.enabled = false;
 
 interface Bay {
-  x: number; z: number; w: number; d: number; h: number;
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  h: number;
   /** base height when the cabinet is wall-mounted rather than floor-standing */
   y?: number;
   kind: string;
@@ -70,7 +79,10 @@ interface Tray {
 }
 /** A row of lift-off covers over the floor cable duct («tapas»). */
 interface Hatch {
-  x: number; z: number; w: number; d: number;
+  x: number;
+  z: number;
+  w: number;
+  d: number;
   /** how many covers in the row; 1 unless the plan draws more */
   n?: number;
 }
@@ -96,7 +108,10 @@ let SV: { stop(): void } | null = null;
 
 /** Stops the render loop and releases the current room's resources. */
 export function stopRoom() {
-  if (SV) { SV.stop(); SV = null; }
+  if (SV) {
+    SV.stop();
+    SV = null;
+  }
 }
 
 /** Kinds that build their own enclosure: the CGBT's cabinet would z-fight
@@ -106,15 +121,31 @@ export function stopRoom() {
 const OWN_ENCLOSURE = new Set(['cgbt', 'battery', 'void']);
 
 const COLOR: Record<string, number> = {
-  olt: 0x2e3238, odf: 0x39414c, transport: 0x36404e, splitter: 0x36404e,
-  catv: 0x3b3a42, rack: 0x2e3238, power: 0x4a4f57, battery: 0x23262c,
-  cgbt: 0x55606e, acdist: 0x55606e, ups: 0x8a9099, cabinet: 0x6f7680,
-  cage: 0xc9cdd2, ac: 0x8f959c, empty: 0x4c5158, void: 0x14171c,
+  olt: 0x2e3238,
+  odf: 0x39414c,
+  transport: 0x36404e,
+  splitter: 0x36404e,
+  catv: 0x3b3a42,
+  rack: 0x2e3238,
+  power: 0x4a4f57,
+  battery: 0x23262c,
+  cgbt: 0x55606e,
+  acdist: 0x55606e,
+  ups: 0x8a9099,
+  cabinet: 0x6f7680,
+  cage: 0xc9cdd2,
+  ac: 0x8f959c,
+  empty: 0x4c5158,
+  void: 0x14171c,
 };
 
 /** What a bay holds when its label names only one thing. */
 const UNITS_OF_KIND: Record<string, string> = {
-  olt: 'olt', odf: 'odf', transport: 'dwdm', splitter: 'splitter', catv: 'video',
+  olt: 'olt',
+  odf: 'odf',
+  transport: 'dwdm',
+  splitter: 'splitter',
+  catv: 'video',
 };
 
 /**
@@ -124,7 +155,12 @@ const UNITS_OF_KIND: Record<string, string> = {
  * elevations draw them.
  */
 const UNIT_WEIGHT: Record<string, number> = {
-  olt: 3, odf: 3, dwdm: 2, splitter: 2, video: 1.4, txcube: 1,
+  olt: 3,
+  odf: 3,
+  dwdm: 2,
+  splitter: 2,
+  video: 1.4,
+  txcube: 1,
 };
 
 /** The kinds whose front is built band by band rather than as one cabinet. */
@@ -156,7 +192,9 @@ export function buildRoom(n: NetworkNode) {
   /* plan coordinates are centred on the room so the camera maths stays simple */
   const xs = room.outline.map((p) => p[0]);
   const zs = room.outline.map((p) => p[1]);
-  const W = Math.max(...xs), D = Math.max(...zs), H = room.h;
+  const W = Math.max(...xs),
+    D = Math.max(...zs),
+    H = room.h;
   const poly: [number, number][] = room.outline.map(([x, z]) => [x - W / 2, z - D / 2]);
 
   scene.fog = new THREE.Fog(0x0b1322, Math.max(W, D) * 1.4, Math.max(W, D) * 4);
@@ -169,17 +207,46 @@ export function buildRoom(n: NetworkNode) {
   const mat = buildMaterials(floorTex, wallTex);
   const fin = buildFinishes();
   const {
-    box, label, portLed, cord, rackFrame,
-    odfUnit, dwdmUnit, splitterUnit, videoUnit, txCubeUnit,
-    cgbtBay, acDistBay, powerBay, batteryBay, chassis, rejiband, hatchRun, leds,
+    box,
+    label,
+    portLed,
+    cord,
+    rackFrame,
+    odfUnit,
+    dwdmUnit,
+    splitterUnit,
+    videoUnit,
+    txCubeUnit,
+    cgbtBay,
+    acDistBay,
+    powerBay,
+    batteryBay,
+    chassis,
+    rejiband,
+    hatchRun,
+    leds,
   } = createEquipmentBuilders(scene, mat, fin);
 
   const UNIT_BUILDER: Record<string, UnitBuilder> = {
-    odf: odfUnit, dwdm: dwdmUnit, splitter: splitterUnit, video: videoUnit, txcube: txCubeUnit,
+    odf: odfUnit,
+    dwdm: dwdmUnit,
+    splitter: splitterUnit,
+    video: videoUnit,
+    txcube: txCubeUnit,
   };
 
   const { halo } = buildShell({
-    scene, mat, poly, doors: room.doors, vents: room.vents, W, D, H, box, label, fin,
+    scene,
+    mat,
+    poly,
+    doors: room.doors,
+    vents: room.vents,
+    W,
+    D,
+    H,
+    box,
+    label,
+    fin,
   });
 
   /* ---- equipment bays ---- */
@@ -194,8 +261,10 @@ export function buildRoom(n: NetworkNode) {
        closed the only aisle in Cangas. */
     if ((bay.y ?? 0) >= CEILING_MOUNTED) continue;
     solids.push({
-      x0: bay.x - W / 2, x1: bay.x - W / 2 + bay.w,
-      z0: bay.z - D / 2, z1: bay.z - D / 2 + bay.d,
+      x0: bay.x - W / 2,
+      x1: bay.x - W / 2 + bay.w,
+      z0: bay.z - D / 2,
+      z1: bay.z - D / 2 + bay.d,
     });
   }
 
@@ -220,17 +289,21 @@ export function buildRoom(n: NetworkNode) {
     /* The gate opens onto the aisle — the middle of the room — so both rows
        of cages present their name to whoever is walking between them. */
     const gateOnMinusZ = bay.z - D / 2 + bay.d / 2 > 0;
-    const gz = (gateOnMinusZ ? -1 : 1) * bay.d / 2;
+    const gz = ((gateOnMinusZ ? -1 : 1) * bay.d) / 2;
 
     for (const [px, pz] of [
-      [-bay.w / 2, -bay.d / 2], [bay.w / 2, -bay.d / 2],
-      [-bay.w / 2, bay.d / 2], [bay.w / 2, bay.d / 2],
-    ] as const) box(0.06, gh, 0.06, mat.alu, px, gh / 2, pz, g);
+      [-bay.w / 2, -bay.d / 2],
+      [bay.w / 2, -bay.d / 2],
+      [-bay.w / 2, bay.d / 2],
+      [bay.w / 2, bay.d / 2],
+    ] as const)
+      box(0.06, gh, 0.06, mat.alu, px, gh / 2, pz, g);
     box(bay.w, 0.05, bay.d, mat.alu, 0, gh, 0, g);
 
     /* mesh on the three closed sides, and on the gate above its name panel */
     const panels: [number, number, number, number][] = [
-      [-bay.w / 2, 0, 0.02, bay.d], [bay.w / 2, 0, 0.02, bay.d],
+      [-bay.w / 2, 0, 0.02, bay.d],
+      [bay.w / 2, 0, 0.02, bay.d],
       [0, -gz, bay.w, 0.02],
     ];
     /* each panel needs its own texture: the mesh has to keep the same cell
@@ -249,22 +322,54 @@ export function buildRoom(n: NetworkNode) {
 
     /* the gate: an accent frame, the operator's name at eye level, mesh above */
     box(bay.w, 0.06, 0.05, accentMat, 0, gh - 0.03, gz, g);
-    for (const sx of [-1, 1]) box(0.05, gh, 0.05, accentMat, sx * (bay.w / 2 - 0.03), gh / 2, gz, g);
+    for (const sx of [-1, 1])
+      box(0.05, gh, 0.05, accentMat, sx * (bay.w / 2 - 0.03), gh / 2, gz, g);
     /* the name plate sits at eye level, mesh above and below it */
-    const ny = 1.45, nh = 0.62;
-    box(bay.w - 0.1, gh - ny - nh / 2 - 0.05, 0.02,
-        meshPanel(bay.w, gh - ny - nh / 2), 0, (ny + nh / 2 + gh) / 2 - 0.02, gz, g);
-    box(bay.w - 0.1, ny - nh / 2 - 0.05, 0.02,
-        meshPanel(bay.w, ny - nh / 2), 0, (ny - nh / 2) / 2, gz, g);
+    const ny = 1.45,
+      nh = 0.62;
+    box(
+      bay.w - 0.1,
+      gh - ny - nh / 2 - 0.05,
+      0.02,
+      meshPanel(bay.w, gh - ny - nh / 2),
+      0,
+      (ny + nh / 2 + gh) / 2 - 0.02,
+      gz,
+      g,
+    );
+    box(
+      bay.w - 0.1,
+      ny - nh / 2 - 0.05,
+      0.02,
+      meshPanel(bay.w, ny - nh / 2),
+      0,
+      (ny - nh / 2) / 2,
+      gz,
+      g,
+    );
     box(bay.w - 0.1, nh, 0.03, accentMat, 0, ny, gz, g);
-    box(0.05, 0.2, 0.05, fin.steel, bay.w / 2 - 0.14, 1.02, gz * 1.12, g);   /* latch */
+    box(0.05, 0.2, 0.05, fin.steel, bay.w / 2 - 0.14, 1.02, gz * 1.12, g); /* latch */
 
     /* the name, big, on the gate and again over the top rail */
     const name = bay.label.split('·').pop()!.trim();
-    label(name.toUpperCase(), Math.min(bay.w * 0.78, 1.1),
-          g.position.x, ny, g.position.z + gz * 1.06,
-          gateOnMinusZ ? Math.PI : 0, '#0d1218');
-    label(bay.label, Math.min(bay.w * 0.9, 1.35), g.position.x, gh + 0.14, g.position.z, 0, '#c8d4e2');
+    label(
+      name.toUpperCase(),
+      Math.min(bay.w * 0.78, 1.1),
+      g.position.x,
+      ny,
+      g.position.z + gz * 1.06,
+      gateOnMinusZ ? Math.PI : 0,
+      '#0d1218',
+    );
+    label(
+      bay.label,
+      Math.min(bay.w * 0.9, 1.35),
+      g.position.x,
+      gh + 0.14,
+      g.position.z,
+      0,
+      '#c8d4e2',
+    );
 
     /* what the plan draws inside */
     for (const rk of bay.racks ?? []) {
@@ -272,15 +377,31 @@ export function buildRoom(n: NetworkNode) {
       sub.position.set(rk.x - bay.x - bay.w / 2 + rk.w / 2, 0, rk.z - bay.z - bay.d / 2 + rk.d / 2);
       g.add(sub);
       const rh = 2.0;
-      box(rk.w, rh, rk.d, new THREE.MeshLambertMaterial({ color: COLOR['rack']! }), 0, rh / 2, 0, sub);
+      box(
+        rk.w,
+        rh,
+        rk.d,
+        new THREE.MeshLambertMaterial({ color: COLOR['rack']! }),
+        0,
+        rh / 2,
+        0,
+        sub,
+      );
       rackFrame(sub, rk.w, rh, rk.d / 2, 0);
       for (let i = 0; i < 6; i++) {
         box(rk.w - 0.13, 0.13, 0.04, fin.module, 0, 0.45 + i * 0.26, rk.d * 0.48, sub);
         portLed(rk.w / 2 - 0.11, 0.45 + i * 0.26, rk.d * 0.52, sub, i % 3 !== 2, 'status');
       }
       if (rk.label) {
-        label(rk.label, Math.min(rk.w * 0.95, 0.7),
-              g.position.x + sub.position.x, rh + 0.09, g.position.z + sub.position.z, 0, '#93a6bf');
+        label(
+          rk.label,
+          Math.min(rk.w * 0.95, 0.7),
+          g.position.x + sub.position.x,
+          rh + 0.09,
+          g.position.z + sub.position.z,
+          0,
+          '#93a6bf',
+        );
       }
     }
   }
@@ -291,7 +412,14 @@ export function buildRoom(n: NetworkNode) {
    * chassis the renewal replaces them with, hidden until the mode toggle.
    * Not a plain UnitBuilder because it is the one unit that needs the node.
    */
-  function buildOltUnit(bay: Bay, g: THREE.Object3D, w: number, y0: number, y1: number, front: number) {
+  function buildOltUnit(
+    bay: Bay,
+    g: THREE.Object3D,
+    w: number,
+    y0: number,
+    y1: number,
+    front: number,
+  ) {
     const olts = (bay.olts ?? []).map((i) => n.olts[i]!).filter(Boolean);
     const slot = (y1 - y0) / Math.max(1, olts.length);
     olts.forEach((o, i) => {
@@ -305,7 +433,8 @@ export function buildRoom(n: NetworkNode) {
     g.add(nu);
     nu.visible = false;
     newChassis.push(nu);
-    const my = (y0 + y1) / 2, mh = Math.min(y1 - y0 - 0.1, 0.85);
+    const my = (y0 + y1) / 2,
+      mh = Math.min(y1 - y0 - 0.1, 0.85);
     box(w - 0.08, mh, 0.06, mat.chassisNew, 0, my, 0.3 * front, nu);
     box(w - 0.08, 0.024, 0.08, fin.bezel, 0, my + mh / 2, 0.3 * front, nu);
     for (let i = 0; i < 12; i++) {
@@ -337,28 +466,55 @@ export function buildRoom(n: NetworkNode) {
       /* a floor opening — Cangas' stair down to the basement. The plan draws
          it inside the room with its «barandilla», so it is a thing you walk
          round, not a cabinet and not floor. */
-      box(faceW, 0.02, faceD, new THREE.MeshLambertMaterial({ color: COLOR['void']! }),
-          0, 0.01, 0, g);
+      box(
+        faceW,
+        0.02,
+        faceD,
+        new THREE.MeshLambertMaterial({ color: COLOR['void']! }),
+        0,
+        0.01,
+        0,
+        g,
+      );
       for (const [px, pz, pw, pd] of [
-        [0, -faceD / 2, faceW, 0.04], [0, faceD / 2, faceW, 0.04],
-        [-faceW / 2, 0, 0.04, faceD], [faceW / 2, 0, 0.04, faceD],
+        [0, -faceD / 2, faceW, 0.04],
+        [0, faceD / 2, faceW, 0.04],
+        [-faceW / 2, 0, 0.04, faceD],
+        [faceW / 2, 0, 0.04, faceD],
       ] as const) {
         box(pw, 0.035, pd, fin.steel, px, bay.h, pz, g);
         box(pw, 0.03, pd, fin.steel, px, bay.h * 0.55, pz, g);
       }
       for (const [px, pz] of [
-        [-faceW / 2, -faceD / 2], [faceW / 2, -faceD / 2],
-        [-faceW / 2, faceD / 2], [faceW / 2, faceD / 2],
-      ] as const) box(0.045, bay.h, 0.045, fin.rail, px, bay.h / 2, pz, g);
-      label(bay.label, Math.min(faceW * 0.95, 0.8),
-            g.position.x, bay.h + 0.12, g.position.z, rot, '#c8d4e2');
+        [-faceW / 2, -faceD / 2],
+        [faceW / 2, -faceD / 2],
+        [-faceW / 2, faceD / 2],
+        [faceW / 2, faceD / 2],
+      ] as const)
+        box(0.045, bay.h, 0.045, fin.rail, px, bay.h / 2, pz, g);
+      label(
+        bay.label,
+        Math.min(faceW * 0.95, 0.8),
+        g.position.x,
+        bay.h + 0.12,
+        g.position.z,
+        rot,
+        '#c8d4e2',
+      );
       continue;
     }
 
     if (!OWN_ENCLOSURE.has(bay.kind)) {
-      box(faceW, bay.h, faceD,
+      box(
+        faceW,
+        bay.h,
+        faceD,
         new THREE.MeshLambertMaterial({ color: COLOR[bay.kind] ?? 0x4c5158 }),
-        0, base + bay.h / 2, 0, g);
+        0,
+        base + bay.h / 2,
+        0,
+        g,
+      );
     }
 
     /* What this cabinet holds: the plan's own reading where the label names
@@ -368,7 +524,8 @@ export function buildRoom(n: NetworkNode) {
     if (units.length) {
       rackFrame(g, faceW, bay.h, fz, base);
       /* share the rack's usable height between the units, by weight */
-      const y0 = base + 0.3, y1 = base + bay.h - 0.15;
+      const y0 = base + 0.3,
+        y1 = base + bay.h - 0.15;
       const total = units.reduce((s, u) => s + (UNIT_WEIGHT[u] ?? 1), 0);
       let y = y0;
       for (const u of units) {
@@ -388,7 +545,8 @@ export function buildRoom(n: NetworkNode) {
     } else if (bay.kind === 'ups') {
       rackFrame(g, faceW, bay.h, fz, base);
       box(faceW - 0.18, 0.12, 0.02, fin.screen, 0, base + bay.h * 0.74, fz * 1.02, g);
-      for (let i = 0; i < 3; i++) portLed(-0.08 + i * 0.08, base + bay.h * 0.6, fz * 1.03, g, true, 'status');
+      for (let i = 0; i < 3; i++)
+        portLed(-0.08 + i * 0.08, base + bay.h * 0.6, fz * 1.03, g, true, 'status');
     } else if (bay.kind === 'rack' || bay.kind === 'empty') {
       rackFrame(g, faceW, bay.h, fz, base);
       if (bay.kind === 'rack') {
@@ -400,10 +558,13 @@ export function buildRoom(n: NetworkNode) {
       if (bay.enclosed) {
         /* a perforated front door on its hinges, as the plan's door swing
            says: the kit behind it shows through the ventilation slots */
-        const dw = faceW - 0.03, dh = bay.h - 0.06, dz = fz * 1.06;
+        const dw = faceW - 0.03,
+          dh = bay.h - 0.06,
+          dz = fz * 1.06;
         box(dw, 0.03, 0.028, fin.bezel, 0, base + bay.h - 0.03, dz, g);
         box(dw, 0.03, 0.028, fin.bezel, 0, base + 0.03, dz, g);
-        for (const sx of [-1, 1]) box(0.03, dh, 0.028, fin.bezel, sx * dw / 2, base + bay.h / 2, dz, g);
+        for (const sx of [-1, 1])
+          box(0.03, dh, 0.028, fin.bezel, (sx * dw) / 2, base + bay.h / 2, dz, g);
         for (let i = 0; i < Math.round(dh / 0.09); i++) {
           box(dw - 0.08, 0.05, 0.02, fin.rail, 0, base + 0.09 + i * 0.09, dz, g);
         }
@@ -421,15 +582,15 @@ export function buildRoom(n: NetworkNode) {
       const bz = -fz * 1.01;
       box(faceW - 0.05, bay.h - 0.08, 0.012, fin.bezel, 0, base + bay.h / 2, bz, g);
       for (let i = 0; i < Math.max(4, Math.round((bay.h - 0.3) / 0.16)); i++) {
-        box(faceW - 0.16, 0.055, 0.016, fin.rail, 0,
-            base + 0.2 + i * 0.16, -fz * 1.03, g);
+        box(faceW - 0.16, 0.055, 0.016, fin.rail, 0, base + 0.2 + i * 0.16, -fz * 1.03, g);
       }
       box(0.02, 0.13, 0.03, fin.steel, faceW / 2 - 0.07, base + bay.h * 0.5, -fz * 1.05, g);
     }
 
     /* the label goes on the face that looks into the room */
-    const lo = new THREE.Vector3(0, base + bay.h + 0.07, fz + 0.02).applyAxisAngle(
-      new THREE.Vector3(0, 1, 0), rot).add(g.position);
+    const lo = new THREE.Vector3(0, base + bay.h + 0.07, fz + 0.02)
+      .applyAxisAngle(new THREE.Vector3(0, 1, 0), rot)
+      .add(g.position);
     label(bay.label, Math.min(faceW * 0.95, 0.8), lo.x, lo.y, lo.z, rot, '#c8d4e2');
   }
 
@@ -456,12 +617,21 @@ export function buildRoom(n: NetworkNode) {
     const cz = bay.z - D / 2 + bay.d / 2;
     const top = (bay.y ?? 0) + bay.h;
     if (top > trayY - 0.05) continue;
-    const m = bay.kind === 'power' || bay.kind === 'cgbt' || bay.kind === 'acdist'
-      ? fin.cableBlack : fin.fibre;
-    cord([[cx - 0.06, trayY - 0.06, cz],
-          [cx - 0.05, trayY - 0.16, cz + 0.05],
-          [cx - 0.03, top + 0.06, cz + 0.02],
-          [cx - 0.02, top - 0.02, cz]], scene, m, 0.009);
+    const m =
+      bay.kind === 'power' || bay.kind === 'cgbt' || bay.kind === 'acdist'
+        ? fin.cableBlack
+        : fin.fibre;
+    cord(
+      [
+        [cx - 0.06, trayY - 0.06, cz],
+        [cx - 0.05, trayY - 0.16, cz + 0.05],
+        [cx - 0.03, top + 0.06, cz + 0.02],
+        [cx - 0.02, top - 0.02, cz],
+      ],
+      scene,
+      m,
+      0.009,
+    );
   }
 
   /* ---- «tapas»: the lift-off covers of the floor cable duct ---- */
@@ -484,8 +654,10 @@ export function buildRoom(n: NetworkNode) {
     const [bx, bz] = poly[(d0.edge + 1) % poly.length]!;
     const ang = Math.atan2(bz - az, bx - ax);
     const t = d0.at + d0.width + 0.28;
-    const ex = ax + Math.cos(ang) * t, ez = az + Math.sin(ang) * t;
-    const inx = ex - Math.sin(ang) * -0.12, inz = ez + Math.cos(ang) * -0.12;
+    const ex = ax + Math.cos(ang) * t,
+      ez = az + Math.sin(ang) * t;
+    const inx = ex - Math.sin(ang) * -0.12,
+      inz = ez + Math.cos(ang) * -0.12;
     if (pointInPolygon(poly, inx, inz)) extinguisher(inx, inz);
   }
 
@@ -498,10 +670,14 @@ export function buildRoom(n: NetworkNode) {
     `· ${room.bays.length} armarios rotulados en el plano<br>` +
     (olts.length
       ? `· ${olts.length} OLT · ${cardCount(n)} tarjetas<br>` +
-        olts.map((o) =>
-          `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))}` +
-          ` — ${o.portsPerCard} puertos GPON <b>por tarjeta</b>,` +
-          ` ${o.portsActive} de ${o.portsTotal} activos`).join('<br>')
+        olts
+          .map(
+            (o) =>
+              `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))}` +
+              ` — ${o.portsPerCard} puertos GPON <b>por tarjeta</b>,` +
+              ` ${o.portsActive} de ${o.portsTotal} activos`,
+          )
+          .join('<br>')
       : '· Sin OLT: punto de interconexión con los operadores') +
     (room.note ? `<br><span style="color:#5a6f8d">${esc(room.note)}</span>` : '');
 
@@ -528,15 +704,25 @@ export function buildRoom(n: NetworkNode) {
     const [bx, bz] = poly[(d0.edge + 1) % poly.length]!;
     const ang = Math.atan2(bz - az, bx - ax);
     const mid = d0.at + d0.width / 2;
-    const dx = ax + Math.cos(ang) * mid, dz = az + Math.sin(ang) * mid;
-    const nx = -Math.sin(ang), nz = Math.cos(ang);
+    const dx = ax + Math.cos(ang) * mid,
+      dz = az + Math.sin(ang) * mid;
+    const nx = -Math.sin(ang),
+      nz = Math.cos(ang);
     const sign = pointInPolygon(poly, dx + nx * 0.1, dz + nz * 0.1) ? 1 : -1;
     const reach = Math.hypot(W, D);
     lookAt = [dx + nx * sign * reach, dz + nz * sign * reach];
   }
 
   SV = initControls({
-    cam, canvas, holder, renderer, scene, poly, solids,
-    startDoor: room.doors[0], lookAt, leds,
+    cam,
+    canvas,
+    holder,
+    renderer,
+    scene,
+    poly,
+    solids,
+    startDoor: room.doors[0],
+    lookAt,
+    leds,
   });
 }
