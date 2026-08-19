@@ -20,7 +20,13 @@
 .gal-tabs button.on{color:var(--ink);background:var(--xgs);border-color:var(--xgs);font-weight:600}
 .interior-badge{position:absolute;top:12px;left:12px;background:rgba(6,11,20,.85);border:1px solid rgba(65,227,210,.5);color:var(--xgs);border-radius:6px;padding:5px 10px;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;backdrop-filter:blur(4px)}
 @media(max-width:760px){
-  .modal-bg{padding:12px 8px}
+  /* Full-bleed sheet, not a floating dialog: at this width the backdrop
+     only showed an 8px sliver of map either side, so the record may as
+     well own the viewport. min-height is a guard for a record short
+     enough to leave a band of backdrop under the sheet — no current node
+     is (the shortest, the PAO, still overflows a phone screen). */
+  .modal-bg{padding:0}
+  .modal{border:none;border-radius:0;min-height:100%}
   .modal .mbody{padding:20px 16px 24px}
   .modal h3{font-size:1.25rem}
 }

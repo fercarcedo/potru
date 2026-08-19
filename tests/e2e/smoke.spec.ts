@@ -75,6 +75,34 @@ test('closing the modal restores the home URL, and back/forward reopen it in pla
   await expect(page).toHaveURL(homeUrl);
 });
 
+test.describe('narrow viewports', () => {
+  // The suite otherwise runs Desktop Chrome only, so the phone-width rules in
+  // styles/node-modal.css had no coverage at all.
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('the node record fills the viewport edge-to-edge instead of floating as a dialog', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="muros"]').click();
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+
+    const box = (await page.locator('#modalBg .modal').boundingBox())!;
+    expect(box.x).toBe(0);
+    expect(box.y).toBe(0);
+    expect(box.width).toBe(390);
+  });
+
+  test('the gallery tabs stay inside the plan image', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="muros"]').click();
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+
+    const img = (await page.locator('#modalBg .mimg').boundingBox())!;
+    const tabs = (await page.locator('#modalBg .gal-tabs').boundingBox())!;
+    expect(tabs.y).toBeGreaterThanOrEqual(img.y);
+    expect(tabs.y + tabs.height).toBeLessThanOrEqual(img.y + img.height);
+  });
+});
+
 test('clicking a gantt bar opens the same node modal', async ({ page }) => {
   await page.goto('./');
   const bar = page.locator('#gantt g[data-node]').first();
