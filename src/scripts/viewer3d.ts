@@ -213,11 +213,12 @@ export function buildRoom(n: NetworkNode) {
    * gate onto the aisle carrying the operator's name, and the racks the plan
    * actually draws inside it.
    */
-  function buildCage(bay: Bay, g: THREE.Group, rot: number, idx: number) {
+  function buildCage(bay: Bay, g: THREE.Group, idx: number) {
     const gh = bay.h;
     const accent = CAGE_ACCENT[idx % CAGE_ACCENT.length]!;
     const accentMat = new THREE.MeshLambertMaterial({ color: accent });
-    /* the gate faces the aisle, i.e. the middle of the room */
+    /* The gate opens onto the aisle — the middle of the room — so both rows
+       of cages present their name to whoever is walking between them. */
     const gateOnMinusZ = bay.z - D / 2 + bay.d / 2 > 0;
     const gz = (gateOnMinusZ ? -1 : 1) * bay.d / 2;
 
@@ -260,10 +261,9 @@ export function buildRoom(n: NetworkNode) {
 
     /* the name, big, on the gate and again over the top rail */
     const name = bay.label.split('·').pop()!.trim();
-    const front = new THREE.Vector3(0, ny, gz * 1.06).applyAxisAngle(new THREE.Vector3(0, 1, 0), rot)
-      .add(g.position);
-    label(name.toUpperCase(), Math.min(bay.w * 0.78, 1.1), front.x, front.y, front.z,
-          rot + (gateOnMinusZ ? Math.PI : 0), '#0d1218');
+    label(name.toUpperCase(), Math.min(bay.w * 0.78, 1.1),
+          g.position.x, ny, g.position.z + gz * 1.06,
+          gateOnMinusZ ? Math.PI : 0, '#0d1218');
     label(bay.label, Math.min(bay.w * 0.9, 1.35), g.position.x, gh + 0.14, g.position.z, 0, '#c8d4e2');
 
     /* what the plan draws inside */
@@ -318,16 +318,20 @@ export function buildRoom(n: NetworkNode) {
     g.position.set(bay.x - W / 2 + bay.w / 2, 0, bay.z - D / 2 + bay.d / 2);
     scene.add(g);
     const base = bay.y ?? 0;
+    if (bay.kind === 'cage') {
+      /* A cage is a room within the room, not a cabinet: it stays square to
+         the plan. Turning it by the cabinet solver's `rot` both mismatched
+         its own w x d footprint and, for the PAO's bottom row, flipped its
+         gate round to face the wall. */
+      buildCage(bay, g, cageIndex++);
+      continue;
+    }
+
     /* local +Z is the front from here on, whichever way the cabinet is turned */
     const { rot, faceW, faceD } = orientOf.get(bay)!;
     g.rotation.y = rot;
     const front = 1;
     const fz = faceD / 2;
-
-    if (bay.kind === 'cage') {
-      buildCage(bay, g, rot, cageIndex++);
-      continue;
-    }
 
     if (bay.kind === 'void') {
       /* a floor opening — Cangas' stair down to the basement. The plan draws
