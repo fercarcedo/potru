@@ -559,7 +559,7 @@ export function initMap(openNode: (id: string) => void): {
      cold cache the first pass places every label against the wrong metrics
      and nothing would ever correct it. The pass is idempotent. */
   placeMapLabels(svg);
-  document.fonts?.ready.then(() => placeMapLabels(svg));
+  void document.fonts?.ready.then(() => placeMapLabels(svg));
 
   return { svg, TR };
 }

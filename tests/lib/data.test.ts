@@ -25,8 +25,8 @@ describe('ontCount / cardCount', () => {
   });
 
   it('is 0 for a node with no OLTs (defensive, in case one is ever added)', () => {
-    expect(ontCount({ olts: [] } as any)).toBe(0);
-    expect(cardCount({ olts: [] } as any)).toBe(0);
+    expect(ontCount({ olts: [] })).toBe(0);
+    expect(cardCount({ olts: [] })).toBe(0);
   });
 });
 

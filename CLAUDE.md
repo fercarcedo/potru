@@ -28,6 +28,7 @@ npm run build     # static site into dist/
 npm run preview   # serve dist/ as it will be published
 npm run check     # astro check — types and templates
 npm run format    # prettier over the repo — see the formatting note below
+npm run lint      # eslint (typescript-eslint), the part a formatter can't see
 npm run test      # vitest: data, lib and script unit tests (tests/data, tests/lib, tests/scripts)
 npm run test:e2e  # playwright: builds + previews dist/, then drives it in Chromium (tests/e2e)
 npm run verify    # check + test + build + test:e2e, in that order
@@ -151,6 +152,14 @@ versioned.
   so how the source is written never reaches the wire. `.astro` files are the one exclusion
   (`.prettierignore`): formatting the templates needs `prettier-plugin-astro` and a diff across
   every one of them, and their scoped `<style>` blocks are already written expanded by hand.
+- **Linting is eslint's**, `src/` and `tests/` TypeScript only, on typescript-eslint's
+  `recommended` plus three type-aware rules — `no-floating-promises`, `no-misused-promises`,
+  `await-thenable`. A dropped promise is the failure this codebase is actually exposed to (a
+  dynamic import that never resolves, a font that never loads), and it is invisible to review.
+  The full `recommendedTypeChecked` set is deliberately off: most of what it adds here is
+  `no-unnecessary-type-assertion` firing on the `arr[i]!` idiom, which is only unnecessary while
+  `noUncheckedIndexedAccess` is off, so deleting those assertions would quietly make the codebase
+  harder to tighten later. `no-non-null-assertion` is off for the same reason.
 - Commits are **in English**, conventional-commit style with a scope (`fix(map): …`,
   `feat(data): …`), and a body explaining what was wrong and why the fix works.
 - The pliego's drawings and data are excluded from the repo's MIT licence (authorship: GIT). Keep

@@ -117,7 +117,9 @@ export function initModal(): ModalApi {
     wbtn.style.display = n.gallery.length > 1 ? 'block' : 'none';
     wbtn.onclick = () => {
       closeModal();
-      openWalk(n.id);
+      /* fire and forget: openWalk reports its own failure to load the 3D
+         engine, and there is nothing for this handler to do about it */
+      void openWalk(n.id);
     };
 
     document.getElementById(DOM.mActs)!.innerHTML = renderActionLinks(n, '', true);
