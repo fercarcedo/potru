@@ -22,8 +22,18 @@ export interface ModalApi {
 export function initModal(): ModalApi {
   const base = import.meta.env.BASE_URL;
   const mBg = document.getElementById(DOM.modalBg)!;
+  const homeHref = location.href;
+  const nodePrefix = `${base}nodos/`;
+  let openId: string | null = null;
 
-  function openNode(id: string, view = 0) {
+  /** id of the node whose permalink the current path names, or null. */
+  function idFromPath(path: string): string | null {
+    if (!path.startsWith(nodePrefix)) return null;
+    const id = path.slice(nodePrefix.length).replace(/\/$/, '');
+    return id && byId[id] ? id : null;
+  }
+
+  function render(id: string, view = 0) {
     const n = byId[id];
     if (!n) return;
     const gallery = n.gallery;
@@ -88,9 +98,22 @@ export function initModal(): ModalApi {
     document.body.style.overflow = 'hidden';
   }
 
+  /** Opens a node's modal and, unless it's already the open one (a gallery
+   *  tab switch), pushes its permalink so the URL bar names what's on
+   *  screen and reloading (or sharing the link) lands back on it — the
+   *  standalone /nodos/<id> page renders the same material. */
+  function openNode(id: string, view = 0) {
+    if (!byId[id]) return;
+    render(id, view);
+    if (openId !== id) history.pushState({}, '', `${base}nodos/${id}`);
+    openId = id;
+  }
+
   function closeModal() {
     mBg.classList.remove('open');
     document.body.style.overflow = '';
+    if (openId !== null) history.pushState({}, '', homeHref);
+    openId = null;
   }
 
   document.getElementById(DOM.mClose)!.onclick = closeModal;
@@ -101,6 +124,21 @@ export function initModal(): ModalApi {
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
+  });
+
+  /* Back/forward across a pushed node permalink: re-render or hide in
+   * place, without pushing a new entry for a navigation that already
+   * happened. */
+  window.addEventListener('popstate', () => {
+    const id = idFromPath(location.pathname);
+    if (id) {
+      render(id, 0);
+      openId = id;
+    } else {
+      mBg.classList.remove('open');
+      document.body.style.overflow = '';
+      openId = null;
+    }
   });
 
   return { openNode, closeModal };

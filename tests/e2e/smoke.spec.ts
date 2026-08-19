@@ -33,13 +33,74 @@ test('progressive enhancement: node cards are real anchors to /nodos/<id> withou
   await context.close();
 });
 
-test('progressive enhancement: with JS, the same click opens the modal and stays on the home page', async ({
+test('progressive enhancement: with JS, the same click opens the modal and updates the URL to the node permalink', async ({
   page,
 }) => {
   await page.goto('./');
-  await page.locator('a.ncard[data-node]').first().click();
+  const card = page.locator('a.ncard[data-node]').first();
+  const id = await card.getAttribute('data-node');
+  await card.click();
   await expect(page.locator('#modalBg')).toHaveClass(/open/);
-  await expect(page).toHaveURL(/\/potru\/?$/);
+  await expect(page).toHaveURL(new RegExp(`/potru/nodos/${id}/?$`));
+});
+
+test('reloading while a node modal is open lands on that node\'s standalone page', async ({ page }) => {
+  await page.goto('./');
+  await page.locator('a.ncard[data-node="muros"]').click();
+  await expect(page.locator('#modalBg')).toHaveClass(/open/);
+  await expect(page).toHaveURL(/\/potru\/nodos\/muros\/?$/);
+
+  await page.reload();
+  await expect(page.getByText('MUR/1D')).toBeVisible();
+});
+
+test('closing the modal restores the home URL, and back/forward reopen it in place', async ({ page }) => {
+  await page.goto('./');
+  const homeUrl = page.url();
+  const card = page.locator('a.ncard[data-node]').first();
+  const id = await card.getAttribute('data-node');
+
+  await card.click();
+  await expect(page.locator('#modalBg')).toHaveClass(/open/);
+  await page.locator('#mClose').click();
+  await expect(page.locator('#modalBg')).not.toHaveClass(/open/);
+  await expect(page).toHaveURL(homeUrl);
+
+  await page.goBack();
+  await expect(page.locator('#modalBg')).toHaveClass(/open/);
+  await expect(page).toHaveURL(new RegExp(`/potru/nodos/${id}/?$`));
+
+  await page.goForward();
+  await expect(page.locator('#modalBg')).not.toHaveClass(/open/);
+  await expect(page).toHaveURL(homeUrl);
+});
+
+test.describe('narrow viewports', () => {
+  // The suite otherwise runs Desktop Chrome only, so the phone-width rules in
+  // styles/node-modal.css had no coverage at all.
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('the node record fills the viewport edge-to-edge instead of floating as a dialog', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="muros"]').click();
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+
+    const box = (await page.locator('#modalBg .modal').boundingBox())!;
+    expect(box.x).toBe(0);
+    expect(box.y).toBe(0);
+    expect(box.width).toBe(390);
+  });
+
+  test('the gallery tabs stay inside the plan image', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="muros"]').click();
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+
+    const img = (await page.locator('#modalBg .mimg').boundingBox())!;
+    const tabs = (await page.locator('#modalBg .gal-tabs').boundingBox())!;
+    expect(tabs.y).toBeGreaterThanOrEqual(img.y);
+    expect(tabs.y + tabs.height).toBeLessThanOrEqual(img.y + img.height);
+  });
 });
 
 test('clicking a gantt bar opens the same node modal', async ({ page }) => {
