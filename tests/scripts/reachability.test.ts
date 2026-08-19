@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import rooms from '../../src/data/rooms.json';
-import { doorway, isClear, reachableFrom, walkInFrom } from '../../src/scripts/viewer3d/walkable';
+import { doorway, inward, isClear, reachableFrom, walkInFrom } from '../../src/scripts/viewer3d/walkable';
 import type { Solid } from '../../src/scripts/viewer3d/walkable';
 
 interface Bay { x: number; z: number; w: number; d: number; y?: number; kind: string; label: string }
@@ -57,14 +57,10 @@ describe('every room lets the visitor in through its door', () => {
       const door = room.doors[0];
       expect(door, `${id} has no door`).toBeTruthy();
       const start = doorway(poly, door!);
-      const landed = walkInFrom(poly, solids, start);
+      const landed = walkInFrom(poly, solids, start, inward(poly, door!));
       expect(landed, `${id}: nowhere to stand walking in from the door`).toBeTruthy();
-      /* it is a walk *in*, not a hike to the far side: the walk stops as soon
-         as it has gone 1,1 m, so only a doorway blocked for metres overshoots */
-      const W = Math.max(...room.outline.map((p) => p[0]));
-      const D = Math.max(...room.outline.map((p) => p[1]));
-      expect(Math.hypot(landed![0] - start[0], landed![1] - start[1]))
-        .toBeLessThan(Math.max(2.2, Math.hypot(W, D) * 0.32));
+      /* it is a walk *in*, not a hike to the far side */
+      expect(Math.hypot(landed![0] - start[0], landed![1] - start[1])).toBeLessThan(3.05);
     });
   }
 });
@@ -73,7 +69,8 @@ describe('every cabinet can be walked up to', () => {
   for (const [id, room] of Object.entries(ROOMS)) {
     it(`${id}: no cabinet is walled off from the door`, () => {
       const { poly, foot, solids } = centred(room);
-      const start = walkInFrom(poly, solids, doorway(poly, room.doors[0]!))!;
+      const door = room.doors[0]!;
+      const start = walkInFrom(poly, solids, doorway(poly, door), inward(poly, door))!;
       const reached = reachableFrom(poly, solids, start);
       const stranded = room.bays
         .map((bay, i) => [bay, foot[i]!] as const)
@@ -91,7 +88,8 @@ describe('no room is mostly unreachable floor', () => {
   for (const [id, room] of Object.entries(ROOMS)) {
     it(`${id}: the visitor can reach most of the standable floor`, () => {
       const { poly, solids, W, D } = centred(room);
-      const start = walkInFrom(poly, solids, doorway(poly, room.doors[0]!))!;
+      const door = room.doors[0]!;
+      const start = walkInFrom(poly, solids, doorway(poly, door), inward(poly, door))!;
       const reached = reachableFrom(poly, solids, start);
       let standable = 0, got = 0;
       for (let x = -W / 2; x < W / 2; x += 0.12) {

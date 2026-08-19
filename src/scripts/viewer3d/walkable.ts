@@ -50,24 +50,52 @@ export function doorway(poly: [number, number][], door: Door): [number, number] 
   return [x1 + Math.cos(ang) * mid, z1 + Math.sin(ang) * mid];
 }
 
+/** The unit vector pointing from a door into the room. */
+export function inward(poly: [number, number][], door: Door): [number, number] {
+  const [x1, z1] = poly[door.edge]!;
+  const [x2, z2] = poly[(door.edge + 1) % poly.length]!;
+  const ang = Math.atan2(z2 - z1, x2 - x1);
+  const [dx, dz] = doorway(poly, door);
+  const nx = -Math.sin(ang), nz = Math.cos(ang);
+  const sign = pointInPolygon(poly, dx + nx * 0.1, dz + nz * 0.1) ? 1 : -1;
+  return [nx * sign, nz * sign];
+}
+
+/** How far in from the door the visitor comes to a stop. */
+const WALK_IN = 1.2;
+
 /**
- * Walks in from a door towards the middle of the room until there is space to
- * stand, then a bit further. Returns where the visitor ends up, or null if
- * the room never opens up — which is what "the view does not start at the
- * door" looks like from here.
+ * Steps in from a door, straight in, until there is room to stand — then to
+ * about a stride and a half inside. Returns where the visitor ends up, or
+ * null if the doorway never opens up, which is what "the view does not start
+ * at the door" looks like from here.
+ *
+ * Straight in, not towards the middle of the room: aiming at the centre walks
+ * a diagonal, and in Blimea that put the visitor's nose 16 cm from a rack.
  */
 export function walkInFrom(
-  poly: [number, number][], solids: Solid[], start: [number, number]
+  poly: [number, number][], solids: Solid[], start: [number, number], dir?: [number, number]
 ): [number, number] | null {
-  let landed: [number, number] | null = null;
-  for (let step = 0; step <= 40; step++) {
-    const k = step / 40;
-    const cx = start[0] * (1 - k), cz = start[1] * (1 - k);
-    if (!isClear(poly, solids, cx, cz)) continue;
-    landed = [cx, cz];
-    if (Math.hypot(cx - start[0], cz - start[1]) > 1.1) break;
+  const paths: [number, number][] = [];
+  if (dir) paths.push(dir);
+  /* fall back to the old aim at the room's origin if straight in is blocked */
+  const len = Math.hypot(start[0], start[1]);
+  if (len > 1e-6) paths.push([-start[0] / len, -start[1] / len]);
+
+  for (const [dx, dz] of paths) {
+    let landed: [number, number] | null = null;
+    for (let t = 0.05; t <= 3; t += 0.05) {
+      const cx = start[0] + dx * t, cz = start[1] + dz * t;
+      if (!isClear(poly, solids, cx, cz)) {
+        if (landed) break;      /* blocked before we ever got in: try the next aim */
+        continue;
+      }
+      landed = [cx, cz];
+      if (t >= WALK_IN) break;
+    }
+    if (landed) return landed;
   }
-  return landed;
+  return null;
 }
 
 /**
