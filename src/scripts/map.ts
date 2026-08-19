@@ -9,13 +9,12 @@
  * in place of the legacy's window.__map and the "import map.ts before
  * tour.ts" ordering this used to rely on silently.
  */
-import { HOST_ONLY, NODES, byId } from '../lib/data';
+import { HOST_ONLY, NODES, byId, ontCount } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { placeMapLabels } from './map/place-labels';
 import { initViewport } from './map/viewport';
-
-const NS = 'http://www.w3.org/2000/svg';
+import { svgEl, type SvgAttrs } from './svg';
 
 /** Screen position of each primary node's dot. Exported (with SECONDARY and
  *  TOWN_POS below) purely so tests/data/map-layout.test.ts can check these
@@ -66,16 +65,9 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
   const tip = document.getElementById(DOM.mapTip)!;
   const shell = svg.parentElement!;
 
-  type Attrs = Record<string, string | number>;
-  /** Creates one SVG element with its attributes, appended to `parent`
-   *  (defaults to the map's own <svg>). Values are coerced to strings the
-   *  same way setAttribute already does at runtime — explicit here only so
-   *  the type checker sees it too. */
-  function e2<K extends keyof SVGElementTagNameMap>(t: K, a: Attrs = {}, parent: Element = svg): SVGElementTagNameMap[K] {
-    const el = document.createElementNS(NS, t) as SVGElementTagNameMap[K];
-    for (const k in a) el.setAttribute(k, String(a[k]));
-    parent.appendChild(el);
-    return el;
+  /** svgEl() bound to the map's own <svg> as the default parent. */
+  function e2<K extends keyof SVGElementTagNameMap>(t: K, a: SvgAttrs = {}, parent: Element = svg): SVGElementTagNameMap[K] {
+    return svgEl(t, a, parent);
   }
 
   /** Positions the tooltip near the pointer, clamped inside the map's
@@ -162,7 +154,7 @@ export function initMap(openNode: (id: string) => void): { svg: SVGSVGElement; T
     anchor(lbl, x, y, hostOnly ? 11 : 7);
     lbl.textContent = n.name + (hostOnly ? ' *' : '');
     g.addEventListener('mousemove', (ev) => {
-      const ont = n.olts.reduce((a, o) => a + o.onts, 0);
+      const ont = ontCount(n);
       const ho = hostOnly
         ? `<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.</span>`
         : '';

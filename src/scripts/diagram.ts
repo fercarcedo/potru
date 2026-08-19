@@ -8,14 +8,17 @@
  */
 import { DIAGRAM_INFO } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
+import { svgEl, type SvgAttrs } from './svg';
 
 export function initDiagram() {
-  const ND=document.getElementById(DOM.netDiagram)!,NS='http://www.w3.org/2000/svg';
+  const ND=document.getElementById(DOM.netDiagram)!;
   const infoBox=document.getElementById(DOM.infoBox)!;
   let mode: 'gpon' | 'xgs' = 'gpon';
   const INFO = DIAGRAM_INFO;
-  type Attrs = Record<string, string | number>;
-  function el(tag: string, attrs: Attrs, parent?: Element){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,String(attrs[k]));(parent||ND).appendChild(e);return e;}
+  /** svgEl() bound to the diagram's own <svg> as the default parent. */
+  function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: SvgAttrs, parent?: Element){
+    return svgEl(tag, attrs, parent ?? ND);
+  }
   function buildDiagram(){
   ND.innerHTML='';
   const c=mode==='gpon'?'#ffb454':'#41e3d2',passive='#5a6f8d',txt='#e8eef6',mut='#8da0b8',Y=210;

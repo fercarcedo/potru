@@ -22,8 +22,7 @@
  */
 import { box, placeLabel } from '../label-placement';
 import type { Anchor, Candidate, Measurement, Rect } from '../label-placement';
-
-const NS = 'http://www.w3.org/2000/svg';
+import { svgEl } from '../svg';
 
 export function placeMapLabels(svg: SVGSVGElement): void {
   /* markers, the PAO square and the fixed captions are all immovable */
@@ -59,8 +58,7 @@ export function placeMapLabels(svg: SVGSVGElement): void {
       width: +q.getAttribute('width')!, height: +q.getAttribute('height')!,
     }, 3));
 
-  const leaders = document.createElementNS(NS, 'g');
-  svg.appendChild(leaders);
+  const leaders = svgEl('g', {}, svg);
 
   for (const cls of ['.lbl-node', '.lbl-sec', '.lbl-town'])
     for (const el of svg.querySelectorAll<SVGTextElement>(cls)) {
@@ -93,15 +91,11 @@ export function placeMapLabels(svg: SVGSVGElement): void {
       if (result.needsLeader) {
         const { x: px, y: py } = result.leaderTarget;
         const k = (ar + 2.5) / result.gap;
-        const ln = document.createElementNS(NS, 'line');
-        ln.setAttribute('x1', String(ax + (px - ax) * k));
-        ln.setAttribute('y1', String(ay + (py - ay) * k));
-        ln.setAttribute('x2', String(ax + (px - ax) * 0.94));
-        ln.setAttribute('y2', String(ay + (py - ay) * 0.94));
-        ln.setAttribute('stroke', '#5a6f8d');
-        ln.setAttribute('stroke-width', '.7');
-        ln.setAttribute('opacity', '.5');
-        leaders.appendChild(ln);
+        svgEl('line', {
+          x1: ax + (px - ax) * k, y1: ay + (py - ay) * k,
+          x2: ax + (px - ax) * 0.94, y2: ay + (py - ay) * 0.94,
+          stroke: '#5a6f8d', 'stroke-width': '.7', opacity: '.5',
+        }, leaders);
       }
     }
 }
