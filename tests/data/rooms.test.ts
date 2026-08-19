@@ -26,6 +26,7 @@ interface Bay {
   olts?: number[];
   units?: string[];
   enclosed?: boolean;
+  model?: string;
   racks?: { x: number; z: number; w: number; d: number; label?: string }[];
 }
 interface Tray {
@@ -83,6 +84,16 @@ const KNOWN_BAY_KINDS = new Set([
   'cage',
   'void',
 ]);
+
+// what a bay of each kind holds when its label names only one thing, as
+// viewer3d.ts's UNITS_OF_KIND has it
+const UNITS_OF_KIND: Record<string, string> = {
+  olt: 'olt',
+  odf: 'odf',
+  transport: 'dwdm',
+  splitter: 'splitter',
+  catv: 'video',
+};
 
 // The rack-mounted units a cabinet can hold, mirroring viewer3d.ts's
 // UNIT_WEIGHT / UNIT_BUILDER tables. A typo here would otherwise leave a
@@ -195,6 +206,16 @@ describe('bays', () => {
             expect(rk.z, rk.label).toBeGreaterThanOrEqual(bay.z - 1e-6);
             expect(rk.z + rk.d, rk.label).toBeLessThanOrEqual(bay.z + bay.d + 1e-6);
           }
+        });
+      }
+
+      if (bay.model !== undefined) {
+        it(`${id}: bay ${i} (${bay.label}) names a model something can print`, () => {
+          expect(bay.model!.trim()).not.toBe('');
+          // only the transport shelf silkscreens it; on anything else the
+          // datum would be transcribed and then silently dropped
+          const units = bay.units ?? [UNITS_OF_KIND[bay.kind]];
+          expect(units, `"${bay.model}" would never be shown`).toContain('dwdm');
         });
       }
 

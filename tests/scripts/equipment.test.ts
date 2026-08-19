@@ -10,7 +10,7 @@
  * 2D canvas context happy-dom does not provide.
  */
 import * as THREE from 'three';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { createEquipmentBuilders } from '../../src/scripts/viewer3d/equipment';
 import type { Finishes, RoomMaterials } from '../../src/scripts/viewer3d/textures';
 
@@ -78,6 +78,44 @@ describe('rack units', () => {
     const tx = builders();
     tx.b.dwdmUnit(new THREE.Group(), 0.6, 0.3, 0.3, 1.85, 1);
     expect(tx.b.leds.length).toBeGreaterThan(0);
+  });
+});
+
+describe('silkscreen', () => {
+  /* happy-dom has no 2D canvas context, and cv() must not paper over a null
+     one — a blank texture in production is worse than a crash. The drawing
+     is not what these tests are about; the scene graph and the canvas size
+     are, and both survive a no-op pen. */
+  beforeAll(() => {
+    const pen = new Proxy(
+      {},
+      { get: (_t, k) => (k === 'measureText' ? () => ({ width: 10 }) : () => undefined) },
+    );
+    /* getContext is overloaded per context id; the cast is to the whole
+       overload set, which a one-line stub cannot satisfy structurally */
+    HTMLCanvasElement.prototype.getContext = (() =>
+      pen) as unknown as HTMLCanvasElement['getContext'];
+  });
+
+  it('hangs off the equipment, not the scene, so it turns with the cabinet', () => {
+    const { scene, b } = builders();
+    const g = new THREE.Group();
+    scene.add(g);
+    b.silkscreen(g, 'ALCATEL 7342', 0.5, 0, 1.2, 0.3);
+    expect(meshes(g)).toHaveLength(1);
+    /* label() puts its plane in the scene by design; this one must not, or
+       the print stays put while the rack it belongs to rotates away */
+    expect(meshes(scene)).toHaveLength(1);
+    expect(meshes(g)[0]!.parent).toBe(g);
+  });
+
+  it('scales its canvas with the print, so it survives being walked up to', () => {
+    const { b } = builders();
+    const wide = b.silkscreen(new THREE.Group(), 'X', 1.2, 0, 0, 0);
+    const narrow = b.silkscreen(new THREE.Group(), 'X', 0.3, 0, 0, 0);
+    const px = (m: THREE.Mesh) =>
+      ((m.material as THREE.MeshBasicMaterial).map!.image as HTMLCanvasElement).width;
+    expect(px(wide)).toBeGreaterThan(px(narrow));
   });
 });
 

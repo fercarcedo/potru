@@ -72,7 +72,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transmode 5800 + 8133"
+        "label": "Transmode 5800 + 8133",
+        "model": "Transmode 5800 + 8133"
       },
       {
         "x": 3.25,
@@ -169,7 +170,8 @@
         "h": 2.0,
         "kind": "splitter",
         "label": "Splitter + vídeo · CWDM Transmode",
-        "units": ["dwdm", "splitter", "video"]
+        "units": ["dwdm", "splitter", "video"],
+        "model": "Transmode CWDM"
       },
       {
         "x": 2.46,
@@ -299,7 +301,8 @@
         "h": 2.0,
         "kind": "splitter",
         "label": "Splitter + vídeo · Transmode",
-        "units": ["dwdm", "splitter", "video"]
+        "units": ["dwdm", "splitter", "video"],
+        "model": "Transmode"
       },
       {
         "x": 1.65,
@@ -418,7 +421,8 @@
         "h": 2.0,
         "kind": "splitter",
         "label": "Splitter + vídeo · Transmode",
-        "units": ["dwdm", "splitter", "video"]
+        "units": ["dwdm", "splitter", "video"],
+        "model": "Transmode"
       },
       {
         "x": 1.9,
@@ -537,7 +541,8 @@
         "h": 2.0,
         "kind": "splitter",
         "label": "Splitter + vídeo · Transmode",
-        "units": ["dwdm", "splitter", "video"]
+        "units": ["dwdm", "splitter", "video"],
+        "model": "Transmode"
       },
       {
         "x": 1.8,
@@ -1356,7 +1361,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transporte Transmode"
+        "label": "Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 3.4,
@@ -1472,7 +1478,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transporte Transmode"
+        "label": "Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 3.45,
@@ -1594,7 +1601,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transporte Transmode"
+        "label": "Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 3.355,
@@ -1835,7 +1843,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "WDM · Transporte Transmode"
+        "label": "WDM · Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 1.4,
@@ -1999,7 +2008,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transporte Transmode"
+        "label": "Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 7.3,
@@ -2115,7 +2125,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transporte Transmode"
+        "label": "Transporte Transmode",
+        "model": "Transmode"
       },
       {
         "x": 1.7,
@@ -2551,7 +2562,8 @@
         "d": 0.6,
         "h": 2.0,
         "kind": "transport",
-        "label": "Transmode DWDM"
+        "label": "Transmode DWDM",
+        "model": "Transmode EMXP 10 GbE"
       },
       {
         "x": 3.49,
