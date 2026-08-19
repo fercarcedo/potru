@@ -1,0 +1,11 @@
+dist
+.astro
+node_modules
+playwright-report
+test-results
+public
+package-lock.json
+# The .astro components' own <style> blocks are already written expanded, and
+# formatting the templates around them needs prettier-plugin-astro and a diff
+# across every one of them. Out of scope, as they are for eslint.
+*.astro

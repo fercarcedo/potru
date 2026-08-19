@@ -38,7 +38,7 @@ function styleBlocks(source: string): string {
  */
 function idSelectors(css: string): string[] {
   let text = css.replace(/\/\*[\s\S]*?\*\//g, '');
-  for (let prev = ''; prev !== text; ) {
+  for (let prev = ''; prev !== text;) {
     prev = text;
     text = text.replace(/\{[^{}]*\}/g, ' ');
   }
@@ -48,8 +48,14 @@ function idSelectors(css: string): string[] {
 describe('CSS id selectors match src/lib/dom-ids.ts', () => {
   const known = new Set<string>(Object.values(DOM));
   const sources: { file: string; css: string }[] = [
-    ...collectFiles(join(SRC, 'styles'), /\.css$/).map((f) => ({ file: f, css: readFileSync(f, 'utf8') })),
-    ...collectFiles(SRC, /\.astro$/).map((f) => ({ file: f, css: styleBlocks(readFileSync(f, 'utf8')) })),
+    ...collectFiles(join(SRC, 'styles'), /\.css$/).map((f) => ({
+      file: f,
+      css: readFileSync(f, 'utf8'),
+    })),
+    ...collectFiles(SRC, /\.astro$/).map((f) => ({
+      file: f,
+      css: styleBlocks(readFileSync(f, 'utf8')),
+    })),
   ];
 
   for (const { file, css } of sources) {

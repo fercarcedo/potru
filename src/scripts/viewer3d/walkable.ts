@@ -34,10 +34,13 @@ export const M_BAY = 0.14;
 /** Can a visitor stand here? Inside the walls, clear of every cabinet. */
 export function isClear(poly: [number, number][], solids: Solid[], x: number, z: number): boolean {
   return (
-    pointInPolygon(poly, x + M_WALL, z) && pointInPolygon(poly, x - M_WALL, z) &&
-    pointInPolygon(poly, x, z + M_WALL) && pointInPolygon(poly, x, z - M_WALL) &&
-    !solids.some((s) => x > s.x0 - M_BAY && x < s.x1 + M_BAY &&
-                        z > s.z0 - M_BAY && z < s.z1 + M_BAY)
+    pointInPolygon(poly, x + M_WALL, z) &&
+    pointInPolygon(poly, x - M_WALL, z) &&
+    pointInPolygon(poly, x, z + M_WALL) &&
+    pointInPolygon(poly, x, z - M_WALL) &&
+    !solids.some(
+      (s) => x > s.x0 - M_BAY && x < s.x1 + M_BAY && z > s.z0 - M_BAY && z < s.z1 + M_BAY,
+    )
   );
 }
 
@@ -56,7 +59,8 @@ export function inward(poly: [number, number][], door: Door): [number, number] {
   const [x2, z2] = poly[(door.edge + 1) % poly.length]!;
   const ang = Math.atan2(z2 - z1, x2 - x1);
   const [dx, dz] = doorway(poly, door);
-  const nx = -Math.sin(ang), nz = Math.cos(ang);
+  const nx = -Math.sin(ang),
+    nz = Math.cos(ang);
   const sign = pointInPolygon(poly, dx + nx * 0.1, dz + nz * 0.1) ? 1 : -1;
   return [nx * sign, nz * sign];
 }
@@ -74,7 +78,10 @@ const WALK_IN = 1.2;
  * a diagonal, and in Blimea that put the visitor's nose 16 cm from a rack.
  */
 export function walkInFrom(
-  poly: [number, number][], solids: Solid[], start: [number, number], dir?: [number, number]
+  poly: [number, number][],
+  solids: Solid[],
+  start: [number, number],
+  dir?: [number, number],
 ): [number, number] | null {
   const paths: [number, number][] = [];
   if (dir) paths.push(dir);
@@ -85,9 +92,10 @@ export function walkInFrom(
   for (const [dx, dz] of paths) {
     let landed: [number, number] | null = null;
     for (let t = 0.05; t <= 3; t += 0.05) {
-      const cx = start[0] + dx * t, cz = start[1] + dz * t;
+      const cx = start[0] + dx * t,
+        cz = start[1] + dz * t;
       if (!isClear(poly, solids, cx, cz)) {
-        if (landed) break;      /* blocked before we ever got in: try the next aim */
+        if (landed) break; /* blocked before we ever got in: try the next aim */
         continue;
       }
       landed = [cx, cz];
@@ -103,23 +111,35 @@ export function walkInFrom(
  * Returns a predicate: can the visitor get from `from` to (x, z)?
  */
 export function reachableFrom(
-  poly: [number, number][], solids: Solid[], from: [number, number], cell = 0.06
+  poly: [number, number][],
+  solids: Solid[],
+  from: [number, number],
+  cell = 0.06,
 ): (x: number, z: number) => boolean {
   const key = (i: number, j: number) => `${i},${j}`;
   const seen = new Set<string>();
-  const i0 = Math.round(from[0] / cell), j0 = Math.round(from[1] / cell);
+  const i0 = Math.round(from[0] / cell),
+    j0 = Math.round(from[1] / cell);
   const queue: [number, number][] = [[i0, j0]];
   seen.add(key(i0, j0));
   /* the room is a few metres across: a plain BFS over ~10^4 cells is fine */
   for (let head = 0; head < queue.length; head++) {
     const [i, j] = queue[head]!;
-    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-      const ni = i + di, nj = j + dj, k = key(ni, nj);
+    for (const [di, dj] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ] as const) {
+      const ni = i + di,
+        nj = j + dj,
+        k = key(ni, nj);
       if (seen.has(k)) continue;
       seen.add(k);
       if (isClear(poly, solids, ni * cell, nj * cell)) queue.push([ni, nj]);
     }
   }
-  return (x, z) => seen.has(key(Math.round(x / cell), Math.round(z / cell)))
-    && isClear(poly, solids, Math.round(x / cell) * cell, Math.round(z / cell) * cell);
+  return (x, z) =>
+    seen.has(key(Math.round(x / cell), Math.round(z / cell))) &&
+    isClear(poly, solids, Math.round(x / cell) * cell, Math.round(z / cell) * cell);
 }

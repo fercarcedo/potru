@@ -25,19 +25,49 @@ export const LCOL: Record<number, [string, string]> = {
 
 /** Tube and fibre colour code, per the TIA-598 standard. */
 export const TIA = [
-  '#3f6fd8', '#e8923a', '#3fae5a', '#9a6a42', '#9aa0a6', '#e8eef6',
-  '#e05252', '#3a3f47', '#e8d24a', '#b57edc', '#e88ab8', '#4ad8d8',
+  '#3f6fd8',
+  '#e8923a',
+  '#3fae5a',
+  '#9a6a42',
+  '#9aa0a6',
+  '#e8eef6',
+  '#e05252',
+  '#3a3f47',
+  '#e8d24a',
+  '#b57edc',
+  '#e88ab8',
+  '#4ad8d8',
 ];
 
 export const TIAN = [
-  'azul', 'naranja', 'verde', 'marrón', 'gris', 'blanco',
-  'rojo', 'negro', 'amarillo', 'violeta', 'rosa', 'aqua',
+  'azul',
+  'naranja',
+  'verde',
+  'marrón',
+  'gris',
+  'blanco',
+  'rojo',
+  'negro',
+  'amarillo',
+  'violeta',
+  'rosa',
+  'aqua',
 ];
 
 /** The 8 CWDM colours in λ order, for the channel occupancy rows. */
-export const CW8 = ['#9aa0a6', '#b57edc', '#4a7bd8', '#3fae5a', '#e8d24a', '#e8923a', '#e05252', '#9a6a42'];
+export const CW8 = [
+  '#9aa0a6',
+  '#b57edc',
+  '#4a7bd8',
+  '#3fae5a',
+  '#e8d24a',
+  '#e8923a',
+  '#e05252',
+  '#9a6a42',
+];
 
-const HALO = '<style>text{paint-order:stroke;stroke:#0c1524;stroke-width:3px;stroke-linejoin:round}</style>';
+const HALO =
+  '<style>text{paint-order:stroke;stroke:#0c1524;stroke-width:3px;stroke-linejoin:round}</style>';
 
 export interface Chan {
   /** wavelength in nm */
@@ -55,12 +85,13 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
   let g = `<svg viewBox="0 0 700 ${H}" style="width:100%;max-width:900px;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
   g += `<text x="8" y="20" fill="#e8eef6" font-size="14" font-weight="600">${esc(title)}</text>`;
-  const muxX = 120, muxY = H / 2 + 8;
+  const muxX = 120,
+    muxY = H / 2 + 8;
   g += `<line x1="10" y1="${muxY - 4}" x2="${muxX - 28}" y2="${muxY - 4}" stroke="#f2d024" stroke-width="3"/>`;
   g += `<line x1="10" y1="${muxY + 4}" x2="${muxX - 28}" y2="${muxY + 4}" stroke="#f2d024" stroke-width="3"/>`;
   g += `<line x1="10" y1="${muxY}" x2="${muxX - 28}" y2="${muxY}" stroke="#f2d024" stroke-width="14" opacity=".14"/>`;
   g += `<text x="12" y="${muxY - 14}" fill="#8da0b8" font-size="9.5">2 ff.oo. alquiladas (par) → Gijón</text>`;
-  g += `<path d="M${muxX - 28},${muxY - 16} L${muxX + 8},${muxY - ((ordered.length * 34) / 2)} L${muxX + 8},${muxY + ((ordered.length * 34) / 2)} L${muxX - 28},${muxY + 16} Z" fill="#12233c" stroke="#41e3d2" stroke-width="1.4"/>`;
+  g += `<path d="M${muxX - 28},${muxY - 16} L${muxX + 8},${muxY - (ordered.length * 34) / 2} L${muxX + 8},${muxY + (ordered.length * 34) / 2} L${muxX - 28},${muxY + 16} Z" fill="#12233c" stroke="#41e3d2" stroke-width="1.4"/>`;
   g += `<text x="${muxX - 10}" y="${muxY + 4}" fill="#41e3d2" font-size="9" text-anchor="middle" transform="rotate(-90 ${muxX - 10} ${muxY})">CWDM MUX</text>`;
   ordered.forEach((ch, i) => {
     const y = 44 + i * 34;
@@ -68,7 +99,8 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
     const dash = ch.free ? 'stroke-dasharray="6 5"' : '';
     g += `<line x1="${muxX + 8}" y1="${muxY}" x2="196" y2="${y}" stroke="${col}" stroke-width="2.4" ${dash} opacity="${ch.free ? 0.55 : 0.95}"/>`;
     g += `<line x1="196" y1="${y}" x2="360" y2="${y}" stroke="${col}" stroke-width="3" ${dash}/>`;
-    if (!ch.free) g += `<line x1="196" y1="${y}" x2="360" y2="${y}" stroke="${col}" stroke-width="9" opacity=".22"/>`;
+    if (!ch.free)
+      g += `<line x1="196" y1="${y}" x2="360" y2="${y}" stroke="${col}" stroke-width="9" opacity=".22"/>`;
     g += `<circle cx="372" cy="${y}" r="7" fill="${ch.free ? 'none' : col}" stroke="${col}" stroke-width="2"/>`;
     g += `<text x="204" y="${y - 6}" fill="${col}" font-size="10.5" font-weight="600">${ch.l} nm · ${esc(cname)}</text>`;
     g += `<text x="388" y="${y + 4}" fill="${ch.free ? '#41e3d2' : '#e8eef6'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? 'VACANTE' : esc(ch.to ?? '')}</text>`;
@@ -112,28 +144,32 @@ export function mkSection(
   nT: number,
   marks: SectionMarks = {},
   zooms: SectionZoom[] = [],
-  foot = ''
+  foot = '',
 ): string {
   const labels = marks.labels || [];
   const H = Math.max(430, 90 + zooms.length * 170);
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
   g += `<text x="10" y="26" fill="#e8eef6" font-size="17" font-weight="600">${esc(title)}</text>`;
-  const CX = 330, CY = H / 2 + 26, Rsh = 136;
+  const CX = 330,
+    CY = H / 2 + 26,
+    Rsh = 136;
   /* sheath, armour and central strength member */
   g += `<circle cx="${CX}" cy="${CY}" r="${Rsh}" fill="#14181f" stroke="#3a4456" stroke-width="8"/>`;
   g += `<circle cx="${CX}" cy="${CY}" r="${Rsh - 12}" fill="none" stroke="#242b36" stroke-width="3"/>`;
   g += `<circle cx="${CX}" cy="${CY}" r="15" fill="#5a6270"/>`;
   g += `<text x="${CX}" y="${CY + 4}" fill="#20242a" font-size="9" text-anchor="middle">alma</text>`;
   g += `<text x="${CX - Rsh + 4}" y="${CY - Rsh + 2}" fill="#5a6f8d" font-size="11">cubierta</text>`;
-  const ring1 = Math.min(nT, 12), ring2 = nT - ring1;
+  const ring1 = Math.min(nT, 12),
+    ring2 = nT - ring1;
   const tubePos: Record<number, [number, number]> = {};
   const tubeAng: Record<number, number> = {};
   function placeRing(count: number, offset: number, rad: number, tr: number) {
     for (let i = 0; i < count; i++) {
       const idx = offset + i + 1;
-      const a = -Math.PI / 2 + i * 2 * Math.PI / count;
-      const x = CX + Math.cos(a) * rad, y = CY + Math.sin(a) * rad;
+      const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
+      const x = CX + Math.cos(a) * rad,
+        y = CY + Math.sin(a) * rad;
       tubePos[idx] = [x, y];
       tubeAng[idx] = a;
       const col = TIA[(idx - 1) % 12]!;
@@ -141,15 +177,18 @@ export function mkSection(
         dead = (marks.dead || []).includes(idx),
         acc = (marks.access || []).includes(idx);
       g += `<circle cx="${x}" cy="${y}" r="${tr}" fill="${col}" opacity="${nf ? 0.3 : 1}" stroke="${acc ? '#41e3d2' : '#060b14'}" stroke-width="${acc ? 3.4 : 1.8}"/>`;
-      if (acc) g += `<circle cx="${x}" cy="${y}" r="${tr + 6}" fill="none" stroke="#41e3d2" stroke-width="1.4" opacity=".55"/>`;
+      if (acc)
+        g += `<circle cx="${x}" cy="${y}" r="${tr + 6}" fill="none" stroke="#41e3d2" stroke-width="1.4" opacity=".55"/>`;
       for (let f = 0; f < 8; f++) {
-        const fa = -Math.PI / 2 + f * Math.PI / 4;
-        const fx = x + Math.cos(fa) * (tr * 0.58), fy = y + Math.sin(fa) * (tr * 0.58);
+        const fa = -Math.PI / 2 + (f * Math.PI) / 4;
+        const fx = x + Math.cos(fa) * (tr * 0.58),
+          fy = y + Math.sin(fa) * (tr * 0.58);
         g += `<circle cx="${fx}" cy="${fy}" r="${tr * 0.16}" fill="${TIA[f]}" opacity="${nf ? 0.3 : 0.95}" stroke="#060b14" stroke-width=".6"/>`;
       }
       const darkCol = ['#e8eef6', '#e8d24a', '#9aa0a6', '#4ad8d8'].includes(col);
       g += `<text x="${x}" y="${y + 4.5}" fill="${darkCol ? '#20242a' : '#e8eef6'}" font-size="12" text-anchor="middle" font-weight="700" opacity="${nf ? 0.5 : 1}">${idx}</text>`;
-      if (dead) g += `<text x="${x + tr - 4}" y="${y - tr + 8}" fill="#ff7d6b" font-size="15" font-weight="700">✕</text>`;
+      if (dead)
+        g += `<text x="${x + tr - 4}" y="${y - tr + 8}" fill="#ff7d6b" font-size="15" font-weight="700">✕</text>`;
     }
   }
   if (ring2 > 0) {
@@ -163,11 +202,17 @@ export function mkSection(
     const angs = L.tubes.map((t) => tubeAng[t]).filter((a): a is number => a !== undefined);
     if (!angs.length) return;
     /* circular mean angle */
-    let sx = 0, sy = 0;
-    angs.forEach((a) => { sx += Math.cos(a); sy += Math.sin(a); });
+    let sx = 0,
+      sy = 0;
+    angs.forEach((a) => {
+      sx += Math.cos(a);
+      sy += Math.sin(a);
+    });
     const am = Math.atan2(sy, sx);
-    const ex = CX + Math.cos(am) * (Rsh + 14), ey = CY + Math.sin(am) * (Rsh + 14);
-    const lx = CX + Math.cos(am) * (Rsh + 44), ly = CY + Math.sin(am) * (Rsh + 44);
+    const ex = CX + Math.cos(am) * (Rsh + 14),
+      ey = CY + Math.sin(am) * (Rsh + 14);
+    const lx = CX + Math.cos(am) * (Rsh + 44),
+      ly = CY + Math.sin(am) * (Rsh + 44);
     L.tubes.forEach((t) => {
       const [tx, ty] = tubePos[t] || [CX, CY];
       g += `<line x1="${tx + Math.cos(tubeAng[t]!) * 20}" y1="${ty + Math.sin(tubeAng[t]!) * 20}" x2="${ex}" y2="${ey}" stroke="${L.color || '#8da0b8'}" stroke-width="1" opacity=".5"/>`;
@@ -192,15 +237,18 @@ export function mkSection(
   });
   /* large zooms */
   zooms.forEach((z, zi) => {
-    const zy = 100 + zi * 170, ZX = 760, ZR = 58;
+    const zy = 100 + zi * 170,
+      ZX = 760,
+      ZR = 58;
     const [tx, ty] = tubePos[z.t] || [CX, CY];
     g += `<line x1="${tx}" y1="${ty}" x2="${ZX - ZR + 6}" y2="${zy - ZR * 0.5}" stroke="#41e3d2" stroke-width="1.1" opacity=".45"/>`;
     g += `<line x1="${tx}" y1="${ty}" x2="${ZX - ZR + 6}" y2="${zy + ZR * 0.5}" stroke="#41e3d2" stroke-width="1.1" opacity=".45"/>`;
     const tcol = TIA[(z.t - 1) % 12]!;
     g += `<circle cx="${ZX}" cy="${zy}" r="${ZR}" fill="#101720" stroke="${tcol}" stroke-width="6"/>`;
     for (let f = 0; f < 8; f++) {
-      const fa = -Math.PI / 2 + f * Math.PI / 4;
-      const fx = ZX + Math.cos(fa) * 35, fy = zy + Math.sin(fa) * 35;
+      const fa = -Math.PI / 2 + (f * Math.PI) / 4;
+      const fx = ZX + Math.cos(fa) * 35,
+        fy = zy + Math.sin(fa) * 35;
       const col = TIA[f];
       let st: string;
       if (z.nf) st = `fill="#2a3038" stroke="#3a4456" stroke-width="1.4"`;
@@ -212,7 +260,8 @@ export function mkSection(
       g += `<circle cx="${fx}" cy="${fy}" r="9" ${st}/>`;
       g += `<text x="${fx}" y="${fy + 3.5}" fill="${f < (z.oc ?? 8) && !z.nf ? '#0c1524' : '#41e3d2'}" font-size="8" text-anchor="middle" stroke="none">${f + 1}</text>`;
     }
-    if (z.nf) g += `<text x="${ZX}" y="${zy + 6}" fill="#ff7d6b" font-size="20" text-anchor="middle" font-weight="700">✕</text>`;
+    if (z.nf)
+      g += `<text x="${ZX}" y="${zy + 6}" fill="#ff7d6b" font-size="20" text-anchor="middle" font-weight="700">✕</text>`;
     g += `<text x="${ZX + ZR + 20}" y="${zy - 20}" fill="#e8eef6" font-size="15" font-weight="600">${esc(z.label)}</text>`;
     if (z.oc != null && !z.nf) {
       g += `<circle cx="${ZX + ZR + 28}" cy="${zy + 4}" r="6.5" fill="${tcol}"/>`;
@@ -220,12 +269,18 @@ export function mkSection(
       g += `<circle cx="${ZX + ZR + 178}" cy="${zy + 4}" r="6.5" fill="none" stroke="#41e3d2" stroke-width="1.8" stroke-dasharray="3 3"/>`;
       g += `<text x="${ZX + ZR + 192}" y="${zy + 9}" fill="#41e3d2" font-size="13">${8 - z.oc} vacantes</text>`;
     }
-    if (z.sub) z.sub.split('|').forEach((sl, si) => {
-      g += `<text x="${ZX + ZR + 20}" y="${zy + 32 + si * 15}" fill="#8da0b8" font-size="11">${esc(sl)}</text>`;
-    });
+    if (z.sub)
+      z.sub.split('|').forEach((sl, si) => {
+        g += `<text x="${ZX + ZR + 20}" y="${zy + 32 + si * 15}" fill="#8da0b8" font-size="11">${esc(sl)}</text>`;
+      });
   });
   g += '</svg>';
-  return g + (foot ? `<div style="margin-top:10px;color:#8da0b8;line-height:1.65;font-size:.8rem">${foot}</div>` : '');
+  return (
+    g +
+    (foot
+      ? `<div style="margin-top:10px;color:#8da0b8;line-height:1.65;font-size:.8rem">${foot}</div>`
+      : '')
+  );
 }
 
 /** Occupancy row: one square per channel, filled when the channel is in use. */
@@ -243,7 +298,8 @@ export function occRow(name: string, total: number, used: number, cols?: string[
       g += `<rect x="${x0 + i * 32}" y="14" width="24" height="24" rx="6" fill="none" stroke="#41e3d2" stroke-width="2" stroke-dasharray="4 3"/>`;
     }
   }
-  const st = used < total ? `${used}/${total} · ${total - used} libres` : `${used}/${total} · sin vacantes`;
+  const st =
+    used < total ? `${used}/${total} · ${total - used} libres` : `${used}/${total} · sin vacantes`;
   g += `<text x="${x0 + total * 32 + 16}" y="32" fill="${used < total ? '#41e3d2' : '#8da0b8'}" font-size="13.5">${st}</text>`;
   g += '</svg>';
   return g;
@@ -267,7 +323,8 @@ export function mkPAO(t: PaoTransport): string {
     g += `<path d="M66,${y - 14} L96,${y - 24} L96,${y + 24} L66,${y + 14} Z" fill="#12233c" stroke="#41e3d2" stroke-width="1.3"/>`;
     g += `<text x="112" y="${y - 14}" fill="#e8eef6" font-size="14.5">${esc(r.name)}</text>`;
     for (let i = 0; i < r.channels; i++) {
-      const cx = 124 + i * 40, cy = y + 10;
+      const cx = 124 + i * 40,
+        cy = y + 10;
       const c = CW8[i % 8];
       if (i < r.used) {
         g += `<circle cx="${cx}" cy="${cy}" r="12" fill="${c}"/>`;
@@ -276,7 +333,10 @@ export function mkPAO(t: PaoTransport): string {
         g += `<circle cx="${cx}" cy="${cy}" r="12" fill="none" stroke="#41e3d2" stroke-width="2.2" stroke-dasharray="4 3"/>`;
       }
     }
-    const st = r.used < r.channels ? `${r.used}/${r.channels} · ${r.channels - r.used} LIBRES` : `${r.used}/${r.channels} · sin vacantes`;
+    const st =
+      r.used < r.channels
+        ? `${r.used}/${r.channels} · ${r.channels - r.used} LIBRES`
+        : `${r.used}/${r.channels} · sin vacantes`;
     g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? '#41e3d2' : '#8da0b8'}" font-size="13.5">${st}</text>`;
   });
   const yd = 70 + rows.length * 62;
@@ -293,9 +353,15 @@ export function mkPAO(t: PaoTransport): string {
 
 /* ---------- Phase 2 gantt ---------- */
 
-const GW = 1080, GROW = 24, GTOP = 34, GLEFT = 190, GRIGHT = 20;
-const GW0 = 13, GW1 = CONTRACT_WEEKS, GSPAN = GW1 - GW0 + 1;
-const gx = (w: number) => GLEFT + (w - GW0) / GSPAN * (GW - GLEFT - GRIGHT);
+const GW = 1080,
+  GROW = 24,
+  GTOP = 34,
+  GLEFT = 190,
+  GRIGHT = 20;
+const GW0 = 13,
+  GW1 = CONTRACT_WEEKS,
+  GSPAN = GW1 - GW0 + 1;
+const gx = (w: number) => GLEFT + ((w - GW0) / GSPAN) * (GW - GLEFT - GRIGHT);
 
 export const ganttViewBox = (nodes: NetworkNode[]): string =>
   `0 0 ${GW} ${GTOP + nodes.length * GROW + 14}`;

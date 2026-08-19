@@ -55,15 +55,17 @@ describe('TOWN_POS', () => {
         const expected = KNOWN_ABBREVIATIONS[label] ?? label;
         expect(
           node!.towns.includes(expected),
-          `${nid}: "${label}" (expected "${expected}") is not in nodes.json's towns: ${JSON.stringify(node!.towns)}`
+          `${nid}: "${label}" (expected "${expected}") is not in nodes.json's towns: ${JSON.stringify(node!.towns)}`,
         ).toBe(true);
       }
     }
   });
 
-  it("keeps the abbreviation list itself honest — every entry is actually shorter than what it stands for", () => {
+  it('keeps the abbreviation list itself honest — every entry is actually shorter than what it stands for', () => {
     for (const [abbr, full] of Object.entries(KNOWN_ABBREVIATIONS)) {
-      expect(abbr.length, `"${abbr}" isn't actually shorter than "${full}"`).toBeLessThan(full.length);
+      expect(abbr.length, `"${abbr}" isn't actually shorter than "${full}"`).toBeLessThan(
+        full.length,
+      );
     }
   });
 });

@@ -5,10 +5,18 @@
  * offset the candidate asks for, standing in for a real text measurement.
  */
 import { describe, expect, it } from 'vitest';
-import { LEADER, box, hits, overlapArea, placeLabel, ringSpots } from '../../src/scripts/label-placement';
+import {
+  LEADER,
+  box,
+  hits,
+  overlapArea,
+  placeLabel,
+  ringSpots,
+} from '../../src/scripts/label-placement';
 import type { Anchor, Measurement, Rect } from '../../src/scripts/label-placement';
 
-const LABEL_W = 20, LABEL_H = 10;
+const LABEL_W = 20,
+  LABEL_H = 10;
 
 /** A synthetic measurer standing in for a real getBBox() read: places an
  *  axis-aligned LABEL_W×LABEL_H box horizontally centred on ax+dx, with its
@@ -16,7 +24,10 @@ const LABEL_W = 20, LABEL_H = 10;
  *  relative to its y attribute, which is what ringSpots's dy offsets (+11
  *  below the dot, -1 above it) are tuned against. Ignores `anchor`; that
  *  only shifts the box horizontally, which none of these tests depend on. */
-function measurerAt(ax: number, ay: number): (dx: number, dy: number, anchor?: Anchor) => Measurement {
+function measurerAt(
+  ax: number,
+  ay: number,
+): (dx: number, dy: number, anchor?: Anchor) => Measurement {
   return (dx, dy) => {
     const raw: Rect = { x: ax + dx - LABEL_W / 2, y: ay + dy - LABEL_H, w: LABEL_W, h: LABEL_H };
     return { raw, padded: box({ x: raw.x, y: raw.y, width: raw.w, height: raw.h }) };
@@ -54,7 +65,8 @@ describe('ringSpots', () => {
     // at increasing pad — same direction, so distance is directly comparable
     for (let dir = 0; dir < 8; dir++) {
       const distances = [0, 1, 2, 3].map((ring) => dist(spots[ring * 8 + dir]!));
-      for (let i = 1; i < distances.length; i++) expect(distances[i]).toBeGreaterThan(distances[i - 1]!);
+      for (let i = 1; i < distances.length; i++)
+        expect(distances[i]).toBeGreaterThan(distances[i - 1]!);
     }
   });
 
@@ -72,7 +84,9 @@ describe('placeLabel', () => {
     // dy: 0 puts the label's box straddling the dot itself (gap 0) — no ring
     // spot, which all sit at radius >= ar + 4, can beat that when clear.
     const result = placeLabel({
-      ax: 100, ay: 100, ar: 7,
+      ax: 100,
+      ay: 100,
+      ar: 7,
       home: [0, 0, 'middle'],
       measure: measurerAt(100, 100),
       obstacles: [],
@@ -87,7 +101,9 @@ describe('placeLabel', () => {
     const measure = measurerAt(100, 100);
     const homeBox = measure(...home).padded;
     const result = placeLabel({
-      ax: 100, ay: 100, ar: 7,
+      ax: 100,
+      ay: 100,
+      ar: 7,
       home,
       measure,
       obstacles: [homeBox],
@@ -105,33 +121,71 @@ describe('placeLabel', () => {
     const home: [number, number, 'middle'] = [0, 22, 'middle'];
     const nearestRingSpot = ringSpots(7)[0]!;
     const cableBox = measure(nearestRingSpot[0], nearestRingSpot[1]).padded;
-    const withoutCable = placeLabel({ ax: 100, ay: 100, ar: 7, home, measure, obstacles: [], cables: [] });
-    const withCable = placeLabel({ ax: 100, ay: 100, ar: 7, home, measure, obstacles: [], cables: [cableBox] });
+    const withoutCable = placeLabel({
+      ax: 100,
+      ay: 100,
+      ar: 7,
+      home,
+      measure,
+      obstacles: [],
+      cables: [],
+    });
+    const withCable = placeLabel({
+      ax: 100,
+      ay: 100,
+      ar: 7,
+      home,
+      measure,
+      obstacles: [],
+      cables: [cableBox],
+    });
     // home spot itself is untouched by the cable, so both keep the same pick —
     // this asserts the cable is consulted at all, via a spot that touches it
-    expect(overlapArea(withCable.box, cableBox)).toBeLessThanOrEqual(overlapArea(withoutCable.box, cableBox));
+    expect(overlapArea(withCable.box, cableBox)).toBeLessThanOrEqual(
+      overlapArea(withoutCable.box, cableBox),
+    );
   });
 
   it('falls back to the least-overlapping ring spot when nothing is fully clear', () => {
-    const ax = 100, ay = 100, ar = 7;
+    const ax = 100,
+      ay = 100,
+      ar = 7;
     const measure = measurerAt(ax, ay);
     // wall off a huge area so every candidate collides with something
     const wall: Rect = { x: ax - 200, y: ay - 200, w: 400, h: 400 };
-    const result = placeLabel({ ax, ay, ar, home: [0, 22, 'middle'], measure, obstacles: [wall], cables: [] });
+    const result = placeLabel({
+      ax,
+      ay,
+      ar,
+      home: [0, 22, 'middle'],
+      measure,
+      obstacles: [wall],
+      cables: [],
+    });
     // still returns *a* placement rather than throwing
     expect(Number.isFinite(result.dx)).toBe(true);
     expect(Number.isFinite(result.dy)).toBe(true);
   });
 
   it('flags needsLeader only once the label sits farther than LEADER from its dot', () => {
-    const ax = 100, ay = 100, ar = 7;
+    const ax = 100,
+      ay = 100,
+      ar = 7;
     // a measurer that always returns a box centred far from the dot,
     // regardless of candidate — simulates a label that had to drift
     const farMeasure = (): Measurement => {
       const raw: Rect = { x: ax + LEADER * 3, y: ay, w: LABEL_W, h: LABEL_H };
       return { raw, padded: box({ x: raw.x, y: raw.y, width: raw.w, height: raw.h }) };
     };
-    const result = placeLabel({ ax, ay, ar, home: [0, 22, 'middle'], measure: farMeasure, obstacles: [], cables: [] });
+    const result = placeLabel({
+      ax,
+      ay,
+      ar,
+      home: [0, 22, 'middle'],
+      measure: farMeasure,
+      obstacles: [],
+      cables: [],
+    });
     expect(result.needsLeader).toBe(true);
     expect(result.gap).toBeGreaterThan(LEADER);
   });

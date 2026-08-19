@@ -5,7 +5,17 @@
  * off if it is actually guarded, so this mirrors tests/data/nodes.test.ts.
  */
 import { describe, expect, it } from 'vitest';
-import { ACTION_DESC, ARCHITECTURE_STEPS, CONTRACT_ACTIONS, DIAGRAM_INFO, HERO_STATS, ONT_INSTALL_BASE, PAO_TRANSPORT, TOUR_STOPS, byId } from '../../src/lib/data';
+import {
+  ACTION_DESC,
+  ARCHITECTURE_STEPS,
+  CONTRACT_ACTIONS,
+  DIAGRAM_INFO,
+  HERO_STATS,
+  ONT_INSTALL_BASE,
+  PAO_TRANSPORT,
+  TOUR_STOPS,
+  byId,
+} from '../../src/lib/data';
 
 describe('heroStats', () => {
   it('has at least one entry and no blank value/label', () => {
@@ -53,7 +63,14 @@ describe('diagramInfo', () => {
   });
 
   it('covers the 6 elements the diagram island actually renders', () => {
-    expect(Object.keys(DIAGRAM_INFO).sort()).toEqual(['olt', 'ont', 'oss', 'pao', 'split', 'troncal']);
+    expect(Object.keys(DIAGRAM_INFO).sort()).toEqual([
+      'olt',
+      'ont',
+      'oss',
+      'pao',
+      'split',
+      'troncal',
+    ]);
   });
 });
 
@@ -81,7 +98,9 @@ describe('contractActions', () => {
   it('every ACTION_DESC code used elsewhere in the site also has a contract action card', () => {
     const cardCodes = new Set(CONTRACT_ACTIONS.map((a) => a.code));
     for (const code of Object.keys(ACTION_DESC)) {
-      expect(cardCodes.has(code), `${code} is referenced by ACTION_DESC but has no card`).toBe(true);
+      expect(cardCodes.has(code), `${code} is referenced by ACTION_DESC but has no card`).toBe(
+        true,
+      );
     }
   });
 });

@@ -70,7 +70,7 @@ export const PAO_NODE: NetworkNode = data.pao;
 export const ALL_NODES: NetworkNode[] = [...NODES, PAO_NODE];
 
 export const byId: Record<string, NetworkNode> = Object.fromEntries(
-  ALL_NODES.map((n) => [n.id, n])
+  ALL_NODES.map((n) => [n.id, n]),
 );
 
 /** [pill class, description, anchor of the matching card] */

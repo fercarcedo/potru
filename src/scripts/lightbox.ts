@@ -84,9 +84,7 @@ export function initLightbox() {
     count.textContent = plans.length > 1 ? `${idx + 1} / ${plans.length}` : '';
     /* announced as one phrase — "Plano de planta · Tineo, 3 de 5" — rather
        than as two unrelated updates to the caption and the counter */
-    said.textContent = plans.length > 1
-      ? `${p.caption}, ${idx + 1} de ${plans.length}`
-      : p.caption;
+    said.textContent = plans.length > 1 ? `${p.caption}, ${idx + 1} de ${plans.length}` : p.caption;
     original.href = p.src;
     setZoom(false);
     fig.scrollTo(0, 0);
@@ -170,25 +168,34 @@ export function initLightbox() {
 
   /* Escape belongs to whichever overlay is on top: the record's own handler
      is unconditional, so this one has to claim the key before it bubbles */
-  document.addEventListener('keydown', (e) => {
-    if (!isOpen()) return;
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      close();
-    } else if (e.key === 'ArrowLeft' && plans.length > 1) {
-      e.stopPropagation();
-      show(idx - 1);
-    } else if (e.key === 'ArrowRight' && plans.length > 1) {
-      e.stopPropagation();
-      show(idx + 1);
-    }
-  }, true);
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (!isOpen()) return;
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        close();
+      } else if (e.key === 'ArrowLeft' && plans.length > 1) {
+        e.stopPropagation();
+        show(idx - 1);
+      } else if (e.key === 'ArrowRight' && plans.length > 1) {
+        e.stopPropagation();
+        show(idx + 1);
+      }
+    },
+    true,
+  );
 
   prev.onclick = () => show(idx - 1);
   next.onclick = () => show(idx + 1);
   document.getElementById(DOM.lbClose)!.onclick = close;
   bg.addEventListener('click', (e) => {
-    if (e.target === bg || e.target === fig || (e.target as HTMLElement).classList.contains('lb-stage')) close();
+    if (
+      e.target === bg ||
+      e.target === fig ||
+      (e.target as HTMLElement).classList.contains('lb-stage')
+    )
+      close();
   });
 
   /* fit ⇄ the image's own pixels. Zoomed in, the figure scrolls; dragging it
@@ -201,7 +208,8 @@ export function initLightbox() {
     const zoom = !fig.classList.contains('zoomed');
     /* keep the point under the cursor roughly where it was */
     const r = img.getBoundingClientRect();
-    const fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+    const fx = (e.clientX - r.left) / r.width,
+      fy = (e.clientY - r.top) / r.height;
     setZoom(zoom);
     if (zoom) {
       fig.scrollTo({
@@ -227,7 +235,10 @@ export function initLightbox() {
     const moved = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
     fig.classList.remove('dragging');
     /* a drag must not also count as the click that zooms back out */
-    if (moved > 4) setTimeout(() => { drag = null; }, 0);
+    if (moved > 4)
+      setTimeout(() => {
+        drag = null;
+      }, 0);
     else drag = null;
   };
   fig.addEventListener('pointerup', endDrag);

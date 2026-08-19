@@ -30,7 +30,10 @@ describe('DETAILS (guided tour panels)', () => {
       expect(panel.length, `stop ${id} is empty`).toBeGreaterThan(0);
       const window = new Window();
       window.document.body.innerHTML = panel;
-      expect(window.document.body.querySelectorAll('svg').length, `stop ${id} has no <svg>`).toBeGreaterThan(0);
+      expect(
+        window.document.body.querySelectorAll('svg').length,
+        `stop ${id} has no <svg>`,
+      ).toBeGreaterThan(0);
     }
   });
 });

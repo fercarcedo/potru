@@ -4,16 +4,16 @@
 
 Todo el contenido de Potru procede de un único documento público:
 
-| | |
-|---|---|
-| Documento | Pliego de Condiciones Técnicas |
-| Expediente | **CON 06/2025** |
-| Órgano | GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de Asturias S.A.U., M.P. |
-| Objeto | Renovación del equipamiento electrónico FTTH de la Red Asturcón: GPON → XGS-PON |
-| Aprobación | 22-12-2025 |
-| Extensión | 460 páginas |
-| Publicación | Plataforma de Contratación del Sector Público (PLACSP) |
-| Fichero | `DOC20251223135602PCT CON 06_2025.pdf` (54 MB) |
+|             |                                                                                                          |
+| ----------- | -------------------------------------------------------------------------------------------------------- |
+| Documento   | Pliego de Condiciones Técnicas                                                                           |
+| Expediente  | **CON 06/2025**                                                                                          |
+| Órgano      | GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de Asturias S.A.U., M.P. |
+| Objeto      | Renovación del equipamiento electrónico FTTH de la Red Asturcón: GPON → XGS-PON                          |
+| Aprobación  | 22-12-2025                                                                                               |
+| Extensión   | 460 páginas                                                                                              |
+| Publicación | Plataforma de Contratación del Sector Público (PLACSP)                                                   |
+| Fichero     | `DOC20251223135602PCT CON 06_2025.pdf` (54 MB)                                                           |
 
 El PDF **no se versiona** en este repositorio por tamaño. Se descarga del anuncio de
 licitación en PLACSP.

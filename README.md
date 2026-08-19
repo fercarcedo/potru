@@ -7,7 +7,7 @@ la red pública FTTH de Asturias, tal y como la describe el Pliego de Condicione
 > ⓘ **Proyecto independiente**, no afiliado a GIT ni al Principado de Asturias ·
 > fuente: pliego público CON 06/2025
 
-*Potru* es «potro» en asturiano: la siguiente generación del Asturcón.
+_Potru_ es «potro» en asturiano: la siguiente generación del Asturcón.
 
 ## Qué hay dentro
 

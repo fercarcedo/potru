@@ -8,7 +8,13 @@
 import { asset, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
-import { renderActionLinks, renderAreaTag, renderMigStrip, renderOltTable, renderTownsBlock } from '../lib/node-render';
+import {
+  renderActionLinks,
+  renderAreaTag,
+  renderMigStrip,
+  renderOltTable,
+  renderTownsBlock,
+} from '../lib/node-render';
 import { registerPlanSet } from './lightbox';
 import { openWalk } from './walk';
 
@@ -31,9 +37,14 @@ export function initModal(): ModalApi {
   registerPlanSet(heroLink, () => {
     const n = openId ? byId[openId] : null;
     return {
-      plans: (n?.gallery ?? []).map((g) => ({ src: asset(g.src), caption: `${g.label} · ${n!.name}` })),
+      plans: (n?.gallery ?? []).map((g) => ({
+        src: asset(g.src),
+        caption: `${g.label} · ${n!.name}`,
+      })),
       index: shownView,
-      onChange: (i: number) => { if (openId) openNode(openId, i); },
+      onChange: (i: number) => {
+        if (openId) openNode(openId, i);
+      },
     };
   });
   const homeHref = location.href;

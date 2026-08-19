@@ -9,10 +9,24 @@
  */
 import { describe, expect, it } from 'vitest';
 import rooms from '../../src/data/rooms.json';
-import { doorway, inward, isClear, reachableFrom, walkInFrom } from '../../src/scripts/viewer3d/walkable';
+import {
+  doorway,
+  inward,
+  isClear,
+  reachableFrom,
+  walkInFrom,
+} from '../../src/scripts/viewer3d/walkable';
 import type { Solid } from '../../src/scripts/viewer3d/walkable';
 
-interface Bay { x: number; z: number; w: number; d: number; y?: number; kind: string; label: string }
+interface Bay {
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  y?: number;
+  kind: string;
+  label: string;
+}
 interface Room {
   h: number;
   outline: [number, number][];
@@ -31,8 +45,10 @@ function centred(room: Room) {
   const poly = room.outline.map(([x, z]) => [x - W / 2, z - D / 2] as [number, number]);
   /* one footprint per bay, in bay order, so callers can pair them up... */
   const foot: Solid[] = room.bays.map((b) => ({
-    x0: b.x - W / 2, x1: b.x - W / 2 + b.w,
-    z0: b.z - D / 2, z1: b.z - D / 2 + b.d,
+    x0: b.x - W / 2,
+    x1: b.x - W / 2 + b.w,
+    z0: b.z - D / 2,
+    z1: b.z - D / 2 + b.d,
   }));
   /* ...and, as buildRoom() does, only the ones a visitor has to walk round: a
      ceiling-slung unit is passed under */
@@ -43,10 +59,17 @@ function centred(room: Room) {
 /** The eight points just outside a cabinet's footprint: can you get to it? */
 function approaches(s: Solid): [number, number][] {
   const R = 0.2;
-  const cx = (s.x0 + s.x1) / 2, cz = (s.z0 + s.z1) / 2;
+  const cx = (s.x0 + s.x1) / 2,
+    cz = (s.z0 + s.z1) / 2;
   return [
-    [cx, s.z0 - R], [cx, s.z1 + R], [s.x0 - R, cz], [s.x1 + R, cz],
-    [s.x0 - R, s.z0 - R], [s.x1 + R, s.z0 - R], [s.x0 - R, s.z1 + R], [s.x1 + R, s.z1 + R],
+    [cx, s.z0 - R],
+    [cx, s.z1 + R],
+    [s.x0 - R, cz],
+    [s.x1 + R, cz],
+    [s.x0 - R, s.z0 - R],
+    [s.x1 + R, s.z0 - R],
+    [s.x0 - R, s.z1 + R],
+    [s.x1 + R, s.z1 + R],
   ];
 }
 
@@ -77,7 +100,9 @@ describe('every cabinet can be walked up to', () => {
         /* a cage is a room within the room; a wall cabinet is looked at, not
            walked round; and a ceiling unit has no floor beside it at all */
         .filter(([bay]) => bay.kind !== 'cage' && (bay.y ?? 0) < CEILING_MOUNTED)
-        .filter(([, s]) => !approaches(s).some(([x, z]) => isClear(poly, solids, x, z) && reached(x, z)))
+        .filter(
+          ([, s]) => !approaches(s).some(([x, z]) => isClear(poly, solids, x, z) && reached(x, z)),
+        )
         .map(([bay]) => bay.label);
       expect(stranded, `unreachable in ${id}: ${stranded.join(', ')}`).toEqual([]);
     });
@@ -91,7 +116,8 @@ describe('no room is mostly unreachable floor', () => {
       const door = room.doors[0]!;
       const start = walkInFrom(poly, solids, doorway(poly, door), inward(poly, door))!;
       const reached = reachableFrom(poly, solids, start);
-      let standable = 0, got = 0;
+      let standable = 0,
+        got = 0;
       for (let x = -W / 2; x < W / 2; x += 0.12) {
         for (let z = -D / 2; z < D / 2; z += 0.12) {
           if (!isClear(poly, solids, x, z)) continue;
@@ -100,8 +126,9 @@ describe('no room is mostly unreachable floor', () => {
         }
       }
       expect(standable).toBeGreaterThan(0);
-      expect(got / standable, `${id}: only ${got}/${standable} cells reachable`)
-        .toBeGreaterThan(0.9);
+      expect(got / standable, `${id}: only ${got}/${standable} cells reachable`).toBeGreaterThan(
+        0.9,
+      );
     });
   }
 });
