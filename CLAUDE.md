@@ -23,15 +23,18 @@ records where each class of data came from; keep it updated when data changes.
 
 ```sh
 npm install
-npm run dev      # dev server
-npm run build    # static site into dist/
-npm run preview  # serve dist/ as it will be published
-npm run check    # astro check — types and templates
+npm run dev       # dev server
+npm run build     # static site into dist/
+npm run preview   # serve dist/ as it will be published
+npm run check     # astro check — types and templates
+npm run test      # vitest: data, lib and script unit tests (tests/data, tests/lib, tests/scripts)
+npm run test:e2e  # playwright: builds + previews dist/, then drives it in Chromium (tests/e2e)
+npm run verify    # check + test + build + test:e2e, in that order
 ```
 
-Node 24 (`.nvmrc`). There is no test suite; verification is `npm run check` plus `npm run build`,
-and driving `dist/` in a browser (headless Chrome works well for asserting on the generated SVG/DOM)
-for the interactive islands.
+Node 24 (`.nvmrc`). `npm run verify` is the full gate; run it (or at least `check` and `test`) before
+calling a change done. `test:e2e` builds and serves the real `dist/` output rather than the dev
+server, so it exercises the same static HTML, base path and asset URLs GitHub Pages serves.
 
 When reading `astro check` output, filter rather than truncate — `tail` has clipped real errors:
 
@@ -100,11 +103,28 @@ versioned.
 - Progressive enhancement: node cards and gantt bars are real anchors to `/nodos/<id>`; JS upgrades
   them to the modal.
 - Styling is hand-written CSS with custom properties (`--gpon` amber, `--xgs` teal); fonts are
-  self-hosted via `@fontsource`, never a CDN. `src/styles/global.css` is only an index of
-  `@import`s — the rules live in one partial per section or component next to it, and Vite inlines
-  them so the site still ships a single stylesheet. Put a rule in the partial that owns the markup,
-  keep its `@media` overrides **at the end of that same partial** (equal-specificity overrides only
-  win if they come later), and change `global.css` when a new partial needs a place in the cascade.
+  self-hosted via `@fontsource`, never a CDN. There are two homes for a rule, and which one is not a
+  style choice — it is forced by whether Astro's scoped-style attribute can reach the markup:
+  - **A component's own `<style>`** if every element the rule touches is written directly in that
+    component's own template — no `set:html`, no child component, nothing a client island rewrites.
+    Astro tags each of the component's own elements with a `data-astro-cid-*` attribute and adds it
+    to the compiled selector, so the rule is automatically more specific than anything global and
+    can never be shadowed by import order. A selector that needs to reach *into* a child component
+    (e.g. `.card .affected`, where `.affected` is a child component's root element) cannot be scoped
+    this way — scoping does not propagate across a component boundary — so either restyle from the
+    child's own `<style>` instead (preferred; see `AffectedNodes.astro`) or fall back to
+    `:global(...)` on just that part of the selector.
+  - **`src/styles/*.css`, indexed by `global.css`** for everything scoped styles can't reach: markup
+    built from strings in `graphics.ts`/`details.ts`/`node-render.ts` via `set:html`, markup a client
+    island constructs at runtime (`map.ts`, `diagram.ts`, `modal.ts`, …), tokens and resets, and the
+    handful of classes reused verbatim by two unrelated components (`.disclaimer`, used by both
+    `Hero.astro` and `Layout.astro`'s footer — each is its own independent instance of the class, so
+    it has to be a plain global rule, not a scoped one, to reach both). `global.css` is only an
+    `@import` index; Vite inlines it at build time so the site still ships one stylesheet. Put a rule
+    in the partial that owns the markup, keep its `@media` overrides **at the end of that same
+    partial** (global rules have no scope attribute to fall back on, so equal-specificity overrides
+    only win if they come later in the cascade), and add a new partial to `global.css`'s import list
+    when it needs a place in that order.
 - Commits are **in English**, conventional-commit style with a scope (`fix(map): …`,
   `feat(data): …`), and a body explaining what was wrong and why the fix works.
 - The pliego's drawings and data are excluded from the repo's MIT licence (authorship: GIT). Keep

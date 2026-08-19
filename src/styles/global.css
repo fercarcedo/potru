@@ -1,26 +1,28 @@
-/* Style index. Every rule lives in a partial next to this file; this is the
-   only place that decides the cascade order, so read it top-down: tokens and
-   base primitives first, then one file per section or component.
-   Vite inlines these @imports at build time — the site still ships a single
-   stylesheet, exactly as when everything lived in this file. */
+/* Style index for rules that CAN'T live in an Astro component's scoped
+   <style>: cross-component primitives (tokens, .wrap, .disclaimer…),
+   markup built from strings (graphics.ts/details.ts/node-render.ts via
+   set:html) and markup client islands construct at runtime (map.ts,
+   diagram.ts, modal.ts…) — none of that carries the scope attribute Astro
+   needs to match a scoped selector. Layout.astro, Hero.astro, NodeGrid.astro,
+   Actions.astro, ActionCard.astro and AffectedNodes.astro own nothing but
+   their own static markup, so their rules live in each component's own
+   <style> block instead, colocated with the template.
+   This is the only place that decides the cascade order for what's left, so
+   read it top-down: tokens and base primitives first, then one file per
+   section or component. Vite inlines these @imports at build time — the
+   site still ships a single stylesheet. */
 
 /* foundations */
 @import './fonts.css';
 @import './tokens.css';
 @import './base.css';
 
-/* page chrome */
-@import './layout.css';
-
 /* front page, in the order the sections appear */
-@import './hero.css';
 @import './diagram.css';
 @import './map.css';
 @import './zoom-pad.css';
 @import './tour.css';
-@import './node-grid.css';
 @import './architecture.css';
-@import './actions.css';
 @import './phases.css';
 
 /* node record: shared contents first, then each of its two containers */

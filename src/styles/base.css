@@ -14,6 +14,12 @@ section{padding:88px 0}
 .eyebrow.warm{color:var(--gpon)}.eyebrow.warm::before{background:var(--gpon)}
 .lead{color:var(--muted);max-width:66ch;font-size:1.02rem}
 .dot{width:9px;height:9px;border-radius:50%}
+/* Independence notice. Written independently into both Hero.astro and
+   Layout.astro's footer, so it can't live in either component's scoped
+   style — Astro's scoping wouldn't reach the other copy. */
+.disclaimer{display:inline-flex;align-items:flex-start;gap:8px;margin-top:20px;padding:9px 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-size:.76rem;line-height:1.5;max-width:64ch}
+.disclaimer b{color:var(--txt);font-weight:600}
+.disclaimer .i{color:var(--xgs);flex:none}
 @media(max-width:760px){
   section{padding:56px 0}
   .lead{font-size:1rem}

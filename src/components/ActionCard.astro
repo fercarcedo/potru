@@ -24,3 +24,67 @@ const { action: a } = Astro.props;
   }
   {a.aff && <AffectedNodes aff={a.aff} />}
 </div>
+
+<style>
+  /* .card and .pill are only this component's own elements, so they scope
+     cleanly. The old `.card .affected …` rules do NOT move in here: that
+     div is AffectedNodes.astro's own root element, a child component, and
+     Astro's scoping never reaches into a child's markup — those rules now
+     live in AffectedNodes.astro itself instead. */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    transition:
+      border-color 0.25s,
+      transform 0.25s;
+  }
+  .card:hover {
+    border-color: #2c4266;
+    transform: translateY(-2px);
+  }
+  .card h3 {
+    font-size: 1.02rem;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .card p {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    padding: 3px 9px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .pill.fix {
+    background: var(--xgs-soft);
+    color: var(--xgs);
+  }
+  .pill.var {
+    background: var(--gpon-soft);
+    color: var(--gpon);
+  }
+  .card ul {
+    list-style: none;
+    margin-top: 10px;
+  }
+  .card li {
+    font-size: 0.92rem;
+    color: var(--muted);
+    padding: 5px 0 5px 18px;
+    position: relative;
+  }
+  .card li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--xgs);
+  }
+</style>

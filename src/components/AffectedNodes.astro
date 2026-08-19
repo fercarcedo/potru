@@ -24,3 +24,27 @@ const base = import.meta.env.BASE_URL;
     ))
   }
 </div>
+
+<style>
+  /* Was `.card .affected …` in ActionCard's stylesheet, back when everything
+     lived in one global file. That descendant selector reached into this
+     component's own markup only because both were global; now that
+     ActionCard.astro is scoped, it can't reach a child component's elements
+     at all, so the rule belongs here instead — this div and its <a> are
+     this component's own template. */
+  .affected {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .affected a {
+    color: var(--xgs);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .affected a:hover {
+    text-decoration: underline;
+  }
+</style>
