@@ -430,38 +430,19 @@ export function buildRoom(n: NetworkNode) {
   }
 
   /* ---- rejiband ----
-     The plans draw the tray runs explicitly, and they are not one straight
-     length over each row: Felechosa and Navia ring the whole room, Tineo has
-     a branch down the middle and a run along the floor, Infiesto a «bajada».
-     Where a room's routes have been transcribed we draw those; the rooms
-     still to be read off keep the old per-row derivation as a stand-in. */
+     Transcribed per room, because the plans draw the runs explicitly and they
+     are not one straight length over each row: Felechosa and Navia ring the
+     whole room, Tineo has a branch down the middle and a run along the floor,
+     Infiesto and Arriondas a «bajada». */
   const trayY = Math.min(H - 0.18, 2.18);
-  if (room.trays?.length) {
-    for (const t of room.trays) {
-      const y = trayHeight(t.level, H);
-      const pts = t.pts.map(([x, z]) => [x - W / 2, y, z - D / 2] as [number, number, number]);
-      for (let i = 0; i + 1 < pts.length; i++) rejiband(pts[i]!, pts[i + 1]!, t.w);
-      /* a «bajada»: the same tray turned upright, linking two levels */
-      if (t.to !== undefined && pts[0]) {
-        const [dx, , dz] = pts[0];
-        rejiband([dx, y, dz], [dx, trayHeight(t.to, H), dz], t.w);
-      }
-    }
-  } else {
-    const rows = new Map<number, { x0: number; x1: number; z: number }>();
-    for (const bay of room.bays) {
-      if (bay.kind === 'cage' || (bay.y ?? 0) > 0.9) continue;
-      const cz = bay.z - D / 2 + bay.d / 2;
-      const key = Math.round(cz * 2) / 2;      /* group cabinets sharing a wall line */
-      const x0 = bay.x - W / 2, x1 = x0 + bay.w;
-      const r = rows.get(key);
-      if (r) { r.x0 = Math.min(r.x0, x0); r.x1 = Math.max(r.x1, x1); }
-      else rows.set(key, { x0, x1, z: cz });
-    }
-    for (const r of rows.values()) {
-      rejiband([r.x0 - 0.15, trayY, r.z], [r.x1 + 0.15, trayY, r.z]);
-      /* a drop piece where the run meets the first cabinet of the row */
-      box(0.06, 0.34, 0.22, fin.steel, r.x0 + 0.05, trayY - 0.2, r.z, scene);
+  for (const t of room.trays ?? []) {
+    const y = trayHeight(t.level, H);
+    const pts = t.pts.map(([x, z]) => [x - W / 2, y, z - D / 2] as [number, number, number]);
+    for (let i = 0; i + 1 < pts.length; i++) rejiband(pts[i]!, pts[i + 1]!, t.w);
+    /* a «bajada»: the same tray turned upright, linking two levels */
+    if (t.to !== undefined && pts[0]) {
+      const [dx, , dz] = pts[0];
+      rejiband([dx, y, dz], [dx, trayHeight(t.to, H), dz], t.w);
     }
   }
   /* a bundle dropping off the ceiling tray into each rack it passes over */

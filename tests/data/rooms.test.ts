@@ -209,6 +209,11 @@ describe('extinguishers', () => {
 });
 
 describe('rejiband runs', () => {
+  it('every room has its runs transcribed, none left to be guessed', () => {
+    const bare = Object.entries(ROOMS).filter(([, r]) => !r.trays?.length).map(([id]) => id);
+    expect(bare, `no rejiband transcribed for: ${bare.join(', ')}`).toEqual([]);
+  });
+
   for (const [id, room] of Object.entries(ROOMS)) {
     const box = bbox(room.outline);
     for (const [i, tray] of (room.trays ?? []).entries()) {
