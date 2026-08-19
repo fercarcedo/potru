@@ -5,7 +5,7 @@
  * base path, asset URLs, lazy chunks and all. Headless Chrome is the tool
  * CLAUDE.md already asks for when verifying UI changes; this formalises it.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('home page has no console errors and renders the map', async ({ page }) => {
   const errors: string[] = [];
@@ -75,6 +75,19 @@ test('closing the modal restores the home URL, and back/forward reopen it in pla
   await expect(page).toHaveURL(homeUrl);
 });
 
+/**
+ * The record slides in on a `pop` keyframe animation, so `.open` appearing
+ * does not mean it has come to rest: measuring straight away caught the
+ * modal mid-translateY and read y = 0.9 instead of 0. Anything checking
+ * where the record sits has to wait for that animation to settle first.
+ */
+async function settled(page: Page, selector: string) {
+  const el = page.locator(selector);
+  await expect(el).toBeVisible();
+  await el.evaluate((node) => Promise.all(node.getAnimations().map((a) => a.finished)));
+  return (await el.boundingBox())!;
+}
+
 test.describe('narrow viewports', () => {
   // The suite otherwise runs Desktop Chrome only, so the phone-width rules in
   // styles/node-modal.css had no coverage at all.
@@ -85,7 +98,7 @@ test.describe('narrow viewports', () => {
     await page.locator('a.ncard[data-node="muros"]').click();
     await expect(page.locator('#modalBg')).toHaveClass(/open/);
 
-    const box = (await page.locator('#modalBg .modal').boundingBox())!;
+    const box = await settled(page, '#modalBg .modal');
     expect(box.x).toBe(0);
     expect(box.y).toBe(0);
     expect(box.width).toBe(390);
@@ -96,6 +109,7 @@ test.describe('narrow viewports', () => {
     await page.locator('a.ncard[data-node="muros"]').click();
     await expect(page.locator('#modalBg')).toHaveClass(/open/);
 
+    await settled(page, '#modalBg .modal');
     const img = (await page.locator('#modalBg .mimg').boundingBox())!;
     const tabs = (await page.locator('#modalBg .gal-tabs').boundingBox())!;
     expect(tabs.y).toBeGreaterThanOrEqual(img.y);
