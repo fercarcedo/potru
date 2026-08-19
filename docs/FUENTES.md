@@ -64,6 +64,21 @@ licitación en PLACSP.
     «DWDM y splitter» y «Splitter + vídeo · Transmode» se dibujan con los mismos elementos.
   - El escalado de los planos caseta (4 450 × 2 400 mm) se fijó con dos referencias del propio
     dibujo: el paso de 445 mm de las tapas y los 4,14 m entre caras interiores de muro.
+  - **Salas remedidas contra la cadena de cotas de su plano**, porque la transcripción anterior
+    no cerraba: Infiesto, Nava, Arriondas y Colombres son la misma caseta de 4 450 × 2 400 mm que
+    Navia —interior 4,14 × 2,09 m— y estaban entradas como 4,25/4,17 × 1,89, lo que comía los
+    huecos de 0,10–0,30 m entre armarios que el plano acota. Tineo llevaba la puerta en el muro
+    izquierdo y el plano la pone en el muro inferior del ala izquierda (1,400 m, doble hoja), con
+    las anchuras del Control A.A. y del CGBT intercambiadas y sin el «Alarmas entorno» ni el aire
+    acondicionado de esa fila. Cangas era 1,300 m menos profunda de lo que mide el plano —de ahí
+    que la OLT baja quedase a 0,30 m de la puerta— y le faltaban la escalera de bajada al sótano y
+    la máquina de aire en el techo. Pola de Lena estaba como rectángulo de 4,30 × 5,20 con la
+    puerta abajo a la izquierda; mide 4,84 × 6,23 m y se entra por la puerta doble de 1,4 m del
+    muro izquierdo. Blimea tenía la puerta en el muro izquierdo y va en el muro inferior del ala
+    izquierda. En Mieres los rótulos «BASTIDOR n FRONTAL» son marcas de vista de alzado, no
+    bastidores, y se habían transcrito como tres bastidores en mitad de la sala.
+    Las cinco salas difíciles (Mieres, Tineo, Blimea, Pola de Lena y Cangas) se releyeron del PDF
+    a 400 ppp; la escala de cada una se fijó con dos cotas independientes del propio plano.
 - **Discrepancias documentadas en la propia interfaz**: el pliego general cita 5 nodos
   secundarios, pero las fichas por área detallan 9 (Vegadeo, La Caridad y Soto del Barco en
   el Occidente; Cabranes y Villamayor en el Suroriente; El Entrego, Sotrondio, Barredos y

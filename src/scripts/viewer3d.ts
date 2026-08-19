@@ -87,13 +87,13 @@ export function stopRoom() {
  *  with a generic body, and the battery stand is an open rack whose cells a
  *  generic body would hide. Named once because the bay loop has to skip
  *  them twice — for the body and again for the vented rear door. */
-const OWN_ENCLOSURE = new Set(['cgbt', 'battery']);
+const OWN_ENCLOSURE = new Set(['cgbt', 'battery', 'void']);
 
 const COLOR: Record<string, number> = {
   olt: 0x2e3238, odf: 0x39414c, transport: 0x36404e, splitter: 0x36404e,
   catv: 0x3b3a42, rack: 0x2e3238, power: 0x4a4f57, battery: 0x23262c,
   cgbt: 0x55606e, acdist: 0x55606e, ups: 0x8a9099, cabinet: 0x6f7680,
-  cage: 0xc9cdd2, ac: 0x8f959c, empty: 0x4c5158,
+  cage: 0xc9cdd2, ac: 0x8f959c, empty: 0x4c5158, void: 0x14171c,
 };
 
 /** What a bay holds when its label names only one thing. */
@@ -113,6 +113,9 @@ const UNIT_WEIGHT: Record<string, number> = {
 
 /** The kinds whose front is built band by band rather than as one cabinet. */
 const RACK_UNITS = new Set(Object.keys(UNIT_WEIGHT));
+
+/** Above this, a bay hangs clear of a visitor's head and is not an obstacle. */
+const CEILING_MOUNTED = 1.8;
 
 /** Where a tray level sits, in metres above the floor. */
 function trayHeight(level: Tray['level'], H: number): number {
@@ -169,6 +172,11 @@ export function buildRoom(n: NetworkNode) {
   const solids: { x0: number; x1: number; z0: number; z1: number }[] = [];
 
   for (const bay of room.bays) {
+    /* what a visitor has to walk round. A unit slung from the ceiling — the
+       «A. acondicionado suspendido en el techo» of Tineo, the machine over
+       Cangas' stair — is passed under, not round, and treating it as a solid
+       closed the only aisle in Cangas. */
+    if ((bay.y ?? 0) >= CEILING_MOUNTED) continue;
     solids.push({
       x0: bay.x - W / 2, x1: bay.x - W / 2 + bay.w,
       z0: bay.z - D / 2, z1: bay.z - D / 2 + bay.d,
@@ -231,6 +239,28 @@ export function buildRoom(n: NetworkNode) {
       rackFrame(inner, 0.5, 1.9, 0.26, 0);
       for (let i = 0; i < 6; i++) box(0.42, 0.11, 0.03, fin.module, 0, 0.5 + i * 0.2, 0.27, inner);
       label(bay.label, Math.min(bay.w * 0.8, 1.0), g.position.x, gh + 0.1, g.position.z, 0, '#c8d4e2');
+      continue;
+    }
+
+    if (bay.kind === 'void') {
+      /* a floor opening — Cangas' stair down to the basement. The plan draws
+         it inside the room with its «barandilla», so it is a thing you walk
+         round, not a cabinet and not floor. */
+      box(faceW, 0.02, faceD, new THREE.MeshLambertMaterial({ color: COLOR['void']! }),
+          0, 0.01, 0, g);
+      for (const [px, pz, pw, pd] of [
+        [0, -faceD / 2, faceW, 0.04], [0, faceD / 2, faceW, 0.04],
+        [-faceW / 2, 0, 0.04, faceD], [faceW / 2, 0, 0.04, faceD],
+      ] as const) {
+        box(pw, 0.035, pd, fin.steel, px, bay.h, pz, g);
+        box(pw, 0.03, pd, fin.steel, px, bay.h * 0.55, pz, g);
+      }
+      for (const [px, pz] of [
+        [-faceW / 2, -faceD / 2], [faceW / 2, -faceD / 2],
+        [-faceW / 2, faceD / 2], [faceW / 2, faceD / 2],
+      ] as const) box(0.045, bay.h, 0.045, fin.rail, px, bay.h / 2, pz, g);
+      label(bay.label, Math.min(faceW * 0.95, 0.8),
+            g.position.x, bay.h + 0.12, g.position.z, rot, '#c8d4e2');
       continue;
     }
 
