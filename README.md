@@ -55,8 +55,9 @@ mapa y el paseo, el modal y el visor 3D, que además descarga `three` bajo deman
 ```
 src/data/nodes.json     los 20 nodos + el PAO, con tarjetas y puertos por OLT
 src/data/rooms.json     planta de cada sala: recinto, puerta y armarios, en metros
+src/data/content.json   copia del pliego que no es por nodo: hero, arquitectura, paseo, PAO…
 src/lib/graphics.ts     generadores SVG puros (CWDM, secciones, ocupación, PAO, gantt)
-src/lib/details.ts      los 9 paneles del paseo, compuestos en build
+src/lib/details.ts      los paneles del paseo, compuestos en build, indexados por parada
 src/scripts/            islas: diagrama, mapa, paseo, modal, visor 3D
 public/planos/          los 105 planos del pliego a resolución original + miniaturas
 ```

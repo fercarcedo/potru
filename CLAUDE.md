@@ -49,13 +49,19 @@ Everything deterministic is generated **at build time**; only five things are cl
 **Build time (no JS shipped):** static sections, node cards, action links, the phase-2 gantt, the 9
 cable panels of the guided tour, and the 21 node record pages.
 
-- `src/lib/data.ts` — the typed façade over `nodes.json`: `NODES` (20 primary), `PAO_NODE`,
-  `ALL_NODES`, `byId`, `AREAS`, `ACTION_DESC`, `HOST_ONLY`, and the helpers `ontCount`, `cardCount`,
-  `cardLabel`, `asset`. Read data through here, not from the JSON directly.
+- `src/lib/data.ts` — the typed façade over both JSON data files. From `nodes.json`: `NODES` (20
+  primary), `PAO_NODE`, `ALL_NODES`, `byId`, `AREAS`, `ACTION_DESC`, `HOST_ONLY`, and the helpers
+  `ontCount`, `cardCount`, `cardLabel`, `asset`. From `content.json`: `HERO_STATS`,
+  `ONT_INSTALL_BASE`, `ARCHITECTURE_STEPS`, `DIAGRAM_INFO`, `CONTRACT_ACTIONS`, `TOUR_STOPS`,
+  `PAO_TRANSPORT`. Read data through here, not from the JSON directly.
 - `src/lib/graphics.ts` — pure SVG generators returning markup strings (`mkCWDM`, `mkSection`,
-  `occRow`, `mkPAO`, `gantt`), plus the TIA-598 and CWDM colour tables.
-- `src/lib/details.ts` — the 9 tour panels, composed from those generators and embedded hidden in
-  the page; the tour island only reveals the current one.
+  `occRow`, `mkPAO`, `gantt`), plus the TIA-598 and CWDM colour tables. Every one of them takes its
+  figures as arguments — none of them carries pliego data of its own.
+- `src/lib/details.ts` — the tour panels, composed from those generators and embedded hidden in the
+  page; the tour island only reveals the current one. It is a `Record` **keyed by tour-stop id**
+  (`TOUR_STOPS[i].id`), not an array: the panel and the stop's prose used to be two arrays lined up
+  by index, so reordering a stop silently mismatched them. `tests/lib/details.test.ts` guards the
+  key contract.
 - `src/pages/nodos/[id].astro` — one static page per node via `getStaticPaths()`.
 
 **Client islands** (`src/scripts/`, started from `main.ts`, which also wires build-rendered node
@@ -63,25 +69,35 @@ cards and gantt bars to the modal):
 
 - `diagram.ts` — end-to-end ONT → splitters → OLT → trunk → PAO schematic, rebuilt on the
   GPON ↔ XGS-PON toggle.
-- `map.ts` — the schematic map. Exports `svg` and `TR` (the trunk index) so `tour.ts` can frame and
-  highlight; the legacy passed these through `window.__map`. Must be imported **before** `tour.ts`.
-- `tour.ts` — the 9-stop guided tour. It drives the map's `viewBox` independently, so anything that
-  syncs with zoom state must observe the attribute (`MutationObserver`), not just the buttons.
+- `map.ts` — the schematic map. `initMap()` returns `svg` and `TR` (the trunk index), which
+  `main.ts` passes into `initTour()`; the legacy passed these through `window.__map` and relied on
+  map.ts being imported before tour.ts. The ordering is now a compile-time argument, not a comment.
+- `tour.ts` — the 9-stop guided tour. The stops themselves (framing, trunks, node, copy) are
+  `TOUR_STOPS` in `content.json`; this module only drives them. It moves the map's `viewBox`
+  independently, so anything that syncs with zoom state must observe the attribute
+  (`MutationObserver`), not just the buttons.
+- `svg.ts` — the one `createElementNS` + `setAttribute` factory the islands share. Nothing else in
+  `src/scripts/` should spell out the SVG namespace.
 - `modal.ts` / `walk.ts` / `viewer3d.ts` — node record modal; and the 3D viewer, which
   dynamic-imports `three` only when the visitor presses "Recorrer el interior en 3D" (keep it that
   way — it is the only heavy chunk).
 
 Everything type-checks, including `src/scripts/map.ts` — once a literal, `// @ts-nocheck`'d port of
-the legacy JavaScript. Its `e2()` element builder now takes a typed `Attrs = Record<string, string |
-number>` and calls `String(a[k])` explicitly before `setAttribute`, matching the coercion
-`setAttribute` already did implicitly at runtime, so the type checker sees the same thing the
-runtime always did.
+the legacy JavaScript. The shared `svgEl()` in `src/scripts/svg.ts` takes a typed `SvgAttrs =
+Record<string, string | number>` and calls `String(...)` explicitly before `setAttribute`, matching
+the coercion `setAttribute` already did implicitly at runtime, so the type checker sees the same
+thing the runtime always did.
 
 ### Data files are the source of truth
 
 - `src/data/nodes.json` — the 20 primary nodes plus the PAO: OLTs (`cards`, `cardModel`,
   `portsPerCard`, `portsActive`, `portsTotal`, `onts`), phase-2 weeks, actions, towns, shared PON
   groups, and the plan gallery.
+- `src/data/content.json` — every piece of pliego-derived site copy that isn't per-node: the hero's
+  headline figures, the ONT install base, the architecture-layer summaries, the diagram's
+  explanations, the contract-action cards, the 9 guided-tour stops and the PAO's transport
+  occupancy. It exists so this copy is in one checkable place instead of inlined in the components
+  and islands that display it, and so `tests/data/content.test.ts` can guard it.
 - `src/data/rooms.json` — one entry per node id (21), transcribed in metres from that node's
   `*-planta.jpg`: `outline` polygon, `doors`, and `bays` (`kind` drives the mesh/colour; an `olt`
   bay renders that OLT's real cards and lit ports). Only the Red Asturcón room is modelled;

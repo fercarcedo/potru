@@ -17,8 +17,9 @@
  */
 import * as THREE from 'three';
 import roomData from '../data/rooms.json';
-import { cardLabel, type NetworkNode } from '../lib/data';
+import { cardCount, cardLabel, type NetworkNode } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
+import { escapeHtml as esc } from '../lib/escape-html';
 import { initControls } from './viewer3d/controls';
 import { createEquipmentBuilders } from './viewer3d/equipment';
 import { pointInPolygon } from './viewer3d/geometry';
@@ -54,6 +55,12 @@ let SV: { stop(): void } | null = null;
 export function stopRoom() {
   if (SV) { SV.stop(); SV = null; }
 }
+
+/** Kinds that build their own enclosure: the CGBT's cabinet would z-fight
+ *  with a generic body, and the battery stand is an open rack whose cells a
+ *  generic body would hide. Named once because the bay loop has to skip
+ *  them twice — for the body and again for the vented rear door. */
+const OWN_ENCLOSURE = new Set(['cgbt', 'battery']);
 
 const COLOR: Record<string, number> = {
   olt: 0x2e3238, odf: 0x39414c, transport: 0x36404e, splitter: 0x36404e,
@@ -138,9 +145,7 @@ export function buildRoom(n: NetworkNode) {
       continue;
     }
 
-    /* the CGBT builds its own enclosure and the battery stand is an open rack:
-       a generic body would z-fight with one and hide the cells of the other */
-    if (bay.kind !== 'cgbt' && bay.kind !== 'battery') {
+    if (!OWN_ENCLOSURE.has(bay.kind)) {
       box(faceW, bay.h, faceD,
         new THREE.MeshLambertMaterial({ color: COLOR[bay.kind] ?? 0x4c5158 }),
         0, base + bay.h / 2, 0, g);
@@ -192,7 +197,7 @@ export function buildRoom(n: NetworkNode) {
 
     /* the rear is a vented door, not a bare slab: from behind a rack still reads
        as equipment rather than a black box */
-    if (bay.kind !== 'cgbt' && bay.kind !== 'battery' && bay.h > 0.9) {
+    if (!OWN_ENCLOSURE.has(bay.kind) && bay.h > 0.9) {
       const bz = -fz * 1.01;
       box(faceW - 0.05, bay.h - 0.08, 0.012, fin.bezel, 0, base + bay.h / 2, bz, g);
       for (let i = 0; i < Math.max(4, Math.round((bay.h - 0.3) / 0.16)); i++) {
@@ -258,17 +263,16 @@ export function buildRoom(n: NetworkNode) {
 
   /* ---- legend ---- */
   const olts = n.olts;
-  const totalCards = olts.reduce((a, o) => a + o.cards, 0);
   document.getElementById(DOM.svLegend)!.innerHTML =
     `<b style="color:#41e3d2">Reconstruido del plano</b><br>` +
-    `· Planta: <span class="mono">${room.source.split('/').pop()}</span><br>` +
+    `· Planta: <span class="mono">${esc(room.source.split('/').pop() ?? '')}</span><br>` +
     `· Recinto ${W.toFixed(2)} × ${D.toFixed(2)} m · ${H.toFixed(2)} m libres<br>` +
     `· ${room.bays.length} armarios rotulados en el plano<br>` +
     (olts.length
-      ? `· ${olts.length} OLT · ${totalCards} tarjetas<br>` +
-        olts.map((o) => `<span class="mono" style="color:#9db4d8">${o.code}</span> ${cardLabel(o)} · ${o.portsActive}/${o.portsTotal} puertos`).join('<br>')
+      ? `· ${olts.length} OLT · ${cardCount(n)} tarjetas<br>` +
+        olts.map((o) => `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))} · ${o.portsActive}/${o.portsTotal} puertos`).join('<br>')
       : '· Sin OLT: punto de interconexión con los operadores') +
-    (room.note ? `<br><span style="color:#5a6f8d">${room.note}</span>` : '');
+    (room.note ? `<br><span style="color:#5a6f8d">${esc(room.note)}</span>` : '');
 
   const modeBtn = document.getElementById(DOM.svMode)!;
   let renewed = false;
