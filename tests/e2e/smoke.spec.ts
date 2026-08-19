@@ -246,3 +246,57 @@ test.describe('plans open full size', () => {
     for (const href of hrefs) expect(href).toMatch(/^\/potru\/planos\/.+\.jpg$/);
   });
 });
+
+test.describe('stepping through a node\'s plans', () => {
+  test('arrows and the thumbnail strip move between the plans of a node', async ({ page }) => {
+    await page.goto('./nodos/tineo/');
+    await page.locator('.node-hero .plan-link').click();
+    await expect(page.locator('#lbBg')).toHaveClass(/open/);
+    await expect(page.locator('#lbCount')).toHaveText('1 / 5');
+    await expect(page.locator('#lbThumbs button')).toHaveCount(5);
+
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('#lbCount')).toHaveText('2 / 5');
+    await page.locator('#lbNext').click();
+    await expect(page.locator('#lbCount')).toHaveText('3 / 5');
+    // and it wraps, rather than dead-ending
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator('#lbCount')).toHaveText('5 / 5');
+
+    await page.locator('#lbThumbs button').nth(1).click();
+    await expect(page.locator('#lbCount')).toHaveText('2 / 5');
+    await expect(page.locator('#lbThumbs button').nth(1)).toHaveClass(/on/);
+  });
+
+  test('the strip steps aside once a plan is zoomed to its own pixels', async ({ page }) => {
+    await page.goto('./nodos/tineo/');
+    await page.locator('.node-hero .plan-link').click();
+    await expect(page.locator('#lbThumbs')).toBeVisible();
+
+    await page.locator('#lbImg').click();
+    await expect(page.locator('#lbBg')).toHaveClass(/reading/);
+    await expect(page.locator('#lbThumbs')).not.toBeVisible();
+
+    // stepping to another plan starts it fit to the screen again
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('#lbBg')).not.toHaveClass(/reading/);
+    await expect(page.locator('#lbThumbs')).toBeVisible();
+  });
+
+  test('the record opens the lightbox on its own tab, and follows it back', async ({ page }) => {
+    await page.goto('./');
+    await page.locator('a.ncard[data-node="tineo"]').click();
+    // switch the record to its third plan first
+    await page.locator('#mTabs button').nth(2).click();
+    await page.locator('#mImgLink').click();
+    await expect(page.locator('#lbCount')).toHaveText('3 / 5');
+
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#modalBg')).toHaveClass(/open/);
+    // the record is left on the plan the lightbox ended on
+    await expect(page.locator('#mTabs button.on')).toHaveText('Alzado derecho');
+  });
+});

@@ -3,7 +3,8 @@ import { DOM } from '../lib/dom-ids';
 
 // Full-size view of a plan. The plans are 1891 x 1310 CAD drawings shown at
 // ~330 px in the record, which is far too small to read the dimension chains
-// they exist for; this puts one on the whole screen.
+// they exist for; this puts one on the whole screen, and lets you step
+// through the rest of that node's set without leaving.
 //
 // Nothing here is required for the plans to be reachable: every one of them
 // is a real <a href> to the image file, so no-JS, middle-click and ⌘-click
@@ -14,13 +15,26 @@ import { DOM } from '../lib/dom-ids';
 <div class="lb-bg" id={DOM.lbBg} role="dialog" aria-modal="true" aria-label="Plano a tamaño completo">
   <div class="lb-top">
     <span class="lb-cap" id={DOM.lbCap}></span>
+    <span class="lb-count" id={DOM.lbCount}></span>
     <a class="lb-open" id={DOM.lbOpen} href="#" target="_blank" rel="noopener"
       >↗ Abrir el original</a
     >
     <button class="lb-close" id={DOM.lbClose} aria-label="Cerrar">✕ Salir</button>
   </div>
-  <figure class="lb-fig" id={DOM.lbFig}>
-    <img id={DOM.lbImg} alt="" />
-  </figure>
-  <div class="lb-help">PULSA el plano para verlo a tamaño real · ARRASTRA para moverte · ESC para salir</div>
+
+  <div class="lb-stage">
+    <figure class="lb-fig" id={DOM.lbFig}>
+      <img id={DOM.lbImg} alt="" />
+    </figure>
+    <button class="lb-nav prev" id={DOM.lbPrev} aria-label="Plano anterior">‹</button>
+    <button class="lb-nav next" id={DOM.lbNext} aria-label="Plano siguiente">›</button>
+  </div>
+
+  <div class="lb-bottom">
+    <div class="lb-thumbs" id={DOM.lbThumbs} role="tablist" aria-label="Planos del nodo"></div>
+    <div class="lb-help">
+      PULSA el plano para verlo a tamaño real · ARRASTRA para moverte · ← → para cambiar de plano ·
+      ESC para salir
+    </div>
+  </div>
 </div>

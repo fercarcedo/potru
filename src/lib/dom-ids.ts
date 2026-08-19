@@ -68,6 +68,10 @@ export const DOM = {
   lbFig: 'lbFig',
   lbImg: 'lbImg',
   lbCap: 'lbCap',
+  lbCount: 'lbCount',
+  lbPrev: 'lbPrev',
+  lbNext: 'lbNext',
+  lbThumbs: 'lbThumbs',
   lbOpen: 'lbOpen',
   lbClose: 'lbClose',
 

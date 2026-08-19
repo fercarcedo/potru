@@ -9,6 +9,7 @@ import { asset, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { renderActionLinks, renderAreaTag, renderMigStrip, renderOltTable, renderTownsBlock } from '../lib/node-render';
+import { registerPlanSet } from './lightbox';
 import { openWalk } from './walk';
 
 export interface ModalApi {
@@ -22,9 +23,24 @@ export interface ModalApi {
 export function initModal(): ModalApi {
   const base = import.meta.env.BASE_URL;
   const mBg = document.getElementById(DOM.modalBg)!;
+  /* The record's hero is one <img> swapping through a gallery behind its
+     tabs, so the DOM cannot describe the set the way the node page's grid
+     can. Hand the lightbox the whole gallery, and let its arrows drive the
+     tabs so closing leaves the record on the plan you ended up at. */
+  const heroLink = document.getElementById(DOM.mImgLink) as HTMLAnchorElement;
+  registerPlanSet(heroLink, () => {
+    const n = openId ? byId[openId] : null;
+    return {
+      plans: (n?.gallery ?? []).map((g) => ({ src: asset(g.src), caption: `${g.label} · ${n!.name}` })),
+      index: shownView,
+      onChange: (i: number) => { if (openId) openNode(openId, i); },
+    };
+  });
   const homeHref = location.href;
   const nodePrefix = `${base}nodos/`;
   let openId: string | null = null;
+  /** which gallery tab the record is showing, for the lightbox to open at */
+  let shownView = 0;
 
   /** id of the node whose permalink the current path names, or null. */
   function idFromPath(path: string): string | null {
@@ -39,6 +55,7 @@ export function initModal(): ModalApi {
     const gallery = n.gallery;
     view = Math.min(view, gallery.length - 1);
     const img = document.getElementById(DOM.mImg) as HTMLImageElement;
+    shownView = view;
     const shot = gallery[view]!;
     img.src = asset(shot.src);
     img.width = shot.w;
