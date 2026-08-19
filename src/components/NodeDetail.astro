@@ -8,72 +8,91 @@ interface Props {
 
 const { node: n } = Astro.props;
 const base = import.meta.env.BASE_URL;
+/* The record leads with the node's first plan, the way the modal leads with
+   whichever tab is open; the rest go in the grid at the foot of the card, so
+   no plan is shown twice. */
+const [hero, ...plans] = n.gallery;
+const towns = renderTownsBlock(n);
+const olts = renderOltTable(n);
 ---
 
-<div class="node-detail">
-  <a class="back-link" href={`${base}#nodos`}>◀ Volver a los 20 nodos</a>
+<a class="back-link" href={`${base}#nodos`}>◀ Volver a los 20 nodos</a>
 
-  <h1>
-    {n.name}
-    <Fragment set:html={renderAreaTag(n)} />
-  </h1>
-  <div class="addr">📍 {n.address}</div>
-  <p class="env">{n.enclosure}</p>
-  {n.extra && <p class="extra">{n.extra}</p>}
-
-  <div class="mig-strip" set:html={renderMigStrip(n)} />
-
+<article class="node-detail">
   {
-    n.olts.length > 0 && (
-      <section class="block">
-        <div class="act-label">Equipamiento OLT en producción</div>
-        <div class="olt-wrap">
-          <table class="olt-table" set:html={renderOltTable(n)} />
-        </div>
-      </section>
+    hero && (
+      <div class="node-hero">
+        <img
+          src={asset(hero.src)}
+          alt={`${hero.label} · ${n.name}`}
+          width={hero.w}
+          height={hero.h}
+          decoding="async"
+        />
+        <span class="hero-tag">{hero.label.toUpperCase()}</span>
+      </div>
     )
   }
 
-  {
-    n.towns.length > 0 && (
-      <section class="block" set:html={renderTownsBlock(n)} />
-    )
-  }
+  <div class="node-body">
+    <h1>
+      {n.name}
+      <Fragment set:html={renderAreaTag(n)} />
+    </h1>
+    <div class="addr">📍 {n.address}</div>
+    <p class="env">{n.enclosure}</p>
 
-  {
-    n.gallery.length > 1 && (
-      <button class="tour-btn" data-walk={n.id} style="margin-top:6px">
-        🚶 Recorrer el interior en 3D{' '}
-        <span style="color:var(--muted);font-size:.66rem">
-          · simulación generada a partir de planta y alzados
-        </span>
-      </button>
-    )
-  }
+    {towns && <div class="towns" set:html={towns} />}
+    {n.extra && <p class="extra">{n.extra}</p>}
 
-  <section class="block">
+    {
+      olts && (
+        <>
+          <div class="act-label">Equipamiento OLT en producción</div>
+          <div class="olt-wrap">
+            <table class="olt-table" set:html={olts} />
+          </div>
+        </>
+      )
+    }
+
+    <div class="mig-strip" set:html={renderMigStrip(n)} />
+
+    {
+      n.gallery.length > 1 && (
+        <button class="tour-btn" data-walk={n.id}>
+          🚶 Recorrer el interior en 3D{' '}
+          <span style="color:var(--muted);font-size:.66rem">
+            · simulación generada a partir de planta y alzados
+          </span>
+        </button>
+      )
+    }
+
     <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
     <div class="act-links" set:html={renderActionLinks(n, base)} />
-  </section>
 
-  <section class="block">
-    <div class="act-label">Planos del pliego · ubicación, planta y alzados</div>
-    <div class="detail-gallery">
-      {
-        n.gallery.map((g) => (
-          <figure>
-            <img
-              src={asset(g.src)}
-              alt={`${g.label} · ${n.name}`}
-              width={g.w}
-              height={g.h}
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>{g.label.toUpperCase()}</figcaption>
-          </figure>
-        ))
-      }
-    </div>
-  </section>
-</div>
+    {
+      plans.length > 0 && (
+        <>
+          <div class="act-label plans-label">Resto de planos del pliego</div>
+          <div class="detail-gallery">
+            {plans.map((g) => (
+              <figure>
+                <img
+                  src={asset(g.src)}
+                  alt={`${g.label} · ${n.name}`}
+                  width={g.w}
+                  height={g.h}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption>{g.label.toUpperCase()}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </>
+      )
+    }
+  </div>
+</article>
