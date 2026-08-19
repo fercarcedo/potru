@@ -26,3 +26,16 @@ const variable = CONTRACT_ACTIONS.filter((a) => a.part === 'variable');
     </div>
   </div>
 </section>
+
+<style>
+  /* Only lays out this component's own two grid divs; ActionCard's cards
+     flow into it as ordinary grid items, so scoping the grid itself doesn't
+     need to reach into the child component. */
+  .grid {
+    display: grid;
+    gap: 16px;
+  }
+  .g3 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+</style>

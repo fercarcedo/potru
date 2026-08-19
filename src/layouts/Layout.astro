@@ -72,3 +72,109 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     </footer>
   </body>
 </html>
+
+<style>
+  /* Sticky nav and footer — both entirely this component's own markup, so
+     scoping reaches every element below without a :global() escape.
+     .disclaimer itself is global (see base.css): the footer's copy of it
+     is a second, independent instance of that same class, not something
+     this component's scope could reach anyway. */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(6, 11, 20, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+  }
+  .brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+  }
+  .brand b {
+    color: var(--xgs);
+  }
+  nav ul {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+  }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  nav a:hover,
+  nav a:focus-visible {
+    color: var(--txt);
+  }
+  nav a:focus-visible {
+    outline: 2px solid var(--xgs);
+    outline-offset: 3px;
+  }
+  /* The legacy hid the nav below 820px, but its sliding nav only kicks in at
+     760px, so navigation vanished in between. The rule is dropped and the
+     max-width:760px sliding block below takes over. */
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 36px 0 48px;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  footer .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  footer .disclaimer {
+    margin-top: 0;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    /* align-items:flex-start del .wrap encogía el <ul> a su contenido, así
+       que overflow-x no tenía nada que recortar y la lista se salía de la
+       pantalla */
+    nav ul {
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+      gap: 16px;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    nav ul::-webkit-scrollbar {
+      display: none;
+    }
+    /* sin esto los <li> encogen y parten el rótulo: «Red en vivo» caía en
+       tres líneas */
+    nav li {
+      flex: none;
+    }
+    nav li a {
+      white-space: nowrap;
+    }
+    nav .wrap {
+      height: auto;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    footer .wrap {
+      flex-direction: column;
+    }
+  }
+</style>
