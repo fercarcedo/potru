@@ -182,6 +182,28 @@ export interface PaoTransport {
   warning: string;
 }
 
+/** One labelled span in the wavelength figure — Architecture.astro's «Dos
+ *  generaciones sobre el mismo hilo». `lo`/`hi` are nanometres. This is
+ *  ITU-T norm data, not pliego data — see `source` on XgsExplainer, which
+ *  the figure is required to display alongside it. */
+export interface WdmBand {
+  lo: number;
+  hi: number;
+  label: string;
+  kind: 'gpon' | 'xgs' | 'video';
+}
+
+export interface XgsExplainer {
+  gpon: { label: string; rate: string; text: string };
+  xgs: { label: string; rate: string; text: string };
+  prose: string;
+  bands: WdmBand[];
+  axisFrom: number;
+  axisTo: number;
+  /** must be shown with the figure: these wavelengths are not pliego data */
+  source: string;
+}
+
 export type DiagramMode = 'gpon' | 'xgs';
 export type DiagramInfo = Record<string, Record<DiagramMode, string>>;
 
@@ -210,6 +232,7 @@ interface ContentData {
   contractActions: ContractAction[];
   tourStops: TourStop[];
   paoTransport: PaoTransport;
+  xgsExplainer: XgsExplainer;
 }
 
 const content = contentRaw as unknown as ContentData;
@@ -221,6 +244,7 @@ export const DIAGRAM_INFO: DiagramInfo = content.diagramInfo;
 export const CONTRACT_ACTIONS: ContractAction[] = content.contractActions;
 export const TOUR_STOPS: TourStop[] = content.tourStops;
 export const PAO_TRANSPORT: PaoTransport = content.paoTransport;
+export const XGS_EXPLAINER: XgsExplainer = content.xgsExplainer;
 
 /** The contract runs weeks 1–58; Phase 2 (all node migrations) ends at the
  *  same week 58, which is why this single constant covers both the gantt's

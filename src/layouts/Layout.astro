@@ -82,10 +82,8 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     <footer>
       <div class="wrap">
         <span class="disclaimer"
-          ><span class="i">ⓘ</span><span
-            ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias · fuente:
-            pliego público CON 06/2025</span
-          ></span
+          ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias · fuente:
+          pliego público CON 06/2025</span
         >
         <span
           >Fuente: Pliego de Condiciones Técnicas · EXPTE CON 06/2025 · aprobado 22-12-2025 · Datos,
@@ -160,9 +158,13 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       color 0.2s,
       background-color 0.2s;
   }
+  /* The pill highlight the redesign plan showed on hover — background in
+     the institutional blue, same treatment the design gave the toggle and
+     the section eyebrows, so the nav reads as part of the same system. */
   nav a:hover,
   nav a:focus-visible {
-    color: var(--txt);
+    color: var(--accent);
+    background: var(--accent-soft);
   }
   nav a:focus-visible {
     outline: 2px solid var(--xgs);
