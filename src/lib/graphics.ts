@@ -152,6 +152,21 @@ export interface SectionZoom {
   sub?: string;
 }
 
+/** Break `text` at a word boundary into at most two lines, each within
+ *  `maxChars` — used where a zoom label runs past the edge of the canvas. */
+function wrapTwo(text: string, maxChars: number): string[] {
+  if (text.length <= maxChars) return [text];
+  const words = text.split(' ');
+  let line1 = '';
+  for (const w of words) {
+    const next = line1 ? `${line1} ${w}` : w;
+    if (next.length > maxChars) break;
+    line1 = next;
+  }
+  if (!line1) return [text]; /* a single word longer than maxChars: leave it be */
+  return [line1, text.slice(line1.length).trim()];
+}
+
 /** XL cable cut: circular section, tubes with their fibres and radial labels. */
 export function mkSection(
   title: string,
@@ -217,6 +232,8 @@ export function mkSection(
     placeRing(ring1, 0, nT > 8 ? 88 : 82, nT > 8 ? 18 : 24);
   }
   /* radial labels, one per tube group */
+  const CHAR_W = 7.4; /* advance width of IBM Plex Mono at 12.5px, for the clamps below */
+  const MARGIN = 10;
   labels.forEach((L) => {
     const angs = L.tubes.map((t) => tubeAng[t]).filter((a): a is number => a !== undefined);
     if (!angs.length) return;
@@ -227,7 +244,12 @@ export function mkSection(
       sx += Math.cos(a);
       sy += Math.sin(a);
     });
-    const am = Math.atan2(sy, sx);
+    /* A tube set spread evenly around the circle (e.g. "all of them") sums to
+       a near-zero vector, and atan2 on floating-point noise near (0, 0) picks
+       an arbitrary quadrant instead of a meaningful direction — that quadrant
+       has landed the label past the edge of the canvas before now. Snap that
+       degenerate case to a fixed, safe direction instead of trusting the noise. */
+    const am = Math.hypot(sx, sy) < 1e-6 ? 0 : Math.atan2(sy, sx);
     const ex = CX + Math.cos(am) * (Rsh + 14),
       ey = CY + Math.sin(am) * (Rsh + 14);
     const lx = CX + Math.cos(am) * (Rsh + 44),
@@ -238,18 +260,25 @@ export function mkSection(
     });
     g += `<line x1="${ex}" y1="${ey}" x2="${lx}" y2="${ly}" stroke="${L.color || 'var(--muted)'}" stroke-width="1.2"/>`;
     const parts = L.text.split('|');
+    const textW = Math.max(...parts.map((p) => p.length)) * CHAR_W;
     const vertical = Math.abs(Math.cos(am)) < 0.35; /* group above or below: centre the text */
     let anchor: string, tx0: number, baseY: number;
     if (vertical) {
       anchor = 'middle';
-      tx0 = lx;
+      tx0 = Math.min(Math.max(lx, MARGIN + textW / 2), 1180 - MARGIN - textW / 2);
       baseY = ly + (Math.sin(am) < 0 ? -6 - (parts.length - 1) * 16 : 14);
     } else {
       const right = Math.cos(am) > 0;
       anchor = right ? 'start' : 'end';
-      tx0 = lx + (right ? 6 : -6);
+      tx0 = right ? Math.min(lx + 6, 1180 - MARGIN - textW) : Math.max(lx - 6, MARGIN + textW);
       baseY = ly + 4 - (parts.length - 1) * 8;
     }
+    /* keep every line inside the viewBox top-to-bottom the same way, whether
+       the overflow is a real label direction or the fallback above */
+    const firstY = baseY,
+      lastY = baseY + (parts.length - 1) * 16;
+    if (firstY < 34) baseY += 34 - firstY;
+    else if (lastY > H - MARGIN) baseY -= lastY - (H - MARGIN);
     parts.forEach((p, pi) => {
       g += `<text x="${tx0}" y="${baseY + pi * 16}" fill="${L.color || 'var(--muted)'}" font-size="12.5" text-anchor="${anchor}" font-weight="${pi === 0 ? '600' : '400'}">${esc(p)}</text>`;
     });
@@ -281,7 +310,11 @@ export function mkSection(
     }
     if (z.nf)
       g += `<text x="${ZX}" y="${zy + 6}" fill="var(--danger)" font-size="20" text-anchor="middle" font-weight="700">✕</text>`;
-    g += `<text x="${ZX + ZR + 20}" y="${zy - 20}" fill="var(--txt)" font-size="15" font-weight="600">${esc(z.label)}</text>`;
+    const labelLines = wrapTwo(z.label, Math.floor((1180 - (ZX + ZR + 20) - MARGIN) / 9));
+    labelLines.forEach((ln, li) => {
+      const ly = zy - 20 - (labelLines.length - 1 - li) * 17;
+      g += `<text x="${ZX + ZR + 20}" y="${ly}" fill="var(--txt)" font-size="15" font-weight="600">${esc(ln)}</text>`;
+    });
     if (z.oc != null && !z.nf) {
       g += `<circle cx="${ZX + ZR + 28}" cy="${zy + 4}" r="6.5" fill="${tcol}"/>`;
       g += `<text x="${ZX + ZR + 42}" y="${zy + 9}" fill="var(--muted)" font-size="13">${z.oc} ocupadas</text>`;
@@ -330,7 +363,9 @@ export function occRow(name: string, total: number, used: number, cols?: string[
  *  in this file. */
 export function mkPAO(t: PaoTransport): string {
   const { rows } = t;
-  const H = 118 + rows.length * 62;
+  /* rows.length * 62 for the channel rows, plus the "direct fibres" line and
+     the warning banner below them (their own layout is fixed, not per-row) */
+  const H = 128 + rows.length * 62 + 66;
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
   g += `<text x="10" y="26" fill="var(--txt)" font-size="17" font-weight="600">Sistemas de transporte en el PAO · ocupación canal a canal</text>`;
