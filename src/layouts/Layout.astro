@@ -57,7 +57,6 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       <div class="wrap">
         <div class="brand">
           <b>Potru<span class="dot">.</span></b>
-          <span class="build">v13 · PAO FOTO</span>
         </div>
         <ul>
           {
@@ -127,11 +126,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     justify-content: space-between;
     height: 58px;
   }
-  .brand {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
+
   /* The wordmark, and the only place the display face runs at full weight.
      The stop is the whole mark: a potru is a colt, the Asturcón's young
      counterpart, so the name already says «related, not the same thing» —
@@ -147,15 +142,6 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   }
   .brand .dot {
     color: var(--gpon);
-  }
-  .brand .build {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    padding: 2px 6px;
   }
   nav ul {
     display: flex;
