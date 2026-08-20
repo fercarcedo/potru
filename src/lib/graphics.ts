@@ -104,8 +104,15 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
   g += `<line x1="10" y1="${muxY - 4}" x2="${muxX - 28}" y2="${muxY - 4}" stroke="#f2d024" stroke-width="3"/>`;
   g += `<line x1="10" y1="${muxY + 4}" x2="${muxX - 28}" y2="${muxY + 4}" stroke="#f2d024" stroke-width="3"/>`;
   g += `<line x1="10" y1="${muxY}" x2="${muxX - 28}" y2="${muxY}" stroke="#f2d024" stroke-width="14" opacity=".14"/>`;
-  g += `<text x="12" y="${muxY - 14}" fill="var(--muted)" font-size="9.5">2 ff.oo. alquiladas (par) → Gijón</text>`;
   g += `<path d="M${muxX - 28},${muxY - 16} L${muxX + 8},${muxY - (ordered.length * 34) / 2} L${muxX + 8},${muxY + (ordered.length * 34) / 2} L${muxX - 28},${muxY + 16} Z" fill="var(--panel2)" stroke="var(--xgs)" stroke-width="1.4"/>`;
+  /* Fixed under the title rather than pinned above the mux (muxY-relative):
+     the fan of lines from the mux to each channel converges on muxY, so at
+     4+ channels that spot is the busiest point in the whole drawing, and
+     this label is long enough to run straight through it. Every fan line's
+     highest point is y=44 (channel 0's own endpoint) regardless of channel
+     count, so a fixed row here is clear no matter how many channels there
+     are, instead of only for however few happened to leave it room. */
+  g += `<text x="8" y="36" fill="var(--muted)" font-size="9.5">2 ff.oo. alquiladas (par) → Gijón</text>`;
   g += `<text x="${muxX - 10}" y="${muxY + 4}" fill="var(--xgs-tx)" font-size="9" text-anchor="middle" transform="rotate(-90 ${muxX - 10} ${muxY})">CWDM MUX</text>`;
   ordered.forEach((ch, i) => {
     const y = 44 + i * 34;
