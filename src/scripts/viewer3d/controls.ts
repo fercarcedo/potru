@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { DOM } from '../../lib/dom-ids';
 import type { Led } from './equipment';
 import type { Door, Solid } from './walkable';
-import { doorway, inward, isClear, walkInFrom } from './walkable';
+import { arriveFrom, isClear } from './walkable';
 
 export interface ControlsDeps {
   cam: THREE.PerspectiveCamera;
@@ -23,13 +23,6 @@ export interface ControlsDeps {
   solids: Solid[];
   /** the door to start just inside of; undefined starts at the room's centre */
   startDoor?: Door;
-  /**
-   * What to face on arrival. The middle of the bounding box is the wrong
-   * thing to look at in an L-shaped room — in Blimea it is the inner corner,
-   * so the visitor walked in and faced a blank wall — so buildRoom() passes
-   * the middle of the equipment instead.
-   */
-  lookAt?: [number, number];
   /** ports/status lamps lit by createEquipmentBuilders(), blinked here */
   leds: Led[];
   /** the browser is rasterising in software: render fewer pixels */
@@ -42,24 +35,21 @@ export interface Controls {
 
 /** Wires movement, look, zoom and the render loop, and starts it. */
 export function initControls(deps: ControlsDeps): Controls {
-  const { cam, canvas, holder, renderer, scene, poly, solids, startDoor, lookAt, leds, software } =
-    deps;
+  const { cam, canvas, holder, renderer, scene, poly, solids, startDoor, leds, software } = deps;
 
   const clear = (x: number, z: number) => isClear(poly, solids, x, z);
   /* If we somehow start inside something, never freeze: let the visitor walk out. */
   const free = (x: number, z: number) => clear(x, z) || !clear(cam.position.x, cam.position.z);
 
-  /* start just inside the door, looking into the room */
-  const start: [number, number] = startDoor ? doorway(poly, startDoor) : [0, 0];
+  /* Start just inside the door, facing whatever is worth looking at: see
+     arriveFrom() in walkable.ts, which decides the spot and the heading
+     together because the second depends on the first. View dir is
+     (-sin y, -cos y). */
   cam.position.set(0, 1.6, 0);
-  const landed = walkInFrom(poly, solids, start, startDoor && inward(poly, startDoor));
-  if (landed) cam.position.set(landed[0], 1.6, landed[1]);
-  else if (free(0, 0)) cam.position.set(0, 1.6, 0);
-
-  /* face the equipment: view dir is (-sin y, -cos y), so aim from where we
-     landed at the target rather than at the origin */
-  const [tx, tz] = lookAt ?? [0, 0];
-  let yaw = Math.atan2(cam.position.x - tx, cam.position.z - tz);
+  const arrival = startDoor && arriveFrom(poly, solids, startDoor, cam.fov);
+  if (arrival) cam.position.set(arrival.at[0], 1.6, arrival.at[1]);
+  const aim = arrival ? arrival.aim : ([0, 1] as [number, number]);
+  let yaw = Math.atan2(-aim[0], -aim[1]);
   let pitch = 0;
   const keys: Record<string, boolean> = {};
   const kd = (e: KeyboardEvent) => {

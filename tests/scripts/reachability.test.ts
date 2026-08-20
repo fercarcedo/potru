@@ -10,10 +10,14 @@
 import { describe, expect, it } from 'vitest';
 import rooms from '../../src/data/rooms.json';
 import {
+  arrivalAim,
+  arriveFrom,
   doorway,
   inward,
   isClear,
+  openness,
   reachableFrom,
+  visibleFrom,
   walkInFrom,
 } from '../../src/scripts/viewer3d/walkable';
 import type { Solid } from '../../src/scripts/viewer3d/walkable';
@@ -131,4 +135,124 @@ describe('no room is mostly unreachable floor', () => {
       );
     });
   }
+});
+
+/**
+ * And once in, is the visitor looking at anything?
+ *
+ * A room can pass every test above — door on the right wall, every cabinet
+ * reachable, the floor connected — and still open on a blank wall, which is
+ * what Tineo and Polalena did: their equipment is down the other arm of an L
+ * and the old aim, straight in from the doorway, framed none of it. The
+ * opposite failure is Blimea's, where the walk-in stopped 16 cm off a rack
+ * flank and it filled the screen. Both are properties of the plan geometry,
+ * so they belong here rather than in a screenshot someone has to look at.
+ */
+describe('the visitor arrives looking at the equipment', () => {
+  /** matches viewer3d.ts's PerspectiveCamera */
+  const FOV = 70;
+  /** a room big enough that its walls never decide anything, for the unit cases */
+  const OPEN: [number, number][] = [
+    [-50, -50],
+    [50, -50],
+    [50, 50],
+    [-50, 50],
+  ];
+
+  /** Share of cabinet floor area in front of the visitor and not hidden. */
+  function inView(solids: Solid[], from: [number, number], dir: [number, number]) {
+    const ang = Math.atan2(dir[1], dir[0]);
+    const seen = visibleFrom(solids, from);
+    let got = 0,
+      total = 0;
+    for (let i = 0; i < solids.length; i++) {
+      const s = solids[i]!;
+      const a = (s.x1 - s.x0) * (s.z1 - s.z0);
+      total += a;
+      if (!seen[i]) continue;
+      const b = Math.atan2((s.z0 + s.z1) / 2 - from[1], (s.x0 + s.x1) / 2 - from[0]);
+      const d = Math.atan2(Math.sin(b - ang), Math.cos(b - ang));
+      if (Math.abs(d) <= (FOV / 2) * (Math.PI / 180)) got += a;
+    }
+    return total ? got / total : 1;
+  }
+
+  for (const [id, room] of Object.entries(ROOMS)) {
+    const door = room.doors[0]!;
+
+    it(`${id}: opens on the equipment, not on a blank wall`, () => {
+      const { poly, solids } = centred(room);
+      const { at, aim } = arriveFrom(poly, solids, door, FOV);
+      const share = inView(solids, at, aim);
+      /* Blimea's 14% is the floor and it is the plan, not the code: its door
+         opens into a 0.70 m aisle beside the OLT block, so most of the room
+         is behind the racks whichever way you turn. Straight in from the
+         doorway framed 0% of Tineo and 0% of Polalena. */
+      expect(
+        share,
+        `${id}: only ${(share * 100).toFixed(0)}% of the cabinets in view`,
+      ).toBeGreaterThan(0.1);
+    });
+
+    it(`${id}: has room to see, rather than a cabinet in its face`, () => {
+      const { poly, solids } = centred(room);
+      const { at, aim } = arriveFrom(poly, solids, door, FOV);
+      const open = openness(poly, solids, at, Math.atan2(aim[1], aim[0]), FOV);
+      expect(open, `${id}: only ${open.toFixed(2)} m of clear view`).toBeGreaterThan(1.2);
+    });
+
+    it(`${id}: is still an arrival through the door`, () => {
+      const { poly, solids } = centred(room);
+      const { at } = arriveFrom(poly, solids, door, FOV);
+      const d = doorway(poly, door);
+      /* stepping aside for elbow room must not become picking the best seat */
+      expect(Math.hypot(at[0] - d[0], at[1] - d[1])).toBeLessThan(2);
+    });
+  }
+
+  it('turns towards the equipment when it is all to one side', () => {
+    /* cabinets due north of the visitor, who walked in facing east */
+    const solids: Solid[] = [
+      { x0: -0.5, x1: 0.5, z0: 3, z1: 3.6 },
+      { x0: 0.8, x1: 1.4, z0: 3, z1: 3.6 },
+    ];
+    expect(inView(solids, [0, 0], [1, 0])).toBeLessThan(1);
+    expect(inView(solids, [0, 0], arrivalAim(OPEN, solids, [0, 0], FOV, [1, 0]))).toBe(1);
+  });
+
+  it('breaks a tie towards the way the visitor walked in', () => {
+    /* two identical clusters, one ahead and one behind: face the one ahead */
+    const solids: Solid[] = [
+      { x0: -0.5, x1: 0.5, z0: 3, z1: 3.6 },
+      { x0: -0.5, x1: 0.5, z0: -3.6, z1: -3 },
+    ];
+    expect(arrivalAim(OPEN, solids, [0, 0], FOV, [0, 1])[1]).toBeGreaterThan(0);
+    expect(arrivalAim(OPEN, solids, [0, 0], FOV, [0, -1])[1]).toBeLessThan(0);
+  });
+
+  it('centres what it sees instead of leaving it on the frame edge', () => {
+    /* a single cabinet 50° off the way in. Preferring the least turn alone
+       would stop as soon as it scraped into the cone, at 15°, with the rack
+       against the edge of the picture; centred, the aim is on it. */
+    const bearing = (50 * Math.PI) / 180;
+    const c: [number, number] = [Math.cos(bearing) * 4, Math.sin(bearing) * 4];
+    const solids: Solid[] = [{ x0: c[0] - 0.3, x1: c[0] + 0.3, z0: c[1] - 0.3, z1: c[1] + 0.3 }];
+    const aim = arrivalAim(OPEN, solids, [0, 0], FOV, [1, 0]);
+    expect((Math.atan2(aim[1], aim[0]) * 180) / Math.PI).toBeCloseTo(50, 0);
+  });
+
+  it('does not count a cabinet hidden behind another one', () => {
+    /* the far one is squarely behind the near one */
+    const solids: Solid[] = [
+      { x0: -0.5, x1: 0.5, z0: 1, z1: 1.6 },
+      { x0: -0.5, x1: 0.5, z0: 3, z1: 3.6 },
+    ];
+    expect(visibleFrom(solids, [0, 0])).toEqual([true, false]);
+    /* and from the side, both are in the clear */
+    expect(visibleFrom(solids, [4, 2.3])).toEqual([true, true]);
+  });
+
+  it('faces the way in when there is no equipment to face', () => {
+    expect(arrivalAim(OPEN, [], [0, 0], FOV, [1, 0])).toEqual([1, 0]);
+  });
 });
