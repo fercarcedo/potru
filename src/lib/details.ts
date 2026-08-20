@@ -177,7 +177,7 @@ export const DETAILS: Record<string, string> = {
 
   /* south-east */
   suroriente: `${occRow('CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes', 8, 8, CW8)}
-    <div style="color:var(--muted);margin-top:6px;padding-left:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
+    <div style="color:var(--muted);margin-top:6px;padding-left:6px;padding-right:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
 
   /* east */
   oriente: `${occRow('CWDM 8133 · Gijón–Llanes–Colombres', 8, 8, CW8)}

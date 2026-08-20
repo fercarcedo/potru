@@ -122,7 +122,9 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
   g += '</svg>';
   return (
     g +
-    (foot ? `<div style="margin-top:8px;padding-left:8px;color:var(--muted)">${foot}</div>` : '')
+    (foot
+      ? `<div style="margin-top:8px;padding-left:8px;padding-right:8px;color:var(--muted)">${foot}</div>`
+      : '')
   );
 }
 
@@ -339,7 +341,7 @@ export function mkSection(
   return (
     g +
     (foot
-      ? `<div style="margin-top:10px;padding-left:10px;color:var(--muted);line-height:1.65;font-size:.8rem">${foot}</div>`
+      ? `<div style="margin-top:10px;padding-left:10px;padding-right:10px;color:var(--muted);line-height:1.65;font-size:.8rem">${foot}</div>`
       : '')
   );
 }
