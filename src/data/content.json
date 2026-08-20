@@ -257,5 +257,28 @@
     "directLabel": "Caudal / Aller / Nalón",
     "directNote": "fibras DIRECTAS al 7750 de Mieres · sin CWDM",
     "warning": "⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gbps libre en toda la máquina"
+  },
+  "xgsExplainer": {
+    "gpon": {
+      "label": "GPON · lo que hay",
+      "rate": "2,5 Gbps bajada · 1,2 Gbps subida · compartidos",
+      "text": "Una fibra sale de la OLT y un divisor pasivo la reparte entre hasta 64 viviendas. El caudal es del grupo, no de cada casa."
+    },
+    "xgs": {
+      "label": "XGS-PON · lo que llega",
+      "rate": "10 Gbps bajada · 10 Gbps subida · compartidos",
+      "text": "Misma fibra, mismos divisores, misma canalización. Cambia la electrónica de los dos extremos: la OLT del nodo y la ONT del salón."
+    },
+    "prose": "Las dos generaciones conviven en la misma fibra porque trabajan en longitudes de onda distintas. Por eso la migración puede hacerse nodo a nodo y usuario a usuario, sin apagar la red: mientras a un vecino ya se le ha cambiado la ONT, el de al lado sigue en GPON sobre el mismo cable.",
+    "bands": [
+      { "lo": 1260, "hi": 1280, "label": "XGS-PON ↑", "kind": "xgs" },
+      { "lo": 1290, "hi": 1330, "label": "GPON ↑", "kind": "gpon" },
+      { "lo": 1480, "hi": 1500, "label": "GPON ↓", "kind": "gpon" },
+      { "lo": 1550, "hi": 1560, "label": "Vídeo RF", "kind": "video" },
+      { "lo": 1575, "hi": 1580, "label": "XGS-PON ↓", "kind": "xgs" }
+    ],
+    "axisFrom": 1250,
+    "axisTo": 1630,
+    "source": "Esta figura no sale del pliego. Las bandas son las que fijan las normas ITU-T G.984.2 (GPON) y G.9807.1 (XGS-PON); el vídeo RF, la G.984.5. El pliego CON 06/2025 nombra las tecnologías, no necesariamente sus longitudes de onda. Se rotula como norma y no como dato del expediente."
   }
 }

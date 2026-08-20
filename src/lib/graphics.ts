@@ -8,7 +8,13 @@
  * Every text carries a halo (paint-order: stroke) so it never gets lost in the
  * lines and circles underneath it.
  */
-import { CONTRACT_WEEKS, HOST_ONLY, type NetworkNode, type PaoTransport } from './data';
+import {
+  CONTRACT_WEEKS,
+  HOST_ONLY,
+  type NetworkNode,
+  type PaoTransport,
+  type WdmBand,
+} from './data';
 import { escapeHtml as esc } from './escape-html';
 
 /** Colours normalised per CWDM wavelength: [colour, name]. */
@@ -399,5 +405,64 @@ export function gantt(nodes: NetworkNode[]): string {
     g += `<text x="${gx(n.weekTo + 1) + 6}" y="${y + 15}" fill="var(--dim)" font-size="8.5">${n.weekFrom}–${n.weekTo}</text>`;
     g += `</g>`;
   });
+  return g;
+}
+
+/**
+ * The wavelength ruler for Architecture.astro's «Dos generaciones sobre el
+ * mismo hilo»: one fibre drawn as a bar, with the occupied bands as
+ * segments on it. Bands and axis span are figures the caller passes in
+ * (XGS_EXPLAINER, ultimately content.json) — this function draws them, it
+ * does not know they are ITU-T norm data rather than pliego data. The page
+ * around it is what has to say that; see the `source` note it renders next
+ * to this figure.
+ *
+ * Labels alternate between two tiers with a leader line down to their band,
+ * because the narrowest band here is under 3% of the axis and no label
+ * fits inside one.
+ */
+export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): string {
+  const W = 1000,
+    BAR_Y = 74,
+    BAR_H = 34,
+    AXIS_Y = 122;
+  const span = axisTo - axisFrom;
+  const x = (nm: number) => ((nm - axisFrom) / span) * W;
+
+  const kindVar: Record<WdmBand['kind'], string> = {
+    gpon: 'var(--gpon)',
+    xgs: 'var(--xgs)',
+    video: 'var(--dim)',
+  };
+
+  let g = `<rect x="0" y="${BAR_Y}" width="${W}" height="${BAR_H}" rx="3" fill="var(--panel2)" stroke="var(--line)"/>`;
+  bands.forEach((b, i) => {
+    const bx = x(b.lo),
+      bw = Math.max(x(b.hi) - bx, 2);
+    g += `<rect x="${bx}" y="${BAR_Y}" width="${bw}" height="${BAR_H}" fill="${kindVar[b.kind]}"/>`;
+    const mid = bx + bw / 2;
+    const tierA = i % 2 === 0;
+    const labelY = tierA ? 8 : 48;
+    const leadY1 = tierA ? 44 : 84;
+    const leadY2 = tierA ? BAR_Y - 2 : BAR_Y + 8;
+    g += `<line x1="${mid}" y1="${leadY1}" x2="${mid}" y2="${leadY2}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${mid}" y="${labelY}" fill="${kindVar[b.kind]}" font-size="12" font-weight="600" text-anchor="middle">${esc(b.label)}</text>`;
+    g += `<text x="${mid}" y="${labelY + 14}" fill="var(--muted)" font-size="10.5" text-anchor="middle">${b.lo}–${b.hi}</text>`;
+  });
+
+  g += `<line x1="0" y1="${AXIS_Y}" x2="${W}" y2="${AXIS_Y}" stroke="var(--line)" stroke-width="1"/>`;
+  const ticks: number[] = [];
+  for (let nm = Math.ceil(axisFrom / 50) * 50; nm <= axisTo; nm += 50) ticks.push(nm);
+  ticks.forEach((nm, i) => {
+    const tx = x(nm);
+    /* the first and last tick sit at the viewBox edge, where a centred
+       label would be clipped in half — the ruler's own "1250" reading "50"
+       is what that looks like — so those two anchor off the edge instead */
+    const anchor = i === 0 ? 'start' : i === ticks.length - 1 ? 'end' : 'middle';
+    g += `<line x1="${tx}" y1="${AXIS_Y}" x2="${tx}" y2="${AXIS_Y + 5}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${tx}" y="${AXIS_Y + 17}" fill="var(--muted)" font-size="9.5" text-anchor="${anchor}">${nm}</text>`;
+  });
+  g += `<text x="${W}" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="end">nm</text>`;
+  g += `<text x="0" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="start" letter-spacing="1">UNA SOLA FIBRA MONOMODO</text>`;
   return g;
 }

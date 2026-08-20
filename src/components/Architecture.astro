@@ -1,5 +1,6 @@
 ---
-import { ARCHITECTURE_STEPS } from '../lib/data';
+import { ARCHITECTURE_STEPS, XGS_EXPLAINER } from '../lib/data';
+import { mkSpectrum } from '../lib/graphics';
 import { DOM } from '../lib/dom-ids';
 ---
 
@@ -34,6 +35,37 @@ import { DOM } from '../lib/dom-ids';
         nuevas en la parte variable del contrato.
       </p>
       <div id={DOM.ontBars} style="margin-top:16px"></div>
+    </div>
+
+    <div class="xgs-explain">
+      <div class="eyebrow">La tecnología</div>
+      <h3>Dos generaciones sobre el mismo hilo</h3>
+      <div class="xgs-cols">
+        <div class="xgs-col g">
+          <h4>{XGS_EXPLAINER.gpon.label}</h4>
+          <p class="rate">{XGS_EXPLAINER.gpon.rate}</p>
+          <p>{XGS_EXPLAINER.gpon.text}</p>
+        </div>
+        <div class="xgs-col x">
+          <h4>{XGS_EXPLAINER.xgs.label}</h4>
+          <p class="rate">{XGS_EXPLAINER.xgs.rate}</p>
+          <p>{XGS_EXPLAINER.xgs.text}</p>
+        </div>
+      </div>
+      <p class="xgs-prose">{XGS_EXPLAINER.prose}</p>
+      <svg
+        class="xgs-ruler"
+        viewBox="0 0 1000 160"
+        role="img"
+        aria-label="Ocupación del espectro sobre una misma fibra, con las bandas GPON y XGS-PON"
+        set:html={mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo)}
+      />
+      <p class="xgs-source">
+        <b>
+          ⚠ {XGS_EXPLAINER.source.split('. ')[0]}.
+        </b>{' '}
+        {XGS_EXPLAINER.source.split('. ').slice(1).join('. ')}
+      </p>
     </div>
   </div>
 </section>

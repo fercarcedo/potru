@@ -112,27 +112,24 @@ section {
 /* Independence notice. Written independently into both Hero.astro and
    Layout.astro's footer, so it can't live in either component's scoped
    style — Astro's scoping wouldn't reach the other copy. */
+/* A provenance mark, not a boxed alert: a quote in the institutional blue,
+   set off by a rule rather than a panel — the visual language the redesign
+   plan settled on for "this fact is cited, not asserted". A bordered box
+   with a background reads as a warning; this is a citation. */
 .disclaimer {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 8px;
+  display: block;
   margin-top: 20px;
-  padding: 9px 13px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel);
+  padding-left: 12px;
+  border-left: 2px solid var(--accent);
   color: var(--muted);
-  font-size: 0.76rem;
-  line-height: 1.5;
-  max-width: 64ch;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  max-width: 68ch;
 }
 .disclaimer b {
-  color: var(--txt);
+  color: var(--accent);
   font-weight: 600;
-}
-.disclaimer .i {
-  color: var(--xgs-tx);
-  flex: none;
 }
 @media (max-width: 760px) {
   section {

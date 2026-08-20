@@ -93,3 +93,88 @@
     grid-column: 1/-1;
   }
 }
+
+/* ── XGS-PON explainer: Architecture.astro's «Dos generaciones sobre el
+   mismo hilo». New copy, not from the pliego — the wavelengths are ITU-T
+   norm data, and .xgs-source is what says so on the page, next to the
+   figure rather than in a footnote nobody scrolls to. ── */
+.xgs-explain {
+  margin-top: 44px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.xgs-explain h3 {
+  font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  font-stretch: 85%;
+  font-size: 1.4rem;
+  margin: 0 0 18px;
+}
+.xgs-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.xgs-col {
+  background: var(--panel);
+  padding: 16px 18px;
+}
+.xgs-col h4 {
+  font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  font-stretch: 90%;
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+.xgs-col.g h4 {
+  color: var(--gpon-tx);
+}
+.xgs-col.x h4 {
+  color: var(--xgs-tx);
+}
+.xgs-col .rate {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+.xgs-col p:not(.rate) {
+  font-size: 0.92rem;
+  margin: 0;
+  color: var(--txt);
+}
+.xgs-prose {
+  max-width: 62ch;
+  font-size: 0.95rem;
+  color: var(--txt);
+  margin-bottom: 22px;
+}
+.xgs-ruler {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 14px;
+}
+.xgs-source {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--muted);
+  background: var(--gpon-soft);
+  border: 1px solid var(--gpon);
+  border-radius: 3px;
+  padding: 10px 13px;
+  max-width: 74ch;
+}
+.xgs-source b {
+  color: var(--gpon-tx);
+}
+@media (max-width: 640px) {
+  .xgs-cols {
+    grid-template-columns: 1fr;
+  }
+}
