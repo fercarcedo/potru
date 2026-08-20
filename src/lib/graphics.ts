@@ -443,8 +443,14 @@ export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): 
     const mid = bx + bw / 2;
     const tierA = i % 2 === 0;
     const labelY = tierA ? 8 : 48;
-    const leadY1 = tierA ? 44 : 84;
-    const leadY2 = tierA ? BAR_Y - 2 : BAR_Y + 8;
+    /* Tier B's label sits closer to the bar than tier A's, so its leader is
+       shorter — but it still has to land in the gap *above* the bar (62 to
+       74), not inside it. It used to run 84→82, which is 10 to 8 px into
+       the band's own fill (74–108): a two-pixel stroke sitting on top of
+       whatever colour the band already was, all but invisible except as a
+       stray mark on the edge of the amber GPON ↑ band. */
+    const leadY1 = tierA ? 44 : 66;
+    const leadY2 = BAR_Y - 2;
     g += `<line x1="${mid}" y1="${leadY1}" x2="${mid}" y2="${leadY2}" stroke="var(--line)" stroke-width="1"/>`;
     g += `<text x="${mid}" y="${labelY}" fill="${kindVar[b.kind]}" font-size="12" font-weight="600" text-anchor="middle">${esc(b.label)}</text>`;
     g += `<text x="${mid}" y="${labelY + 14}" fill="var(--muted)" font-size="10.5" text-anchor="middle">${b.lo}–${b.hi}</text>`;
@@ -463,6 +469,9 @@ export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): 
     g += `<text x="${tx}" y="${AXIS_Y + 17}" fill="var(--muted)" font-size="9.5" text-anchor="${anchor}">${nm}</text>`;
   });
   g += `<text x="${W}" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="end">nm</text>`;
-  g += `<text x="0" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="start" letter-spacing="1">UNA SOLA FIBRA MONOMODO</text>`;
+  /* letter-spacing="1" at font-size 9 is over a tenth of the glyph width —
+     it read as "FIB RA" rather than tracked caps. 0.4 keeps the tracked-caps
+     look without the gap. */
+  g += `<text x="0" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="start" letter-spacing="0.4">UNA SOLA FIBRA MONOMODO</text>`;
   return g;
 }
