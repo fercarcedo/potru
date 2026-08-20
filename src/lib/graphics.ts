@@ -120,7 +120,12 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
     g += `<text x="388" y="${y + 4}" fill="${ch.free ? 'var(--xgs-tx)' : 'var(--txt)'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? 'VACANTE' : esc(ch.to ?? '')}</text>`;
   });
   g += '</svg>';
-  return g + (foot ? `<div style="margin-top:8px;color:var(--muted)">${foot}</div>` : '');
+  return (
+    g +
+    (foot
+      ? `<div style="margin-top:8px;padding-left:8px;padding-right:8px;color:var(--muted)">${foot}</div>`
+      : '')
+  );
 }
 
 export interface SectionLabel {
@@ -336,7 +341,7 @@ export function mkSection(
   return (
     g +
     (foot
-      ? `<div style="margin-top:10px;color:var(--muted);line-height:1.65;font-size:.8rem">${foot}</div>`
+      ? `<div style="margin-top:10px;padding-left:10px;padding-right:10px;color:var(--muted);line-height:1.65;font-size:.8rem">${foot}</div>`
       : '')
   );
 }
