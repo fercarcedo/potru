@@ -100,11 +100,27 @@ export function initDiagram() {
       { x: 120, y: Y - 4, fill: txt, 'font-size': 13, 'text-anchor': 'middle', 'font-weight': 600 },
       gOnt,
     ).textContent = 'ONT';
-    el(
-      'text',
-      { x: 120, y: Y + 16, fill: mut, 'font-size': 9, 'text-anchor': 'middle' },
-      gOnt,
-    ).textContent = mode === 'gpon' ? '6 modelos · 4 fabricantes' : 'GPON + XGS-PON';
+    /* "6 modelos · 4 fabricantes" is wider than the 100px box at any
+       legible size — split across two lines instead of one that overflows
+       it on both sides. The XGS-PON caption is short enough to stay on one. */
+    if (mode === 'gpon') {
+      el(
+        'text',
+        { x: 120, y: Y + 13, fill: mut, 'font-size': 9, 'text-anchor': 'middle' },
+        gOnt,
+      ).textContent = '6 modelos';
+      el(
+        'text',
+        { x: 120, y: Y + 24, fill: mut, 'font-size': 9, 'text-anchor': 'middle' },
+        gOnt,
+      ).textContent = '4 fabricantes';
+    } else {
+      el(
+        'text',
+        { x: 120, y: Y + 16, fill: mut, 'font-size': 9, 'text-anchor': 'middle' },
+        gOnt,
+      ).textContent = 'GPON + XGS-PON';
+    }
     el(
       'text',
       { x: 120, y: Y + 52, fill: mut, 'font-size': 10, 'text-anchor': 'middle' },
