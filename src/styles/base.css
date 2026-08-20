@@ -11,7 +11,7 @@ html {
 body {
   background: var(--ink);
   color: var(--txt);
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-family: 'Newsreader', Georgia, serif;
   font-size: 16.5px;
   line-height: 1.6;
   overflow-x: hidden;
@@ -24,9 +24,24 @@ h1,
 h2,
 h3,
 .display {
-  font-family: 'Archivo Variable', sans-serif;
-  font-stretch: 125%;
+  font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  font-stretch: 85%;
   letter-spacing: -0.01em;
+}
+/* The one italic on the site, and the only reason the italic cut is loaded:
+   the hero's «(longitud de) onda» pun is the headline, so it gets to look
+   like one. It has to be spelled out — inside a heading the display face is
+   inherited, and a browser asked for italic Bricolage synthesises a slant
+   rather than falling back, so the pairing would silently not happen. */
+h1 em,
+h2 em,
+.display em {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: normal;
+  letter-spacing: -0.005em;
+  color: var(--accent);
 }
 h2 {
   font-size: clamp(1.7rem, 3.4vw, 2.5rem);

@@ -1,8 +1,41 @@
 /* Self-hosted fonts (@fontsource) instead of the Google Fonts CDN.
-   Archivo is loaded with its wdth axis because the design uses font-stretch:125%. */
-@import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource/ibm-plex-sans/400.css';
-@import '@fontsource/ibm-plex-sans/500.css';
-@import '@fontsource/ibm-plex-sans/600.css';
-@import '@fontsource/ibm-plex-mono/400.css';
-@import '@fontsource/ibm-plex-mono/500.css';
+ *
+ * Three faces, three jobs: Bricolage Grotesque sets display, Newsreader sets
+ * running prose, IBM Plex Mono sets everything that is a figure, a code or a
+ * label. A serif for body text is the cheapest reliable signal that this is
+ * something to read rather than a sede electrónica to file a form on — no
+ * Spanish public-sector site sets prose in a serif.
+ *
+ * Only two of these are variable, and only where the axis earns its weight:
+ *
+ *  · Bricolage carries `wdth` because the design condenses it (78–88) for
+ *    headlines and the wordmark. That axis is the face's whole character, so
+ *    76 KB for it is the point rather than the cost.
+ *  · Newsreader is loaded *static*, not variable, and that is the size of the
+ *    whole decision: the variable cut is 129 KB because it carries the entire
+ *    opsz × wght design space, while a single static latin weight is 22 KB.
+ *    Three of them — regular, semibold and one italic — come to 69 KB, and
+ *    optical sizing is not worth the 60 KB difference on a page whose prose
+ *    all sits at one size anyway.
+ *
+ * Latin only, explicitly. @fontsource's per-subset entrypoints keep the other
+ * eight subsets out of `dist/` entirely; the browser was already skipping
+ * them at runtime via unicode-range, but there is no reason to deploy files
+ * nothing will ever request. Spanish needs nothing above U+00FF — ñ, the
+ * accents, ¿¡ and the guillemets « » are all inside the latin subset.
+ *
+ * Measured, on the home page, over the wire: 163 KB before, 175 KB after.
+ * Two new families for +12 KB, because the two they replace are gone.
+ */
+
+/* display — headlines, section titles, the wordmark */
+@import '@fontsource-variable/bricolage-grotesque/wdth.css';
+
+/* prose — the italic is only ever the hero's «(longitud de) onda» */
+@import '@fontsource/newsreader/latin-400.css';
+@import '@fontsource/newsreader/latin-600.css';
+@import '@fontsource/newsreader/latin-400-italic.css';
+
+/* data — figures, node codes, labels, every provenance mark */
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
