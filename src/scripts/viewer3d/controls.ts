@@ -32,6 +32,8 @@ export interface ControlsDeps {
   lookAt?: [number, number];
   /** ports/status lamps lit by createEquipmentBuilders(), blinked here */
   leds: Led[];
+  /** the browser is rasterising in software: render fewer pixels */
+  software?: boolean;
 }
 
 export interface Controls {
@@ -40,7 +42,8 @@ export interface Controls {
 
 /** Wires movement, look, zoom and the render loop, and starts it. */
 export function initControls(deps: ControlsDeps): Controls {
-  const { cam, canvas, holder, renderer, scene, poly, solids, startDoor, lookAt, leds } = deps;
+  const { cam, canvas, holder, renderer, scene, poly, solids, startDoor, lookAt, leds, software } =
+    deps;
 
   const clear = (x: number, z: number) => isClear(poly, solids, x, z);
   /* If we somehow start inside something, never freeze: let the visitor walk out. */
@@ -172,7 +175,9 @@ export function initControls(deps: ControlsDeps): Controls {
     const w = holder.clientWidth,
       h = holder.clientHeight;
     renderer.setSize(w, h, false);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    /* a HiDPI screen means four times the fragments; without a GPU behind
+       it that is the whole frame budget */
+    renderer.setPixelRatio(software ? 1 : Math.min(devicePixelRatio, 2));
     cam.aspect = w / h;
     cam.updateProjectionMatrix();
   }
@@ -219,7 +224,9 @@ export function initControls(deps: ControlsDeps): Controls {
       removeEventListener('keyup', ku);
       removeEventListener('resize', resize);
       canvas.removeEventListener('wheel', wheel);
-      renderer.dispose();
+      /* the renderer outlives the room now — viewer3d.ts owns it, and
+         disposing it here would throw away the shared environment and a
+         WebGL context the browser only lets you have so many of */
     },
   };
 }
