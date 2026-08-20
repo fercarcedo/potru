@@ -106,7 +106,7 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
   g += `<line x1="10" y1="${muxY}" x2="${muxX - 28}" y2="${muxY}" stroke="#f2d024" stroke-width="14" opacity=".14"/>`;
   g += `<text x="12" y="${muxY - 14}" fill="var(--muted)" font-size="9.5">2 ff.oo. alquiladas (par) → Gijón</text>`;
   g += `<path d="M${muxX - 28},${muxY - 16} L${muxX + 8},${muxY - (ordered.length * 34) / 2} L${muxX + 8},${muxY + (ordered.length * 34) / 2} L${muxX - 28},${muxY + 16} Z" fill="var(--panel2)" stroke="var(--xgs)" stroke-width="1.4"/>`;
-  g += `<text x="${muxX - 10}" y="${muxY + 4}" fill="var(--xgs)" font-size="9" text-anchor="middle" transform="rotate(-90 ${muxX - 10} ${muxY})">CWDM MUX</text>`;
+  g += `<text x="${muxX - 10}" y="${muxY + 4}" fill="var(--xgs-tx)" font-size="9" text-anchor="middle" transform="rotate(-90 ${muxX - 10} ${muxY})">CWDM MUX</text>`;
   ordered.forEach((ch, i) => {
     const y = 44 + i * 34;
     const [col, cname] = LCOL[ch.l]!;
@@ -117,7 +117,7 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
       g += `<line x1="196" y1="${y}" x2="360" y2="${y}" stroke="${col}" stroke-width="9" opacity=".22"/>`;
     g += `<circle cx="372" cy="${y}" r="7" fill="${ch.free ? 'none' : col}" stroke="${col}" stroke-width="2"/>`;
     g += `<text x="204" y="${y - 6}" fill="${col}" font-size="10.5" font-weight="600">${ch.l} nm · ${esc(cname)}</text>`;
-    g += `<text x="388" y="${y + 4}" fill="${ch.free ? 'var(--xgs)' : 'var(--txt)'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? 'VACANTE' : esc(ch.to ?? '')}</text>`;
+    g += `<text x="388" y="${y + 4}" fill="${ch.free ? 'var(--xgs-tx)' : 'var(--txt)'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? 'VACANTE' : esc(ch.to ?? '')}</text>`;
   });
   g += '</svg>';
   return g + (foot ? `<div style="margin-top:8px;color:var(--muted)">${foot}</div>` : '');
@@ -319,7 +319,7 @@ export function mkSection(
       g += `<circle cx="${ZX + ZR + 28}" cy="${zy + 4}" r="6.5" fill="${tcol}"/>`;
       g += `<text x="${ZX + ZR + 42}" y="${zy + 9}" fill="var(--muted)" font-size="13">${z.oc} ocupadas</text>`;
       g += `<circle cx="${ZX + ZR + 178}" cy="${zy + 4}" r="6.5" fill="none" stroke="var(--xgs)" stroke-width="1.8" stroke-dasharray="3 3"/>`;
-      g += `<text x="${ZX + ZR + 192}" y="${zy + 9}" fill="var(--xgs)" font-size="13">${8 - z.oc} vacantes</text>`;
+      g += `<text x="${ZX + ZR + 192}" y="${zy + 9}" fill="var(--xgs-tx)" font-size="13">${8 - z.oc} vacantes</text>`;
     }
     if (z.sub)
       z.sub.split('|').forEach((sl, si) => {
@@ -352,7 +352,7 @@ export function occRow(name: string, total: number, used: number, cols?: string[
   }
   const st =
     used < total ? `${used}/${total} · ${total - used} libres` : `${used}/${total} · sin vacantes`;
-  g += `<text x="${x0 + total * 32 + 16}" y="32" fill="${used < total ? 'var(--xgs)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
+  g += `<text x="${x0 + total * 32 + 16}" y="32" fill="${used < total ? 'var(--xgs-tx)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
   g += '</svg>';
   return g;
 }
@@ -391,7 +391,7 @@ export function mkPAO(t: PaoTransport): string {
       r.used < r.channels
         ? `${r.used}/${r.channels} · ${r.channels - r.used} LIBRES`
         : `${r.used}/${r.channels} · sin vacantes`;
-    g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? 'var(--xgs)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
+    g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? 'var(--xgs-tx)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
   });
   const yd = 70 + rows.length * 62;
   g += `<text x="112" y="${yd - 8}" fill="var(--txt)" font-size="14.5">${esc(t.directLabel)}</text>`;
@@ -400,7 +400,7 @@ export function mkPAO(t: PaoTransport): string {
   g += `<line x1="124" y1="${yd + 13}" x2="470" y2="${yd + 13}" stroke="#f2d024" stroke-width="18" opacity=".12"/>`;
   g += `<text x="486" y="${yd + 18}" fill="var(--muted)" font-size="13.5">${esc(t.directNote)}</text>`;
   g += `<rect x="10" y="${yd + 34}" width="760" height="30" rx="8" fill="rgba(255,180,84,.12)" stroke="rgba(255,180,84,.5)"/>`;
-  g += `<text x="24" y="${yd + 54}" fill="var(--gpon)" font-size="13">${esc(t.warning)}</text>`;
+  g += `<text x="24" y="${yd + 54}" fill="var(--gpon-tx)" font-size="13">${esc(t.warning)}</text>`;
   g += '</svg>';
   return g;
 }
@@ -469,6 +469,14 @@ export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): 
     xgs: 'var(--xgs)',
     video: 'var(--dim)',
   };
+  /* --gpon and --xgs are the vivid brand colours the band fill wants, but at
+     1.6-2:1 they fail as text on a light panel — that's what their -tx
+     variants are for; --dim already reads fine as text in both themes. */
+  const kindTextVar: Record<WdmBand['kind'], string> = {
+    gpon: 'var(--gpon-tx)',
+    xgs: 'var(--xgs-tx)',
+    video: 'var(--dim)',
+  };
 
   let g = `<rect x="0" y="${BAR_Y}" width="${W}" height="${BAR_H}" rx="3" fill="var(--panel2)" stroke="var(--line)"/>`;
   bands.forEach((b, i) => {
@@ -487,7 +495,7 @@ export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): 
     const leadY1 = tierA ? 44 : 66;
     const leadY2 = BAR_Y - 2;
     g += `<line x1="${mid}" y1="${leadY1}" x2="${mid}" y2="${leadY2}" stroke="var(--line)" stroke-width="1"/>`;
-    g += `<text x="${mid}" y="${labelY}" fill="${kindVar[b.kind]}" font-size="12" font-weight="600" text-anchor="middle">${esc(b.label)}</text>`;
+    g += `<text x="${mid}" y="${labelY}" fill="${kindTextVar[b.kind]}" font-size="12" font-weight="600" text-anchor="middle">${esc(b.label)}</text>`;
     g += `<text x="${mid}" y="${labelY + 14}" fill="var(--muted)" font-size="10.5" text-anchor="middle">${b.lo}–${b.hi}</text>`;
   });
 

@@ -65,9 +65,10 @@ describe('mkCWDM', () => {
     const doc = parseSvg(mkCWDM('Título', chans));
     const vacante = [...doc.querySelectorAll('text')].find((t) => t.textContent === 'VACANTE');
     expect(vacante).toBeTruthy();
-    /* the token, not the hex: --xgs is the same value in both themes, but
-       the instruments stopped writing colours literally */
-    expect(vacante!.getAttribute('fill')).toBe('var(--xgs)');
+    /* the -tx variant, not raw --xgs: --xgs is legible text on the dark
+       theme's own panel but only ~1.6:1 on the light theme's white one —
+       --xgs-tx is the token built for text, matching both. */
+    expect(vacante!.getAttribute('fill')).toBe('var(--xgs-tx)');
   });
 
   it('escapes a channel destination before writing it into the SVG text', () => {
