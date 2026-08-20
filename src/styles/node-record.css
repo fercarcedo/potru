@@ -28,7 +28,7 @@
 .olt-table tr.total td {
   font-weight: 600;
   border-bottom: none;
-  color: var(--xgs);
+  color: var(--xgs-tx);
 }
 .mig-strip {
   display: flex;
@@ -46,7 +46,7 @@
   display: block;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 1rem;
-  color: var(--xgs);
+  color: var(--xgs-tx);
 }
 .mig-strip .box span {
   font-size: 0.72rem;
@@ -68,11 +68,11 @@
   transition: all 0.2s;
 }
 .act-links a.fix {
-  color: var(--xgs);
+  color: var(--xgs-tx);
   background: var(--xgs-soft);
 }
 .act-links a.var {
-  color: var(--gpon);
+  color: var(--gpon-tx);
   background: var(--gpon-soft);
 }
 .act-links a:hover {

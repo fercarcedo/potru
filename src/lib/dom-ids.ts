@@ -11,6 +11,9 @@
  * CLAUDE.md's architecture notes for the fuller picture.
  */
 export const DOM = {
+  // Layout.astro — the nav's colour-theme toggle, wired by scripts/theme.ts
+  themeToggle: 'themeToggle',
+
   // NetworkMap.astro — the schematic map and the guided tour built on it
   astMap: 'astMap',
   mapTip: 'mapTip',

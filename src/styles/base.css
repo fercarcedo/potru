@@ -49,7 +49,7 @@ section {
   font-size: 0.75rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--xgs);
+  color: var(--xgs-tx);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -62,7 +62,7 @@ section {
   background: var(--xgs);
 }
 .eyebrow.warm {
-  color: var(--gpon);
+  color: var(--gpon-tx);
 }
 .eyebrow.warm::before {
   background: var(--gpon);
@@ -99,7 +99,7 @@ section {
   font-weight: 600;
 }
 .disclaimer .i {
-  color: var(--xgs);
+  color: var(--xgs-tx);
   flex: none;
 }
 @media (max-width: 760px) {

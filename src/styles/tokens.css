@@ -1,17 +1,127 @@
-/* Design tokens. --gpon (amber) and --xgs (teal) carry the whole GPON ↔ XGS-PON
-   reading of the site and are also read from JS and from the SVG generators. */
+/* Design tokens, in two palettes.
+ *
+ * The names are the ones the site already used, with the same meanings — so
+ * `--ink` is still the page ground and `--txt` is still the text, however
+ * backwards that reads. Re-valuing 218 existing `var(--…)` uses is a change
+ * no rule can get wrong; renaming them would have been a change every missed
+ * rule gets silently inverted by, and there was no reason to spend that risk
+ * here. A later pass can rename with the two themes already in place.
+ *
+ * --gpon and --xgs carry the GPON ↔ XGS-PON reading of the whole site and are
+ * read from JS and from the SVG generators too. Their fill values are the same
+ * in both themes, because they mean a technology and not a mood; what changes
+ * is --gpon-tx / --xgs-tx, the variants dark enough to set text in on a light
+ * ground.
+ *
+ * Three states, not two. An explicit choice stamps data-theme on <html>; the
+ * default — the visitor who never touched the toggle — stamps nothing, and
+ * only prefers-color-scheme separates light from dark there. So dark is
+ * declared twice: once for the un-stamped default, guarded so an explicit
+ * light choice still beats a dark OS, and once for the stamp itself.
+ */
+
+/* ── light ─────────────────────────────────────────────────────────────── */
 :root {
-  --ink: #060b14;
-  --panel: #0c1524;
-  --panel2: #101c30;
-  --line: #1c2c44;
-  --txt: #e8eef6;
-  --muted: #8da0b8;
-  --dim: #5a6f8d;
-  --gpon: #ffb454;
+  --ink: #edf1f5; /* page ground */
+  --panel: #ffffff;
+  --panel2: #f4f7fa;
+  --line: #ccd8e4;
+  --txt: #0b1a2b; /* 15.5:1 on --ink */
+  --muted: #4a6076; /* 5.7:1 */
+  --dim: #6a7f95;
+
+  /* GITPA's own blue, sampled from LOGO_GITPA.png. 8.2:1 on --ink. */
+  --accent: #004494;
+  --accent-soft: #dbe6f3;
+
+  --gpon: #f7a800; /* GITPA amber, and GPON */
+  --gpon-tx: #8a5a00; /* 5.9:1 on --panel — amber itself is 1.8:1, fill only */
+  --gpon-soft: #fdefd2;
+
   --xgs: #41e3d2;
+  --xgs-tx: #0e7c74; /* 5.1:1 on --panel; do not set it on --ink, it drops to 4.5 */
+  --xgs-soft: #d9edf1;
+
+  --pon: #8a6d1f;
+  --danger: #b3402e;
+  --track: #dde5ee;
+  --veil: rgba(237, 241, 245, 0.85);
+  --scrim: rgba(11, 26, 43, 0.55);
+  --shadow: 0 1px 2px rgba(11, 26, 43, 0.07), 0 12px 34px rgba(11, 26, 43, 0.14);
+}
+
+/* ── dark, for the visitor who has not chosen ──────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink: #0d1520;
+    --panel: #141f2e;
+    --panel2: #1a2637;
+    --line: #263548;
+    --txt: #e9eff6;
+    --muted: #93a7bd;
+    --dim: #6d829b;
+
+    /* the other blue of the same logotype: #004494 is 1.96:1 here, unusable */
+    --accent: #6aacda;
+    --accent-soft: #12314a;
+
+    --gpon: #f7a800;
+    --gpon-tx: #f7a800; /* 9.2:1 — needs no darkened variant */
+    --gpon-soft: #3a2c08;
+
+    --xgs: #41e3d2;
+    --xgs-tx: #41e3d2; /* 11.5:1 */
+    --xgs-soft: #0d3330;
+
+    --pon: #c9a44e;
+    --danger: #ff7d6b;
+    --track: #1e2b3d;
+    --veil: rgba(13, 21, 32, 0.85);
+    --scrim: rgba(4, 9, 16, 0.72);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 38px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ── dark, chosen ──────────────────────────────────────────────────────── */
+:root[data-theme='dark'] {
+  --ink: #0d1520;
+  --panel: #141f2e;
+  --panel2: #1a2637;
+  --line: #263548;
+  --txt: #e9eff6;
+  --muted: #93a7bd;
+  --dim: #6d829b;
+
+  --accent: #6aacda;
+  --accent-soft: #12314a;
+
+  --gpon: #f7a800;
+  --gpon-tx: #f7a800;
+  --gpon-soft: #3a2c08;
+
+  --xgs: #41e3d2;
+  --xgs-tx: #41e3d2;
+  --xgs-soft: #0d3330;
+
   --pon: #c9a44e;
-  --xgs-soft: rgba(65, 227, 210, 0.12);
-  --gpon-soft: rgba(255, 180, 84, 0.12);
   --danger: #ff7d6b;
+  --track: #1e2b3d;
+  --veil: rgba(13, 21, 32, 0.85);
+  --scrim: rgba(4, 9, 16, 0.72);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 38px rgba(0, 0, 0, 0.5);
+}
+
+/* The one thing that must be told twice: a form control inherits the platform
+   palette, not ours, so without this a select or an input renders in the
+   opposite theme's chrome. */
+:root {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }

@@ -21,11 +21,11 @@
 }
 .mode-toggle button.active-gpon {
   background: var(--gpon-soft);
-  color: var(--gpon);
+  color: var(--gpon-tx);
 }
 .mode-toggle button.active-xgs {
   background: var(--xgs-soft);
-  color: var(--xgs);
+  color: var(--xgs-tx);
 }
 .mode-toggle button:focus-visible {
   outline: 2px solid var(--xgs);

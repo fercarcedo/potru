@@ -28,7 +28,7 @@
   text-decoration: none;
 }
 .back-link:hover {
-  color: var(--xgs);
+  color: var(--xgs-tx);
 }
 
 /* the hero plan, as .mimg does in the modal */
@@ -47,9 +47,9 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(6, 11, 20, 0.85);
+  background: var(--veil);
   border: 1px solid rgba(65, 227, 210, 0.5);
-  color: var(--xgs);
+  color: var(--xgs-tx);
   border-radius: 6px;
   padding: 5px 10px;
   font-family: 'IBM Plex Mono', monospace;

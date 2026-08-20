@@ -1,4 +1,5 @@
 ---
+import { DOM } from '../lib/dom-ids';
 import '../styles/global.css';
 
 interface Props {
@@ -33,6 +34,23 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    {
+      /*
+      Stamps the visitor's stored theme before the first paint. This cannot be
+      a module script: those are deferred, so the page would paint in the
+      system theme and then snap to the chosen one — the flash every themed
+      site gets wrong once. Kept deliberately tiny, and it must agree with
+      `KEY` in src/scripts/theme.ts.
+    */
+    }
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('potru:theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {
+        /* storage unavailable: fall through to prefers-color-scheme */
+      }
+    </script>
   </head>
   <body>
     <nav>
@@ -40,7 +58,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
         <div class="brand">
           <b>POTRU</b> · CON 06/2025
           <span
-            style="color:var(--xgs);font-size:.66rem;border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin-left:8px"
+            style="color:var(--xgs-tx);font-size:.66rem;border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin-left:8px"
             >v13 · PAO FOTO</span
           >
         </div>
@@ -53,6 +71,13 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
             ))
           }
         </ul>
+        {
+          /* Label written by theme.ts, which is the only side that knows which
+            theme is actually showing. The text here is the no-JS fallback. */
+        }
+        <button id={DOM.themeToggle} class="theme-toggle" type="button" hidden
+          >Cambiar de tema</button
+        >
       </div>
     </nav>
 
@@ -79,6 +104,12 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   </body>
 </html>
 
+<script>
+  import { initTheme } from '../scripts/theme';
+
+  initTheme();
+</script>
+
 <style>
   /* Sticky nav and footer — both entirely this component's own markup, so
      scoping reaches every element below without a :global() escape.
@@ -89,7 +120,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(6, 11, 20, 0.85);
+    background: var(--veil);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
   }
@@ -105,7 +136,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     letter-spacing: 0.14em;
   }
   .brand b {
-    color: var(--xgs);
+    color: var(--xgs-tx);
   }
   nav ul {
     display: flex;
@@ -182,5 +213,27 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     footer .wrap {
       flex-direction: column;
     }
+  }
+  /* Sits at the end of the nav, quiet until wanted. Hidden in the markup and
+     revealed by theme.ts, so it never shows for a visitor whose JS did not
+     run — pressing it would do nothing. */
+  .theme-toggle {
+    font-family: var(--mono, ui-monospace, monospace);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .theme-toggle[hidden] {
+    display: none;
   }
 </style>

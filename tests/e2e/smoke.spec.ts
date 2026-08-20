@@ -332,3 +332,61 @@ test('stepping between plans is announced, since the set wraps with no end state
   // and the visible caption is not doubled up with the counter beside it
   await expect(page.locator('#lbCap')).not.toContainText('de 5');
 });
+
+test.describe('colour theme', () => {
+  test('the toggle only appears once its script has run', async ({ page }) => {
+    /* it is hidden in the markup on purpose: pressing it without JS does
+       nothing, and a dead control is worse than no control */
+    await page.goto('./');
+    const btn = page.locator('#themeToggle');
+    await expect(btn).toBeVisible();
+    await expect(btn).toHaveText(/Ver en (claro|oscuro)/);
+  });
+
+  test('the visitor with no stored choice follows the system', async ({ browser }) => {
+    for (const [scheme, expected] of [
+      ['dark', 'rgb(13, 21, 32)'],
+      ['light', 'rgb(237, 241, 245)'],
+    ] as const) {
+      const ctx = await browser.newContext({ colorScheme: scheme });
+      const page = await ctx.newPage();
+      await page.goto('./');
+      /* no stamp at all: prefers-color-scheme is doing the work */
+      await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/);
+      await expect(page.locator('body')).toHaveCSS('background-color', expected);
+      await ctx.close();
+    }
+  });
+
+  test('a chosen theme beats the system and survives a click through to a node', async ({
+    browser,
+  }) => {
+    /* the whole reason the choice is stored at all: /nodos/<id> is a separate
+       document, so anything held only in memory is gone by the time it loads */
+    const ctx = await browser.newContext({ colorScheme: 'dark' });
+    const page = await ctx.newPage();
+    await page.goto('./');
+    await page.locator('#themeToggle').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
+    await page.goto('./nodos/blimea/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(237, 241, 245)');
+    await ctx.close();
+  });
+
+  test('the stamp is applied before the first paint, so there is no flash', async ({ browser }) => {
+    /* an inline <script> in <head> does this; a module script is deferred and
+       would paint the system theme first, then snap */
+    const ctx = await browser.newContext({ colorScheme: 'dark' });
+    const page = await ctx.newPage();
+    await page.goto('./');
+    await page.evaluate(() => localStorage.setItem('potru:theme', 'light'));
+
+    /* stop as soon as the document exists, well before load: the attribute
+       must already be there */
+    await page.goto('./nodos/blimea/', { waitUntil: 'commit' });
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('light');
+    await ctx.close();
+  });
+});
