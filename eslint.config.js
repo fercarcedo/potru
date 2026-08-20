@@ -22,7 +22,16 @@ import globals from 'globals';
 import ts from 'typescript-eslint';
 
 export default defineConfig(
-  globalIgnores(['dist/**', '.astro/**', 'playwright-report/**', 'test-results/**', 'public/**']),
+  globalIgnores([
+    'dist/**',
+    '.astro/**',
+    'playwright-report/**',
+    'test-results/**',
+    'public/**',
+    /* throwaway scripts, gitignored: they are node one-offs, not repo code */
+    '*.tmp.mjs',
+    '*.tmp.js',
+  ]),
   js.configs.recommended,
   {
     files: ['**/*.ts'],
