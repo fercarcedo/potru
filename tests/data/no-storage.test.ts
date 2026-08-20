@@ -11,9 +11,9 @@
  * A grep-level guard, still: cheaper than scanning dist/ and it doesn't
  * depend on a build having run.
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { collectSourceFiles } from './helpers/source-files';
 
 const SRC = join(__dirname, '../../src');
 
@@ -26,20 +26,10 @@ const OWNERS = [
   'layouts/Layout.astro', // the pre-paint inline script, which cannot wait for a module
 ];
 
-function collectFiles(dir: string): string[] {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir)) {
-    const p = join(dir, entry);
-    if (statSync(p).isDirectory()) out.push(...collectFiles(p));
-    else if (/\.(ts|astro|js)$/.test(entry)) out.push(p);
-  }
-  return out;
-}
-
-/** Repo-relative and slash-separated, so the OWNERS list reads the same on any OS. */
-const rel = (f: string) => relative(SRC, f).split(sep).join('/');
-
-const FILES = collectFiles(SRC).map((f) => ({ f: rel(f), text: readFileSync(f, 'utf8') }));
+const FILES = collectSourceFiles(SRC, /\.(ts|astro|js)$/).map(({ path, text }) => ({
+  f: path,
+  text,
+}));
 const STORAGE = /\blocalStorage\b|\bsessionStorage\b/;
 
 describe('client-side storage is only ever the colour theme', () => {
