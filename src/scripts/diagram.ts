@@ -21,10 +21,10 @@ export function initDiagram() {
   }
   function buildDiagram() {
     ND.innerHTML = '';
-    const c = mode === 'gpon' ? '#ffb454' : '#41e3d2',
-      passive = '#5a6f8d',
-      txt = '#e8eef6',
-      mut = '#8da0b8',
+    const c = mode === 'gpon' ? 'var(--gpon)' : 'var(--xgs)',
+      passive = 'var(--dim)',
+      txt = 'var(--txt)',
+      mut = 'var(--muted)',
       Y = 210;
     (
       [
@@ -89,7 +89,7 @@ export function initDiagram() {
         width: 100,
         height: 64,
         rx: 8,
-        fill: '#0e1a2e',
+        fill: 'var(--panel)',
         stroke: c,
         'stroke-width': 1.5,
       },
@@ -115,7 +115,7 @@ export function initDiagram() {
       'path',
       {
         d: `M285,${Y - 26} L315,${Y} L285,${Y + 26} Z`,
-        fill: '#12233c',
+        fill: 'var(--panel2)',
         stroke: passive,
         'stroke-width': 1.5,
       },
@@ -131,7 +131,7 @@ export function initDiagram() {
       'path',
       {
         d: `M425,${Y - 20} L450,${Y} L425,${Y + 20} Z`,
-        fill: '#12233c',
+        fill: 'var(--panel2)',
         stroke: passive,
         'stroke-width': 1.5,
       },
@@ -159,7 +159,7 @@ export function initDiagram() {
         width: 90,
         height: 116,
         rx: 8,
-        fill: '#0e1a2e',
+        fill: 'var(--panel)',
         stroke: c,
         'stroke-width': 2,
       },
@@ -174,7 +174,7 @@ export function initDiagram() {
           width: 66,
           height: 14,
           rx: 3,
-          fill: i < 2 ? c : mode === 'xgs' ? '#1d5c55' : '#5a4526',
+          fill: i < 2 ? c : mode === 'xgs' ? 'var(--xgs-soft)' : 'var(--gpon-soft)',
           opacity: i < 2 ? 0.85 : 0.5,
         },
         gOlt,
@@ -210,7 +210,7 @@ export function initDiagram() {
         width: 96,
         height: 32,
         rx: 16,
-        fill: '#12233c',
+        fill: 'var(--panel2)',
         stroke: passive,
         'stroke-width': 1.5,
       },
@@ -235,7 +235,7 @@ export function initDiagram() {
         width: 120,
         height: 128,
         rx: 8,
-        fill: '#0e1a2e',
+        fill: 'var(--panel)',
         stroke: c,
         'stroke-width': 2,
       },
@@ -254,7 +254,11 @@ export function initDiagram() {
       gP,
     ).textContent = 'PAO GIJÓN';
     if (mode === 'gpon') {
-      el('rect', { x: 1014, y: Y - 20, width: 92, height: 26, rx: 4, fill: '#5a4526' }, gP);
+      el(
+        'rect',
+        { x: 1014, y: Y - 20, width: 92, height: 26, rx: 4, fill: 'var(--gpon-soft)' },
+        gP,
+      );
       el(
         'text',
         { x: 1060, y: Y - 3, fill: txt, 'font-size': 9, 'text-anchor': 'middle' },
@@ -273,7 +277,15 @@ export function initDiagram() {
     } else {
       el(
         'rect',
-        { x: 1014, y: Y - 24, width: 92, height: 22, rx: 4, fill: '#5a4526', opacity: 0.55 },
+        {
+          x: 1014,
+          y: Y - 24,
+          width: 92,
+          height: 22,
+          rx: 4,
+          fill: 'var(--gpon-soft)',
+          opacity: 0.55,
+        },
         gP,
       );
       el(
@@ -281,10 +293,10 @@ export function initDiagram() {
         { x: 1060, y: Y - 9, fill: txt, 'font-size': 8.5, 'text-anchor': 'middle' },
         gP,
       ).textContent = '7750 actual';
-      el('rect', { x: 1014, y: Y + 2, width: 92, height: 22, rx: 4, fill: '#1d5c55' }, gP);
+      el('rect', { x: 1014, y: Y + 2, width: 92, height: 22, rx: 4, fill: 'var(--xgs-soft)' }, gP);
       el(
         'text',
-        { x: 1060, y: Y + 17, fill: '#9df0e6', 'font-size': 8.5, 'text-anchor': 'middle' },
+        { x: 1060, y: Y + 17, fill: 'var(--xgs-tx)', 'font-size': 8.5, 'text-anchor': 'middle' },
         gP,
       ).textContent = '+ enrutador nuevo';
       el(
@@ -307,7 +319,7 @@ export function initDiagram() {
         width: 250,
         height: 44,
         rx: 8,
-        fill: '#0c1524',
+        fill: 'var(--panel)',
         stroke: mode === 'gpon' ? passive : c,
         'stroke-width': 1.2,
         'stroke-dasharray': mode === 'gpon' ? '4 3' : '0',

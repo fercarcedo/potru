@@ -13,7 +13,7 @@ export function initHeroFiber() {
     'M-50,530 C350,500 600,590 900,470 S1250,380 1460,420',
     'M-50,420 C250,380 520,450 820,350 S1220,240 1460,270',
   ];
-  const colors = ['#ffb454', '#41e3d2', '#41e3d2'];
+  const colors = ['var(--gpon)', 'var(--xgs)', 'var(--xgs)'];
   paths.forEach((d, i) => {
     svgEl(
       'path',
