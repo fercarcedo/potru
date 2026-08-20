@@ -16,6 +16,12 @@
 import { PAO_TRANSPORT } from './data';
 import { CW8, mkCWDM, mkPAO, mkSection, occRow } from './graphics';
 
+/* Two mkSection cuts stacked in the same panel: each SVG's own bottom
+   padding varies with how much its zooms and labels fill it, so back to
+   back they can end up touching. A fixed gap between them beats relying on
+   that leftover space to be enough. */
+const SECTION_GAP = '<div style="height:28px"></div>';
+
 export const DETAILS: Record<string, string> = {
   /* PAO: unified panel, in the same visual language as the sections */
   pao: mkPAO(PAO_TRANSPORT),
@@ -59,6 +65,7 @@ export const DETAILS: Record<string, string> = {
       ],
       '',
     ) +
+    SECTION_GAP +
     mkSection(
       'Cable TROMIENSCFO128 · 128 ff.oo. · 16 tubos',
       16,
@@ -129,6 +136,7 @@ export const DETAILS: Record<string, string> = {
       ],
       'Anillo cian = tubos 4–8 de ACCESO, segregados en <b>Puerto de Vega</b> (Navia), <b>Figueras</b> (Castropol) y <b>La Caridad</b> (Tapia) · Tapia–Castropol: 3 oc/5 vac · regeneradores eléctrico-ópticos en Navia, Luarca y Muros · distancias: Castropol–Tapia 19 km · Tapia–Navia 16 · Navia–Luarca 22 · Luarca–Muros 49 · Muros–Gijón 60',
     ) +
+    SECTION_GAP +
     mkSection(
       'Cable CASTROPOL–VEGADEO · 96 ff.oo. · 12 tubos × 8 fibras',
       12,
