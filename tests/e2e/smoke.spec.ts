@@ -55,7 +55,7 @@ test("reloading while a node modal is open lands on that node's standalone page"
   await expect(page).toHaveURL(/\/potru\/nodos\/muros\/?$/);
 
   await page.reload();
-  await expect(page.getByText('MUR/1D')).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'MUR/1D', exact: true })).toBeVisible();
 });
 
 test('closing the modal restores the home URL, and back/forward reopen it in place', async ({
@@ -175,7 +175,20 @@ test('the three.js viewer chunk loads only after "Recorrer el interior en 3D" is
 test('a node record page renders its gallery and OLT table', async ({ page }) => {
   await page.goto('./nodos/muros/');
   await expect(page.locator('img').first()).toBeVisible();
-  await expect(page.getByText('MUR/1D')).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'MUR/1D', exact: true })).toBeVisible();
+});
+
+test('an OLT the pliego contradicts itself about is flagged on the page, not in a tooltip', async ({
+  page,
+}) => {
+  /* Muros' MUR/1D is one of three such OLTs in the data. The figures are
+     transcribed exactly and annotated — the annotation used to sit in a title
+     attribute, which no touch device can reach. */
+  await page.goto('./nodos/muros/');
+  await expect(page.locator('.olt-table td.warn')).toBeVisible();
+  await expect(page.locator('.olt-table tr.olt-notes')).toBeVisible();
+  await expect(page.locator('.olt-table tr.olt-notes')).toContainText('MUR/1D');
+  await expect(page.locator('.olt-table [title]')).toHaveCount(0);
 });
 
 test('the modal and the static node page render the same OLT and shared-PON data', async ({

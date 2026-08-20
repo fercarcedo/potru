@@ -24,6 +24,34 @@
 }
 .olt-table td.mono {
   color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+/* Where the pliego contradicts itself: more active ports than total. The
+   figures are transcribed exactly as the source has them and never corrected,
+   so the marking has to make clear the discrepancy is the source's — hence
+   amber on the cell and a sentence under the table, rather than a tooltip
+   nobody on a phone can reach. */
+.olt-table td.warn {
+  color: var(--gpon-tx);
+  font-weight: 600;
+}
+.olt-table tr.olt-notes td {
+  border-bottom: 0;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+.olt-table tr.olt-notes span {
+  display: block;
+  border-left: 2px solid var(--gpon);
+  padding-left: 9px;
+  margin-bottom: 5px;
+}
+.olt-table tr.olt-notes b {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--gpon-tx);
+  font-weight: 600;
 }
 .olt-table tr.total td {
   font-weight: 600;
