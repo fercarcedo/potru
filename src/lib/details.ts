@@ -26,7 +26,7 @@ export const DETAILS: Record<string, string> = {
     {
       access: [6, 7, 8],
       labels: [
-        { tubes: [6, 7, 8], color: '#41e3d2', text: 'tubos 6–8|SEGREGACIÓN →|Cuenca del Nalón' },
+        { tubes: [6, 7, 8], color: 'var(--xgs)', text: 'tubos 6–8|SEGREGACIÓN →|Cuenca del Nalón' },
         { tubes: [1, 2, 3, 4, 5], text: 'tubos 1–5 (ilustr.)|Gijón ↔ Mieres' },
       ],
     },
@@ -65,7 +65,7 @@ export const DETAILS: Record<string, string> = {
       {
         access: [16],
         labels: [
-          { tubes: [16], color: '#41e3d2', text: 'tubo 16|prolongado → VILLALLANA' },
+          { tubes: [16], color: 'var(--xgs)', text: 'tubo 16|prolongado → VILLALLANA' },
           { tubes: [1, 8], text: 'tubos 1–15|red troncal Mieres|(sin desglose)' },
         ],
       },
@@ -91,18 +91,18 @@ export const DETAILS: Record<string, string> = {
         labels: [
           {
             tubes: [1],
-            color: '#c8d4e2',
+            color: 'var(--muted)',
             text: 'TUBO 1 · TRANSPORTE|Luarca→Cudillero|2 oc · 6 vacantes',
           },
           {
             tubes: [2],
-            color: '#c8d4e2',
+            color: 'var(--muted)',
             text: 'TUBO 2 · TRANSPORTE|Navia→Luarca|5 oc · 3 vacantes',
           },
-          { tubes: [3], color: '#ff7d6b', text: 'TUBO 3 · SIN SALIDA|segregado en Tapia' },
+          { tubes: [3], color: 'var(--danger)', text: 'TUBO 3 · SIN SALIDA|segregado en Tapia' },
           {
             tubes: [4, 5, 6, 7, 8],
-            color: '#41e3d2',
+            color: 'var(--xgs)',
             text: 'TUBOS 4–8 · ACCESO|Pto. Vega · Figueras|· La Caridad',
           },
         ],
@@ -135,7 +135,7 @@ export const DETAILS: Record<string, string> = {
       {
         access: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         labels: [
-          { tubes: [12, 1, 2], color: '#41e3d2', text: 'TUBOS 1–12 · ACCESO|Vegadeo y Barres' },
+          { tubes: [12, 1, 2], color: 'var(--xgs)', text: 'TUBOS 1–12 · ACCESO|Vegadeo y Barres' },
         ],
       },
       [{ t: 1, oc: null, label: 'Tubos 1–12 → acceso de Vegadeo y Barres' }],
@@ -173,18 +173,18 @@ export const DETAILS: Record<string, string> = {
 
   /* south-east */
   suroriente: `${occRow('CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes', 8, 8, CW8)}
-    <div style="color:#8da0b8;margin-top:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
+    <div style="color:var(--muted);margin-top:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
 
   /* east */
   oriente: `${occRow('CWDM 8133 · Gijón–Llanes–Colombres', 8, 8, CW8)}
     <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-    <svg viewBox="0 0 150 34" style="width:150px"><path d="M6,26 C40,26 110,26 144,26" stroke="#ffb454" stroke-width="2.5" fill="none" stroke-dasharray="7 6"/><path d="M6,10 C50,-2 100,-2 144,10" stroke="#9db4d8" stroke-width="2" fill="none" stroke-dasharray="2 5"/><text x="75" y="8" fill="#9db4d8" font-size="8" text-anchor="middle">ruta redundante</text><text x="75" y="33" fill="#c99a54" font-size="8" text-anchor="middle">ruta principal</text></svg>
-    <span style="color:#8da0b8">Si la principal cae, las tramas del Oriente y Suroriente vuelven al PAO por la segunda ruta desde Llanes</span></div>`,
+    <svg viewBox="0 0 150 34" style="width:150px"><path d="M6,26 C40,26 110,26 144,26" stroke="var(--gpon)" stroke-width="2.5" fill="none" stroke-dasharray="7 6"/><path d="M6,10 C50,-2 100,-2 144,10" stroke="var(--muted)" stroke-width="2" fill="none" stroke-dasharray="2 5"/><text x="75" y="8" fill="var(--muted)" font-size="8" text-anchor="middle">ruta redundante</text><text x="75" y="33" fill="#c99a54" font-size="8" text-anchor="middle">ruta principal</text></svg>
+    <span style="color:var(--muted)">Si la principal cae, las tramas del Oriente y Suroriente vuelven al PAO por la segunda ruta desde Llanes</span></div>`,
 
   /* closing */
   'red-completa': `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <span style="color:#e8eef6;min-width:150px">Enlace por OLT hoy</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#ffb454" stroke-width="2"/></svg><span style="color:#c99a54">1 Gbps</span></div>
+    <span style="color:var(--txt);min-width:150px">Enlace por OLT hoy</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="var(--gpon)" stroke-width="2"/></svg><span style="color:#c99a54">1 Gbps</span></div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-    <span style="color:#e8eef6;min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs-tx)">≥ 10 Gbps extremo a extremo</span></div>
-    <div style="color:#8da0b8;margin-top:10px">Prioridad a portadores directos vacantes; CWDM o equipos nuevos del adjudicatario donde no los haya · los nodos cabecera pueden encadenar su área</div>`,
+    <span style="color:var(--txt);min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="var(--xgs)" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="var(--xgs)" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs-tx)">≥ 10 Gbps extremo a extremo</span></div>
+    <div style="color:var(--muted);margin-top:10px">Prioridad a portadores directos vacantes; CWDM o equipos nuevos del adjudicatario donde no los haya · los nodos cabecera pueden encadenar su área</div>`,
 };

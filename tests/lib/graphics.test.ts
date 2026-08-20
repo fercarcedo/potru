@@ -65,7 +65,9 @@ describe('mkCWDM', () => {
     const doc = parseSvg(mkCWDM('Título', chans));
     const vacante = [...doc.querySelectorAll('text')].find((t) => t.textContent === 'VACANTE');
     expect(vacante).toBeTruthy();
-    expect(vacante!.getAttribute('fill')).toBe('#41e3d2');
+    /* the token, not the hex: --xgs is the same value in both themes, but
+       the instruments stopped writing colours literally */
+    expect(vacante!.getAttribute('fill')).toBe('var(--xgs)');
   });
 
   it('escapes a channel destination before writing it into the SVG text', () => {
@@ -90,7 +92,7 @@ describe('mkSection', () => {
   it('rings an access tube in cyan', () => {
     const doc = parseSvg(mkSection('Título', 8, { access: [3] }, [], ''));
     const accessRing = [...doc.querySelectorAll('circle')].filter(
-      (c) => c.getAttribute('stroke') === '#41e3d2' && c.getAttribute('fill') === 'none',
+      (c) => c.getAttribute('stroke') === 'var(--xgs)' && c.getAttribute('fill') === 'none',
     );
     expect(accessRing.length).toBeGreaterThan(0);
   });
@@ -99,7 +101,7 @@ describe('mkSection', () => {
     const doc = parseSvg(mkSection('Título', 8, { dead: [2] }));
     const cross = [...doc.querySelectorAll('text')].find((t) => t.textContent === '✕');
     expect(cross).toBeTruthy();
-    expect(cross!.getAttribute('fill')).toBe('#ff7d6b');
+    expect(cross!.getAttribute('fill')).toBe('var(--danger)');
   });
 });
 
