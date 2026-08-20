@@ -177,11 +177,11 @@ export const DETAILS: Record<string, string> = {
 
   /* south-east */
   suroriente: `${occRow('CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes', 8, 8, CW8)}
-    <div style="color:var(--muted);margin-top:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
+    <div style="color:var(--muted);margin-top:6px;padding-left:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
 
   /* east */
   oriente: `${occRow('CWDM 8133 · Gijón–Llanes–Colombres', 8, 8, CW8)}
-    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding-left:6px">
     <svg viewBox="0 0 150 34" style="width:150px"><path d="M6,26 C40,26 110,26 144,26" stroke="var(--gpon)" stroke-width="2.5" fill="none" stroke-dasharray="7 6"/><path d="M6,10 C50,-2 100,-2 144,10" stroke="var(--muted)" stroke-width="2" fill="none" stroke-dasharray="2 5"/><text x="75" y="8" fill="var(--muted)" font-size="8" text-anchor="middle">ruta redundante</text><text x="75" y="33" fill="#c99a54" font-size="8" text-anchor="middle">ruta principal</text></svg>
     <span style="color:var(--muted)">Si la principal cae, las tramas del Oriente y Suroriente vuelven al PAO por la segunda ruta desde Llanes</span></div>`,
 
