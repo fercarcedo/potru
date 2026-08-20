@@ -115,6 +115,17 @@ licitación en PLACSP.
   CWDM 8133 compartido con el Suroriente (Tabla 65/70/74, idéntica en las fichas de Arriondas,
   Nava y Llanes). El panel «Oriente» del paseo transcribe el dato de la ficha de Colombres y
   anota la discrepancia con el resumen general.
+- **`paoTransport` fusiona Suroriental y Oriental en una fila**, donde antes tenía una por
+  área (8/8 cada una). Ese resumen del equipamiento del PAO describe el CWDM 8133 de cada área
+  por separado («Equipo**s** CWDM TRANSMODE 8133», en plural, a diferencia del «Equipo CWDM
+  TRANSMODE 8133» en singular que da para el Occidental, que sí es un único aparato), pero la
+  Tabla 65/70/74 —repetida sin variar en las tres fichas de nodo que la citan— asigna los 8
+  canales de ese sistema a nodos de **ambas** áreas a la vez: Nava, Infiesto y Arriondas
+  (Suroriental) en los canales 6–8, Llanes (Oriental) en el 4–5, Colombres en el 1 y el
+  Hospital Grande Covián en el 2–3. Ninguna ficha de nodo describe un segundo aparato de 8
+  canales exclusivo del Oriental — de haberlo, su tabla de canales sería distinta de la de
+  Arriondas y Nava, y no lo es. Se lee como un mismo equipo descrito dos veces, una por cada
+  área a la que da servicio, no como dos equipos de 8 canales cada uno (16 en total).
 - **Lo serigrafiado en el visor 3D sí es literal.** El bastidor de cada OLT lleva impreso su
   fabricante y modelo (`vendor`), su código del pliego (`code`) y su juego de tarjetas (`cards` y
   `cardModel`), y la balda de transporte el modelo que rotula el plano — en el sitio donde el
