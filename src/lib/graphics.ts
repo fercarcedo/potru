@@ -363,9 +363,10 @@ export function occRow(name: string, total: number, used: number, cols?: string[
  *  in this file. */
 export function mkPAO(t: PaoTransport): string {
   const { rows } = t;
-  /* rows.length * 62 for the channel rows, plus the "direct fibres" line and
-     the warning banner below them (their own layout is fixed, not per-row) */
-  const H = 128 + rows.length * 62 + 66;
+  const yd = 70 + rows.length * 62; /* y where the rows end and the direct-fibre line starts */
+  /* yd, then the direct-fibre line (yd+8..yd+18) and the warning banner
+     (yd+34, height 30) below it, plus a bottom margin */
+  const H = yd + 64 + 12;
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
   g += `<text x="10" y="26" fill="var(--txt)" font-size="17" font-weight="600">Sistemas de transporte en el PAO · ocupación canal a canal</text>`;
@@ -393,11 +394,10 @@ export function mkPAO(t: PaoTransport): string {
         : `${r.used}/${r.channels} · sin vacantes`;
     g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? 'var(--xgs-tx)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
   });
-  const yd = 70 + rows.length * 62;
   g += `<text x="112" y="${yd - 8}" fill="var(--txt)" font-size="14.5">${esc(t.directLabel)}</text>`;
-  g += `<line x1="124" y1="${yd + 8}" x2="470" y2="${yd + 8}" stroke="#f2d024" stroke-width="3.5"/>`;
-  g += `<line x1="124" y1="${yd + 18}" x2="470" y2="${yd + 18}" stroke="#f2d024" stroke-width="3.5"/>`;
-  g += `<line x1="124" y1="${yd + 13}" x2="470" y2="${yd + 13}" stroke="#f2d024" stroke-width="18" opacity=".12"/>`;
+  g += `<line x1="112" y1="${yd + 8}" x2="470" y2="${yd + 8}" stroke="#f2d024" stroke-width="3.5"/>`;
+  g += `<line x1="112" y1="${yd + 18}" x2="470" y2="${yd + 18}" stroke="#f2d024" stroke-width="3.5"/>`;
+  g += `<line x1="112" y1="${yd + 13}" x2="470" y2="${yd + 13}" stroke="#f2d024" stroke-width="18" opacity=".12"/>`;
   g += `<text x="486" y="${yd + 18}" fill="var(--muted)" font-size="13.5">${esc(t.directNote)}</text>`;
   g += `<rect x="10" y="${yd + 34}" width="760" height="30" rx="8" fill="rgba(255,180,84,.12)" stroke="rgba(255,180,84,.5)"/>`;
   g += `<text x="24" y="${yd + 54}" fill="var(--gpon-tx)" font-size="13">${esc(t.warning)}</text>`;
