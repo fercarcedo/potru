@@ -58,22 +58,40 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
         <div class="brand">
           <b>Potru<span class="dot">.</span></b>
         </div>
-        <ul>
+        <div class="nav-right">
+          <ul>
+            {
+              nav.map(([href, label]) => (
+                <li>
+                  <a href={`${anchorPrefix}${href}`}>{label}</a>
+                </li>
+              ))
+            }
+          </ul>
           {
-            nav.map(([href, label]) => (
-              <li>
-                <a href={`${anchorPrefix}${href}`}>{label}</a>
-              </li>
-            ))
+            /* Two icons, always both in the markup, one shown at a time by CSS
+              keyed off data-theme — see the .theme-toggle rules below. Each
+              names the *destination*: the sun shows in dark mode because
+              pressing it takes you to light, and vice versa, matching the
+              aria-label theme.ts writes. JS only reveals the button at all
+              (see theme.ts) — without it, the icons sit inert and hidden. */
           }
-        </ul>
-        {
-          /* Label written by theme.ts, which is the only side that knows which
-            theme is actually showing. The text here is the no-JS fallback. */
-        }
-        <button id={DOM.themeToggle} class="theme-toggle" type="button" hidden
-          >Cambiar de tema</button
-        >
+          <button id={DOM.themeToggle} class="theme-toggle" type="button" hidden>
+            <svg class="i-sun" viewBox="0 0 20 20" aria-hidden="true" fill="none">
+              <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.6"></circle>
+              <path
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                d="M10 1.6v2.2M10 16.2v2.2M18.4 10h-2.2M3.8 10H1.6M15.6 4.4l-1.6 1.6M6 14l-1.6 1.6M15.6 15.6L14 14M6 6 4.4 4.4"
+              ></path>
+            </svg>
+            <svg class="i-moon" viewBox="0 0 20 20" aria-hidden="true" fill="none">
+              <path fill="currentColor" d="M17 12.4A7.2 7.2 0 0 1 7.6 3a7.6 7.6 0 1 0 9.4 9.4Z"
+              ></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -123,6 +141,11 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     align-items: center;
     justify-content: space-between;
     height: 58px;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
   }
 
   /* The wordmark, and the only place the display face runs at full weight.
@@ -231,16 +254,43 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
      revealed by theme.ts, so it never shows for a visitor whose JS did not
      run — pressing it would do nothing. */
   .theme-toggle {
-    font-family: var(--mono, ui-monospace, monospace);
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
     color: var(--muted);
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 4px 10px;
+    padding: 0;
     cursor: pointer;
-    white-space: nowrap;
+    flex: none;
+  }
+  .theme-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+  /* the icon named for where the click goes: sun visible in dark (→ light),
+     moon visible in light (→ dark) */
+  .theme-toggle .i-moon {
+    display: block;
+  }
+  .theme-toggle .i-sun {
+    display: none;
+  }
+  :root[data-theme='dark'] .theme-toggle .i-moon {
+    display: none;
+  }
+  :root[data-theme='dark'] .theme-toggle .i-sun {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .theme-toggle .i-moon {
+      display: none;
+    }
+    :root:not([data-theme='light']) .theme-toggle .i-sun {
+      display: block;
+    }
   }
   .theme-toggle:hover {
     color: var(--accent);
