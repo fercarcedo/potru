@@ -18,7 +18,7 @@
 #astMap text {
   font-family: 'IBM Plex Mono', monospace;
   paint-order: stroke;
-  stroke: #060b14;
+  stroke: var(--panel);
   stroke-width: 2.6px;
   stroke-linejoin: round;
 }
