@@ -53,8 +53,8 @@
   text-transform: uppercase;
 }
 .tour-panel h4 {
-  font-family: 'Archivo Variable', sans-serif;
-  font-stretch: 125%;
+  font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  font-stretch: 85%;
   font-size: 1.15rem;
   margin: 6px 0 8px;
 }

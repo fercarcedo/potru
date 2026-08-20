@@ -44,9 +44,9 @@ export const POS: Record<string, [number, number]> = {
 };
 /** [name, x, y, colour, id of the primary it hangs off, how it connects] */
 export const SECONDARY: [string, number, number, string, string, string][] = [
-  ['Vegadeo', 95, 160, '#41e3d2', 'castropol', 'cable de 96 ff.oo. Castropol–Vegadeo'],
-  ['La Caridad', 205, 140, '#41e3d2', 'tapia', 'tubos 4–8 del cable Castropol–Cudillero'],
-  ['Soto del Barco', 420, 145, '#41e3d2', 'muros', 'fibra desde Muros de Nalón'],
+  ['Vegadeo', 95, 160, 'var(--xgs)', 'castropol', 'cable de 96 ff.oo. Castropol–Vegadeo'],
+  ['La Caridad', 205, 140, 'var(--xgs)', 'tapia', 'tubos 4–8 del cable Castropol–Cudillero'],
+  ['Soto del Barco', 420, 145, 'var(--xgs)', 'muros', 'fibra desde Muros de Nalón'],
   ['Sta. Eulalia de Cabranes', 757, 148, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
   ['Villamayor', 843, 205, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
   ['El Entrego', 674, 264, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
@@ -145,14 +145,14 @@ export function initMap(openNode: (id: string) => void): {
   e2('path', {
     d: 'M60,80 C250,55 480,70 620,62 C800,55 980,80 1110,92',
     fill: 'none',
-    stroke: '#1c2c44',
+    stroke: 'var(--line)',
     'stroke-width': 1.5,
     'stroke-dasharray': '6 5',
   });
   e2('text', {
     x: 1108,
     y: 78,
-    fill: '#3d5473',
+    fill: 'var(--dim)',
     'font-size': 10,
     'text-anchor': 'end',
     'letter-spacing': '.2em',
@@ -174,7 +174,7 @@ export function initMap(openNode: (id: string) => void): {
     const p = e2('path', {
       d,
       fill: 'none',
-      stroke: own ? '#41e3d2' : '#ffb454',
+      stroke: own ? 'var(--xgs)' : 'var(--gpon)',
       'stroke-width': 2.2,
       opacity: 0.55,
       'stroke-dasharray': own ? '0' : '7 6',
@@ -203,7 +203,7 @@ export function initMap(openNode: (id: string) => void): {
       TR[id + '_lbl'] = t;
     }
     /* permanent ambient pulse: the cable is "alive" */
-    const amb = e2('circle', { r: 2.6, fill: own ? '#41e3d2' : '#ffb454', opacity: 0.85 });
+    const amb = e2('circle', { r: 2.6, fill: own ? 'var(--xgs)' : 'var(--gpon)', opacity: 0.85 });
     e2(
       'animateMotion',
       { dur: `${6 + (id.length % 4) * 1.7}s`, repeatCount: 'indefinite', path: d },
@@ -236,7 +236,14 @@ export function initMap(openNode: (id: string) => void): {
     452,
     150,
   );
-  e2('circle', { cx: 352, cy: 127, r: 3.5, fill: 'none', stroke: '#8da0b8', 'stroke-width': 1.2 });
+  e2('circle', {
+    cx: 352,
+    cy: 127,
+    r: 3.5,
+    fill: 'none',
+    stroke: 'var(--muted)',
+    'stroke-width': 1.2,
+  });
   /* el rótulo va abajo a la izquierda y en dos líneas: en una sola se solapaba
      con «Muros de Nalón», que arranca en x=346, y quedaba ilegible */
   e2('line', {
@@ -244,21 +251,21 @@ export function initMap(openNode: (id: string) => void): {
     y1: 130,
     x2: 332,
     y2: 145,
-    stroke: '#5a6f8d',
+    stroke: 'var(--dim)',
     'stroke-width': 0.7,
     opacity: 0.6,
   });
   e2('text', {
     x: 318,
     y: 154,
-    fill: '#8da0b8',
+    fill: 'var(--muted)',
     'font-size': 8.5,
     'text-anchor': 'middle',
   }).textContent = 'Cudillero';
   e2('text', {
     x: 318,
     y: 164,
-    fill: '#5a6f8d',
+    fill: 'var(--dim)',
     'font-size': 7.5,
     'text-anchor': 'middle',
   }).textContent = '(arqueta ADIF)';
@@ -294,7 +301,7 @@ export function initMap(openNode: (id: string) => void): {
   const rd = e2('path', {
     d: 'M965,125 C880,72 730,58 590,95',
     fill: 'none',
-    stroke: '#9db4d8',
+    stroke: 'var(--muted)',
     'stroke-width': 1.8,
     opacity: 0.5,
     'stroke-dasharray': '2 6',
@@ -304,7 +311,7 @@ export function initMap(openNode: (id: string) => void): {
   const rdl = e2('text', {
     x: 770,
     y: 52,
-    fill: '#7288a8',
+    fill: 'var(--muted)',
     'font-size': 8.5,
     'letter-spacing': '.08em',
   });
@@ -328,7 +335,15 @@ export function initMap(openNode: (id: string) => void): {
     g.style.cursor = 'help';
     e2(
       'circle',
-      { cx: x, cy: y, r: 4.5, fill: '#060b14', stroke: col, 'stroke-width': 1.6, opacity: 0.85 },
+      {
+        cx: x,
+        cy: y,
+        r: 4.5,
+        fill: 'var(--panel)',
+        stroke: col,
+        'stroke-width': 1.6,
+        opacity: 0.85,
+      },
       g,
     );
     const t = e2(
@@ -336,7 +351,7 @@ export function initMap(openNode: (id: string) => void): {
       {
         x,
         y: y + 16,
-        fill: '#8da0b8',
+        fill: 'var(--muted)',
         'font-size': 7.5,
         'text-anchor': 'middle',
         class: 'lbl-sec',
@@ -368,7 +383,7 @@ export function initMap(openNode: (id: string) => void): {
           cy: y,
           r: 11,
           fill: 'none',
-          stroke: '#8da0b8',
+          stroke: 'var(--muted)',
           'stroke-width': 1,
           'stroke-dasharray': '2 3',
         },
@@ -395,7 +410,7 @@ export function initMap(openNode: (id: string) => void): {
       {
         x,
         y: y + 22,
-        fill: '#8da0b8',
+        fill: 'var(--muted)',
         'font-size': 9.5,
         'text-anchor': 'middle',
         class: 'lbl-node',
@@ -407,11 +422,11 @@ export function initMap(openNode: (id: string) => void): {
     g.addEventListener('mousemove', (ev) => {
       const ont = ontCount(n);
       const ho = hostOnly
-        ? `<br><span style="color:#ffb454">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.</span>`
+        ? `<br><span style="color:var(--gpon)">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.</span>`
         : '';
       const pl =
         n.towns && n.towns.length > 1
-          ? `<br><span style="color:#b8c6d8">Sirve a: ${esc(n.towns.slice(0, 3).join(', '))}${n.towns.length > 3 ? '…' : ''}</span>`
+          ? `<br><span style="color:var(--muted)">Sirve a: ${esc(n.towns.slice(0, 3).join(', '))}${n.towns.length > 3 ? '…' : ''}</span>`
           : '';
       showTip(
         ev,
@@ -432,8 +447,8 @@ export function initMap(openNode: (id: string) => void): {
       width: 20,
       height: 20,
       rx: 4,
-      fill: '#0e1a2e',
-      stroke: '#41e3d2',
+      fill: 'var(--panel)',
+      stroke: 'var(--xgs)',
       'stroke-width': 2,
     },
     gp,
@@ -443,7 +458,7 @@ export function initMap(openNode: (id: string) => void): {
     {
       x: PAO.x,
       y: PAO.y - 18,
-      fill: '#e8eef6',
+      fill: 'var(--txt)',
       'font-size': 10,
       'text-anchor': 'middle',
       'font-weight': 600,
@@ -494,7 +509,7 @@ export function initMap(openNode: (id: string) => void): {
         {
           x,
           y: y - 5,
-          fill: '#6f8199',
+          fill: 'var(--dim)',
           'font-size': 7,
           'text-anchor': 'middle',
           class: 'lbl-town',
@@ -514,7 +529,7 @@ export function initMap(openNode: (id: string) => void): {
     {
       d: 'M890,130 C888,110 900,98 922,96 C946,94 990,120 1000,142 C1008,160 985,176 950,176 C915,176 894,160 890,130 Z',
       fill: 'rgba(255,215,107,.05)',
-      stroke: '#ffd76b',
+      stroke: 'var(--gpon)',
       'stroke-width': '1',
       'stroke-dasharray': '3 4',
       opacity: '.6',
@@ -526,7 +541,7 @@ export function initMap(openNode: (id: string) => void): {
     {
       x: 940,
       y: 80,
-      fill: '#c9a44e',
+      fill: 'var(--pon)',
       'font-size': 7.5,
       'text-anchor': 'middle',
       'letter-spacing': '.06em',
