@@ -19,6 +19,9 @@ import type { Olt } from '../../lib/data';
 import { cv } from './textures';
 import type { Finishes, RoomMaterials } from './textures';
 
+/** Smallest dimension that earns a place in the shadow pass, in metres. */
+const SHADOW_MIN = 0.14;
+
 export interface Led {
   m: THREE.Mesh;
   base: number;
@@ -136,6 +139,13 @@ export function createEquipmentBuilders(
   ) {
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
     b.position.set(x, y, z);
+    /* One place decides this, so no builder has to remember. Only things big
+       enough to throw a shadow anyone would see are in the shadow pass: a
+       room is thousands of 8 mm tray wires, 16 mm adapters and card ejectors,
+       and rendering all of them twice costs a great deal to change nothing.
+       Receiving is per-fragment and cheap, so everything receives. */
+    b.castShadow = Math.max(w, h, d) >= SHADOW_MIN;
+    b.receiveShadow = true;
     (parent ?? scene).add(b);
     return b;
   }
@@ -158,7 +168,12 @@ export function createEquipmentBuilders(
     });
     const p = new THREE.Mesh(
       new THREE.PlaneGeometry(wm, (wm * 96) / 512),
-      new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({
+        map: t,
+        transparent: true,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
     );
     p.position.set(x, y, z);
     p.rotation.y = ry;
@@ -199,7 +214,12 @@ export function createEquipmentBuilders(
     });
     const p = new THREE.Mesh(
       new THREE.PlaneGeometry(wm, hm),
-      new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({
+        map: t,
+        transparent: true,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
     );
     p.position.set(x, y, z);
     parent.add(p);
@@ -222,7 +242,11 @@ export function createEquipmentBuilders(
     /* DoubleSide: cabinets against the far wall present their face towards -Z */
     const m = new THREE.Mesh(
       new THREE.PlaneGeometry(0.016, 0.011),
-      new THREE.MeshBasicMaterial({ color: on ? 0x39ff88 : 0x0d1218, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({
+        color: on ? 0x39ff88 : 0x0d1218,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
     );
     m.position.set(x, y, z);
     m.name = role;

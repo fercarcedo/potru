@@ -25,3 +25,13 @@ pnpm-debug.log*
 
 # system
 .DS_Store
+
+# local scratch: the running list of viewer problems, and the session ids for
+# `claude --resume`. Both are working notes, not repo content.
+changes.txt
+sessions.txt
+
+# throwaway scripts — screenshot drivers, perf harnesses. Named so they cannot
+# be swept into a commit by a broad `git add`, which is how sessions.txt got in.
+*.tmp.mjs
+*.tmp.js

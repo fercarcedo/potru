@@ -11,9 +11,12 @@
  * What is still interpretation: finishes, colours and the appearance of the
  * equipment itself. The drawings give footprints and labels, not photographs.
  *
- * three comes from npm at a pinned version; the legacy loaded r128 from a CDN.
- * r128 predates colour management and the lighting rework, so ColorManagement
- * is disabled and linear output forced to keep the room looking the way it did.
+ * Rendering is physically based: MeshStandard materials with real
+ * roughness/metalness, an indoor environment for the reflections they need to
+ * read at all, filmic tone mapping and shadow maps. It used to run with
+ * ColorManagement off and linear output "as in r128", which was parity with
+ * the legacy single-page build; that build is long gone, and the flat look it
+ * bought made a steel rack indistinguishable from a plastic bezel.
  */
 import * as THREE from 'three';
 import roomData from '../data/rooms.json';
@@ -24,15 +27,14 @@ import { initControls } from './viewer3d/controls';
 import { createEquipmentBuilders, type UnitBuilder } from './viewer3d/equipment';
 import { pointInPolygon } from './viewer3d/geometry';
 import { computeOrientations } from './viewer3d/orientation';
-import { LX, buildShell, type Vent } from './viewer3d/shell';
+import { HALO, buildShell, type Vent } from './viewer3d/shell';
 import {
+  buildEnvTexture,
   buildFinishes,
   buildFloorTexture,
   buildMaterials,
   buildWallTexture,
 } from './viewer3d/textures';
-
-THREE.ColorManagement.enabled = false;
 
 interface Bay {
   x: number;
@@ -107,6 +109,85 @@ interface Room {
 const ROOMS = roomData as unknown as Record<string, Room>;
 
 let SV: { stop(): void } | null = null;
+
+/**
+ * The renderer and the environment it reflects, built once and kept.
+ *
+ * Both used to be per room, and neither depends on which node is open. The
+ * environment was the expensive one — PMREM filtering a cubemap was most of
+ * the first room's build and was paid again on every visit. The renderer is
+ * shared for a second reason: a browser caps how many live WebGL contexts a
+ * page may have, and a new one per room walks straight into that cap.
+ */
+let shared: {
+  renderer: THREE.WebGLRenderer;
+  env: THREE.Texture;
+  /** true when the browser is rasterising in software; quality steps down */
+  software: boolean;
+} | null = null;
+
+/**
+ * Is the GPU real, or is the browser rasterising in software?
+ *
+ * WebGL is hardware accelerated wherever it can be — that is the browser's
+ * decision, not ours, and `powerPreference` is the only lever we get. But it
+ * silently falls back to a software rasteriser (SwiftShader on Chrome,
+ * llvmpipe on Linux Mesa) when there is no usable GPU: on a locked-down
+ * machine, in a VM, behind a blocklisted driver, or in a headless browser.
+ * There the shadow pass and a 2× pixel ratio are the difference between a
+ * room that turns and a slideshow, so it is worth knowing which we are on.
+ */
+function isSoftwareRenderer(gl: WebGLRenderingContext | WebGL2RenderingContext): boolean {
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  const name = String(
+    (info && gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) || gl.getParameter(gl.RENDERER) || '',
+  ).toLowerCase();
+  return /swiftshader|llvmpipe|softpipe|software|microsoft basic render/.test(name);
+}
+
+function sharedRenderer(canvas: HTMLCanvasElement) {
+  if (shared) return shared;
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    /* on a laptop with both, ask for the discrete GPU rather than the one
+       picked for battery life — this is a scene the visitor is looking at,
+       not a background animation */
+    powerPreference: 'high-performance',
+  });
+  /* Khronos neutral rather than ACES: it holds the palette's hues instead of
+     pushing them warm, which is what a technical visualisation wants. */
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1.35;
+  const software = isSoftwareRenderer(renderer.getContext());
+  /* Shadows are the first thing to go without a GPU: they double the draw
+     calls for a room that is already thousands of boxes. */
+  renderer.shadowMap.enabled = !software;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  /* PBR needs something to reflect; without it the cabinets read as flat
+     gouache. See buildEnvTexture() for why it is a gradient rather than
+     three's RoomEnvironment. */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const src = buildEnvTexture();
+  const env = pmrem.fromEquirectangular(src).texture;
+  src.dispose();
+  pmrem.dispose();
+  return (shared = { renderer, env, software });
+}
+
+/** Frees the geometry, materials and textures a room built. With the
+ *  renderer shared, nothing else does it for us. */
+function disposeScene(scene: THREE.Scene) {
+  scene.traverse((o) => {
+    const m = o as THREE.Mesh;
+    m.geometry?.dispose();
+    for (const mat of [m.material].flat()) {
+      if (!mat) continue;
+      (mat as THREE.MeshStandardMaterial).map?.dispose();
+      mat.dispose();
+    }
+  });
+}
 
 /** Stops the render loop and releases the current room's resources. */
 export function stopRoom() {
@@ -185,11 +266,13 @@ export function buildRoom(n: NetworkNode) {
 
   const canvas = document.getElementById(DOM.svCanvas) as HTMLCanvasElement;
   const holder = canvas.parentElement!;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  /* linear output, as in r128: the palette was chosen against it */
-  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+  const { renderer, env, software } = sharedRenderer(canvas);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b1322);
+  scene.environment = env;
+  /* the gradient is what stands in for bounce off the walls and floor, so it
+     carries more of the room than a reflection-only environment would */
+  scene.environmentIntensity = 0.9;
 
   /* plan coordinates are centred on the room so the camera maths stays simple */
   const xs = room.outline.map((p) => p[0]);
@@ -238,6 +321,7 @@ export function buildRoom(n: NetworkNode) {
   };
 
   const { halo } = buildShell({
+    software,
     scene,
     mat,
     poly,
@@ -250,6 +334,20 @@ export function buildRoom(n: NetworkNode) {
     label,
     fin,
   });
+
+  /* One body material per colour, not per cabinet: each distinct material
+     costs a shader variant in the colour pass and another in the shadow
+     pass, and a room has far more cabinets than colours. */
+  const bodies = new Map<number, THREE.MeshStandardMaterial>();
+  const body = (color: number) => {
+    let m = bodies.get(color);
+    if (!m)
+      bodies.set(
+        color,
+        (m = new THREE.MeshStandardMaterial({ color, metalness: 0.15, roughness: 0.62 })),
+      );
+    return m;
+  };
 
   /* ---- equipment bays ---- */
   const oldChassis: THREE.Object3D[] = [];
@@ -287,7 +385,11 @@ export function buildRoom(n: NetworkNode) {
   function buildCage(bay: Bay, g: THREE.Group, idx: number) {
     const gh = bay.h;
     const accent = CAGE_ACCENT[idx % CAGE_ACCENT.length]!;
-    const accentMat = new THREE.MeshLambertMaterial({ color: accent });
+    const accentMat = new THREE.MeshStandardMaterial({
+      color: accent,
+      metalness: 0.2,
+      roughness: 0.55,
+    });
     /* The gate opens onto the aisle — the middle of the room — so both rows
        of cages present their name to whoever is walking between them. */
     const gateOnMinusZ = bay.z - D / 2 + bay.d / 2 > 0;
@@ -308,18 +410,22 @@ export function buildRoom(n: NetworkNode) {
       [bay.w / 2, 0, 0.02, bay.d],
       [0, -gz, bay.w, 0.02],
     ];
-    /* each panel needs its own texture: the mesh has to keep the same cell
-       size whatever the panel measures, and repeat lives on the map */
-    const meshPanel = (pw: number, ph: number) => {
-      const m = fin.mesh.clone();
-      m.map = fin.mesh.map!.clone();
-      m.map.needsUpdate = true;
-      m.map.wrapS = m.map.wrapT = THREE.RepeatWrapping;
-      m.map.repeat.set(Math.max(0.5, pw) * 16, Math.max(0.5, ph) * 16);
+    /* The mesh has to keep the same cell size whatever the panel measures.
+       Repeat lives on the texture, so doing it that way meant a cloned
+       material and texture per panel — and every distinct material costs a
+       shader variant for the colour pass and another for the shadow pass,
+       which is what made this room take five seconds to build. Scaling the
+       geometry's own UVs gets the same picture from one shared material. */
+    const meshPanel = (m: THREE.Mesh, pw: number, ph: number) => {
+      const uv = m.geometry.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) {
+        uv.setXY(i, uv.getX(i) * Math.max(0.5, pw) * 16, uv.getY(i) * Math.max(0.5, ph) * 16);
+      }
+      uv.needsUpdate = true;
       return m;
     };
     for (const [px, pz, pw, pd] of panels) {
-      box(pw, gh - 0.1, pd, meshPanel(Math.max(pw, pd), gh), px, gh / 2, pz, g);
+      meshPanel(box(pw, gh - 0.1, pd, fin.mesh, px, gh / 2, pz, g), Math.max(pw, pd), gh);
     }
 
     /* the gate: an accent frame, the operator's name at eye level, mesh above */
@@ -329,25 +435,24 @@ export function buildRoom(n: NetworkNode) {
     /* the name plate sits at eye level, mesh above and below it */
     const ny = 1.45,
       nh = 0.62;
-    box(
-      bay.w - 0.1,
-      gh - ny - nh / 2 - 0.05,
-      0.02,
-      meshPanel(bay.w, gh - ny - nh / 2),
-      0,
-      (ny + nh / 2 + gh) / 2 - 0.02,
-      gz,
-      g,
+    meshPanel(
+      box(
+        bay.w - 0.1,
+        gh - ny - nh / 2 - 0.05,
+        0.02,
+        fin.mesh,
+        0,
+        (ny + nh / 2 + gh) / 2 - 0.02,
+        gz,
+        g,
+      ),
+      bay.w,
+      gh - ny - nh / 2,
     );
-    box(
-      bay.w - 0.1,
-      ny - nh / 2 - 0.05,
-      0.02,
-      meshPanel(bay.w, ny - nh / 2),
-      0,
-      (ny - nh / 2) / 2,
-      gz,
-      g,
+    meshPanel(
+      box(bay.w - 0.1, ny - nh / 2 - 0.05, 0.02, fin.mesh, 0, (ny - nh / 2) / 2, gz, g),
+      bay.w,
+      ny - nh / 2,
     );
     box(bay.w - 0.1, nh, 0.03, accentMat, 0, ny, gz, g);
     box(0.05, 0.2, 0.05, fin.steel, bay.w / 2 - 0.14, 1.02, gz * 1.12, g); /* latch */
@@ -379,16 +484,7 @@ export function buildRoom(n: NetworkNode) {
       sub.position.set(rk.x - bay.x - bay.w / 2 + rk.w / 2, 0, rk.z - bay.z - bay.d / 2 + rk.d / 2);
       g.add(sub);
       const rh = 2.0;
-      box(
-        rk.w,
-        rh,
-        rk.d,
-        new THREE.MeshLambertMaterial({ color: COLOR['rack']! }),
-        0,
-        rh / 2,
-        0,
-        sub,
-      );
+      box(rk.w, rh, rk.d, body(COLOR['rack']!), 0, rh / 2, 0, sub);
       rackFrame(sub, rk.w, rh, rk.d / 2, 0);
       for (let i = 0; i < 6; i++) {
         box(rk.w - 0.13, 0.13, 0.04, fin.module, 0, 0.45 + i * 0.26, rk.d * 0.48, sub);
@@ -472,7 +568,7 @@ export function buildRoom(n: NetworkNode) {
         faceW,
         0.02,
         faceD,
-        new THREE.MeshLambertMaterial({ color: COLOR['void']! }),
+        new THREE.MeshStandardMaterial({ color: COLOR['void']!, metalness: 0, roughness: 0.95 }),
         0,
         0.01,
         0,
@@ -507,16 +603,7 @@ export function buildRoom(n: NetworkNode) {
     }
 
     if (!OWN_ENCLOSURE.has(bay.kind)) {
-      box(
-        faceW,
-        bay.h,
-        faceD,
-        new THREE.MeshLambertMaterial({ color: COLOR[bay.kind] ?? 0x4c5158 }),
-        0,
-        base + bay.h / 2,
-        0,
-        g,
-      );
+      box(faceW, bay.h, faceD, body(COLOR[bay.kind] ?? 0x4c5158), 0, base + bay.h / 2, 0, g);
     }
 
     /* What this cabinet holds: the plan's own reading where the label names
@@ -690,7 +777,7 @@ export function buildRoom(n: NetworkNode) {
     renewed = !renewed;
     oldChassis.forEach((r) => (r.visible = !renewed));
     newChassis.forEach((r) => (r.visible = renewed));
-    halo.intensity = renewed ? 1.1 * LX : 0;
+    halo.intensity = renewed ? HALO : 0;
     modeBtn.textContent = renewed ? '⇄ Ver actual' : '⇄ Ver renovado';
   };
 
@@ -715,7 +802,7 @@ export function buildRoom(n: NetworkNode) {
     lookAt = [dx + nx * sign * reach, dz + nz * sign * reach];
   }
 
-  SV = initControls({
+  const controls = initControls({
     cam,
     canvas,
     holder,
@@ -726,5 +813,12 @@ export function buildRoom(n: NetworkNode) {
     startDoor: room.doors[0],
     lookAt,
     leds,
+    software,
   });
+  SV = {
+    stop() {
+      controls.stop();
+      disposeScene(scene);
+    },
+  };
 }

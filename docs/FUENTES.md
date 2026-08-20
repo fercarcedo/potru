@@ -114,7 +114,9 @@ licitación en PLACSP.
   tarjetas iguales y lo dicen en el rótulo: el pliego dice que hay dos tipos, no cuál va en cada
   ranura, y lo honesto con un dato desconocido es escribirlo, no dibujar una suposición. Lo que
   sigue sin ser literal es el **aspecto**: saber que es un Alcatel 7342 no es tener una foto de un
-  Alcatel 7342, y el pliego no la trae.
+  Alcatel 7342, y el pliego no la trae. El visor renderiza con materiales físicos, entorno y
+  sombras desde agosto de 2026, así que la sala se parece más a una fotografía que antes — razón
+  de más para que el aviso lo diga: lo que mejoró es el render, no las fuentes.
 - **Lo que NO es literal** se marca como tal donde aparece: el reparto de tubos de la
   troncal de la Autovía Minera es ilustrativo (la segregación hacia el Nalón sí es literal),
   los tubos 1–15 del TROMIENSCFO128 figuran sin desglose, y en el visor 3D los acabados, los colores y el

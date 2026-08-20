@@ -32,11 +32,9 @@ export interface Vent {
   y?: number;
 }
 
-/** three ≥155 reads light intensity in physical units, so the r128-era
- *  values the palette was tuned against need scaling by π to look the same.
- *  Exported because the mode-toggle button (viewer3d.ts) also scales the
- *  halo's intensity by it when switching to the renewed view. */
-export const LX = Math.PI;
+/** How bright the renewed view's teal halo burns. Exported because the
+ *  mode-toggle button in viewer3d.ts is what turns it on. */
+export const HALO = 3.2;
 
 export interface ShellDeps {
   scene: THREE.Scene;
@@ -49,19 +47,24 @@ export interface ShellDeps {
   W: number;
   D: number;
   H: number;
+  /** the browser is rasterising in software, so spend less on the shadow */
+  software?: boolean;
   box: EquipmentBuilders['box'];
   label: EquipmentBuilders['label'];
   fin: Finishes;
 }
 
 export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
-  const { scene, mat, poly, doors, vents = [], W, D, H, box, label, fin } = deps;
+  const { scene, mat, poly, doors, vents = [], W, D, H, box, label, fin, software } = deps;
 
   /* ---- shell: floor, ceiling and one wall per outline edge, with door gaps ---- */
   const shape = new THREE.Shape(poly.map(([x, z]) => new THREE.Vector2(x, z)));
   const floorGeo = new THREE.ShapeGeometry(shape);
   const floor = new THREE.Mesh(floorGeo, mat.floor);
   floor.rotation.x = Math.PI / 2;
+  /* the floor only takes shadows — casting from it would fight the key light
+     across the whole slab for nothing */
+  floor.receiveShadow = true;
   scene.add(floor);
   const ceil = new THREE.Mesh(floorGeo.clone(), mat.ceil);
   ceil.rotation.x = -Math.PI / 2;
@@ -86,6 +89,7 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
       const p = new THREE.Mesh(new THREE.PlaneGeometry(to - from, H), mat.wall);
       p.position.set(x1 + Math.cos(ang) * mid, H / 2, z1 + Math.sin(ang) * mid);
       p.rotation.y = -ang;
+      p.receiveShadow = true;
       scene.add(p);
     }
     if (door) {
@@ -139,18 +143,34 @@ export function buildShell(deps: ShellDeps): { halo: THREE.PointLight } {
       along ? 1.1 : 0.16,
       0.05,
       along ? 0.16 : 1.1,
-      new THREE.MeshBasicMaterial({ color: 0xeef6f4 }),
+      new THREE.MeshBasicMaterial({ color: 0xeef6f4, toneMapped: false }),
       x,
       H - 0.04,
       z,
     );
   }
-  scene.add(new THREE.AmbientLight(0xf2f4f6, 0.66 * LX));
-  const dl = new THREE.DirectionalLight(0xffffff, 0.42 * LX);
-  dl.position.set(2, 4, 2);
-  scene.add(dl);
-  const fill = new THREE.DirectionalLight(0xdfe8f2, 0.22 * LX);
-  fill.position.set(-2, 3, -2);
+  /* The environment (viewer3d.ts) now does the ambient work that an
+     AmbientLight used to fake, so what is left is a key that casts and a low
+     fill that does not. The key's shadow frustum is fitted to the room: a
+     default one would either miss the corners or waste its resolution on
+     empty space outside the walls. */
+  const key = new THREE.DirectionalLight(0xfff4e8, 2.1);
+  key.position.set(W * 0.45, H * 2.2, D * 0.5);
+  key.castShadow = true;
+  const reach = Math.max(W, D) * 0.75 + 1;
+  key.shadow.camera.left = -reach;
+  key.shadow.camera.right = reach;
+  key.shadow.camera.top = reach;
+  key.shadow.camera.bottom = -reach;
+  key.shadow.camera.far = H * 4 + Math.max(W, D);
+  key.shadow.mapSize.setScalar(software ? 512 : 1536);
+  /* the racks are thin boxes stood on a flat floor, which is exactly the
+     geometry that shadow-acnes without a bias */
+  key.shadow.bias = -0.0006;
+  key.shadow.normalBias = 0.02;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xdfe8f2, 0.7);
+  fill.position.set(-W * 0.4, H * 1.4, -D * 0.5);
   scene.add(fill);
   const halo = new THREE.PointLight(0x41e3d2, 0, 9);
   halo.position.set(0, H - 0.5, 0);

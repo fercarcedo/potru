@@ -19,6 +19,47 @@ export function cv(
   draw(c.getContext('2d')!);
   const t = new THREE.CanvasTexture(c);
   t.anisotropy = 4;
+  /* every texture built here is a colour map, and with ColorManagement on an
+     unmarked one is read as linear and comes out dark */
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * What the room reflects: a bright ceiling fading to a dark floor, as an
+ * equirectangular strip for PMREM to filter into an environment map.
+ *
+ * three ships RoomEnvironment for this, but it is a whole scene of boxes that
+ * PMREM has to render into six faces — four seconds of the first room's build,
+ * and a demo living room is not what a windowless equipment room reflects
+ * anyway. A vertical gradient is both cheaper and closer to the truth: these
+ * rooms are lit from ceiling panels and have no other light in them.
+ */
+export function buildEnvTexture(): THREE.DataTexture {
+  /* wide enough for PMREM to have something to filter across: a one-pixel
+     column is a degenerate equirect and does not survive the mip chain */
+  const w = 64,
+    h = 32;
+  const data = new Uint8Array(w * h * 4);
+  for (let i = 0; i < h; i++) {
+    const t = i / (h - 1); // 0 at the top of the strip
+    /* ceiling panels, then wall, then the floor's dim bounce */
+    /* ceiling panels down to the wall, then the floor's own dim bounce —
+       which has to be more than nothing, or everything below waist height in
+       these rooms goes flat */
+    const v = t < 0.42 ? 1 - t * 0.5 : 0.79 - (t - 0.42) * 0.67;
+    for (let j = 0; j < w; j++) {
+      const o = (i * w + j) * 4;
+      data[o] = Math.round(238 * v);
+      data[o + 1] = Math.round(244 * v);
+      data[o + 2] = Math.round(250 * v);
+      data[o + 3] = 255;
+    }
+  }
+  const t = new THREE.DataTexture(data, w, h);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.needsUpdate = true;
   return t;
 }
 
@@ -82,111 +123,147 @@ export function buildWallTexture(): THREE.CanvasTexture {
   });
 }
 
+/**
+ * How a surface behaves under light, as three's PBR model wants it: 0
+ * metalness is paint or plastic, 1 is bare metal, and roughness is how
+ * scattered the reflection is. Naming the handful of real materials once,
+ * rather than picking numbers per call, is what keeps a steel rack from
+ * looking like a plastic bezel — which was the whole problem with everything
+ * being MeshLambert.
+ */
+const SURFACE = {
+  /* bare and brushed metal: rack posts, tray wire, chequer plate, busbars */
+  steel: { metalness: 0.9, roughness: 0.42 },
+  brushed: { metalness: 0.85, roughness: 0.55 },
+  copper: { metalness: 1, roughness: 0.38 },
+  /* powder-coated steel: cabinet bodies, panels, bezels */
+  paint: { metalness: 0.15, roughness: 0.62 },
+  matte: { metalness: 0.05, roughness: 0.8 },
+  /* mouldings: adapters, breakers, cable sheath */
+  plastic: { metalness: 0, roughness: 0.5 },
+  rubber: { metalness: 0, roughness: 0.78 },
+  /* the room itself */
+  masonry: { metalness: 0, roughness: 0.94 },
+} as const;
+
+type Surface = keyof typeof SURFACE;
+
+/** A PBR material of the given colour and surface, in one line. */
+function pbr(
+  color: number,
+  surface: Surface,
+  extra: THREE.MeshStandardMaterialParameters = {},
+): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({ color, ...SURFACE[surface], ...extra });
+}
+
 export interface RoomMaterials {
-  floor: THREE.MeshLambertMaterial;
-  wall: THREE.MeshLambertMaterial;
-  ceil: THREE.MeshLambertMaterial;
-  door: THREE.MeshLambertMaterial;
-  alu: THREE.MeshLambertMaterial;
-  chassisAlcatel: THREE.MeshLambertMaterial;
-  chassisEricsson: THREE.MeshLambertMaterial;
-  chassisNew: THREE.MeshLambertMaterial;
-  card: THREE.MeshLambertMaterial;
-  glass: THREE.MeshLambertMaterial;
-  tray: THREE.MeshLambertMaterial;
+  floor: THREE.MeshStandardMaterial;
+  wall: THREE.MeshStandardMaterial;
+  ceil: THREE.MeshStandardMaterial;
+  door: THREE.MeshStandardMaterial;
+  alu: THREE.MeshStandardMaterial;
+  chassisAlcatel: THREE.MeshStandardMaterial;
+  chassisEricsson: THREE.MeshStandardMaterial;
+  chassisNew: THREE.MeshStandardMaterial;
+  card: THREE.MeshStandardMaterial;
+  glass: THREE.MeshStandardMaterial;
+  tray: THREE.MeshStandardMaterial;
 }
 
 export function buildMaterials(floorTex: THREE.Texture, wallTex: THREE.Texture): RoomMaterials {
   return {
-    floor: new THREE.MeshLambertMaterial({ map: floorTex, side: THREE.DoubleSide }),
-    wall: new THREE.MeshLambertMaterial({ map: wallTex, side: THREE.DoubleSide }),
-    ceil: new THREE.MeshLambertMaterial({ color: 0x9aa0a8, side: THREE.DoubleSide }),
-    door: new THREE.MeshLambertMaterial({ color: 0x6f7680 }),
-    alu: new THREE.MeshLambertMaterial({ color: 0xc9cdd2 }),
-    chassisAlcatel: new THREE.MeshLambertMaterial({ color: 0xb9bec6 }),
-    chassisEricsson: new THREE.MeshLambertMaterial({ color: 0x3a4d6e }),
-    chassisNew: new THREE.MeshLambertMaterial({ color: 0x11313a }),
-    card: new THREE.MeshLambertMaterial({ color: 0x59626f }),
-    glass: new THREE.MeshLambertMaterial({
+    floor: pbr(0xffffff, 'masonry', { map: floorTex, side: THREE.DoubleSide, roughness: 0.72 }),
+    wall: pbr(0xffffff, 'masonry', { map: wallTex, side: THREE.DoubleSide }),
+    ceil: pbr(0x9aa0a8, 'matte', { side: THREE.DoubleSide }),
+    door: pbr(0x6f7680, 'paint'),
+    alu: pbr(0xc9cdd2, 'brushed'),
+    chassisAlcatel: pbr(0xb9bec6, 'paint'),
+    chassisEricsson: pbr(0x3a4d6e, 'paint'),
+    chassisNew: pbr(0x11313a, 'paint'),
+    card: pbr(0x59626f, 'paint', { roughness: 0.55 }),
+    glass: new THREE.MeshPhysicalMaterial({
       color: 0xaad4e8,
       transparent: true,
       opacity: 0.16,
+      roughness: 0.08,
+      metalness: 0,
       side: THREE.DoubleSide,
     }),
-    tray: new THREE.MeshLambertMaterial({ color: 0x8a9099 }),
+    tray: pbr(0x8a9099, 'brushed'),
   };
 }
 
 export interface Finishes {
-  rail: THREE.MeshLambertMaterial;
-  bezel: THREE.MeshLambertMaterial;
-  trayFace: THREE.MeshLambertMaterial;
-  adapter: THREE.MeshLambertMaterial;
-  adapterBlue: THREE.MeshLambertMaterial;
-  fibre: THREE.MeshLambertMaterial;
-  fibreRed: THREE.MeshLambertMaterial;
-  steel: THREE.MeshLambertMaterial;
-  panel: THREE.MeshLambertMaterial;
-  smoked: THREE.MeshLambertMaterial;
-  breaker: THREE.MeshLambertMaterial;
-  toggle: THREE.MeshLambertMaterial;
-  cell: THREE.MeshLambertMaterial;
-  module: THREE.MeshLambertMaterial;
+  rail: THREE.MeshStandardMaterial;
+  bezel: THREE.MeshStandardMaterial;
+  trayFace: THREE.MeshStandardMaterial;
+  adapter: THREE.MeshStandardMaterial;
+  adapterBlue: THREE.MeshStandardMaterial;
+  fibre: THREE.MeshStandardMaterial;
+  fibreRed: THREE.MeshStandardMaterial;
+  steel: THREE.MeshStandardMaterial;
+  panel: THREE.MeshStandardMaterial;
+  smoked: THREE.MeshStandardMaterial;
+  breaker: THREE.MeshStandardMaterial;
+  toggle: THREE.MeshStandardMaterial;
+  cell: THREE.MeshStandardMaterial;
+  module: THREE.MeshStandardMaterial;
   screen: THREE.MeshBasicMaterial;
-  red: THREE.MeshLambertMaterial;
-  cellCase: THREE.MeshLambertMaterial;
-  cellTop: THREE.MeshLambertMaterial;
-  cellLabel: THREE.MeshLambertMaterial;
-  copper: THREE.MeshLambertMaterial;
-  cableBlack: THREE.MeshLambertMaterial;
-  cableBlue: THREE.MeshLambertMaterial;
+  red: THREE.MeshStandardMaterial;
+  cellCase: THREE.MeshStandardMaterial;
+  cellTop: THREE.MeshStandardMaterial;
+  cellLabel: THREE.MeshStandardMaterial;
+  copper: THREE.MeshStandardMaterial;
+  cableBlack: THREE.MeshStandardMaterial;
+  cableBlue: THREE.MeshStandardMaterial;
   /** lift-off cover of a floor cable duct («tapa»): chequer plate */
-  hatchPlate: THREE.MeshLambertMaterial;
+  hatchPlate: THREE.MeshStandardMaterial;
   /** the recess the covers sit in, seen through the joints */
-  hatchWell: THREE.MeshLambertMaterial;
+  hatchWell: THREE.MeshStandardMaterial;
   /** ventilation louvre let into a wall («salida de aire», «hueco de A/A») */
-  louvre: THREE.MeshLambertMaterial;
+  louvre: THREE.MeshStandardMaterial;
   /** body of a passive optical module: PLC splitters are white, not livery grey */
-  passive: THREE.MeshLambertMaterial;
+  passive: THREE.MeshStandardMaterial;
   /** the RF side of a video shelf: F connectors and their coax */
-  rfBody: THREE.MeshLambertMaterial;
-  coax: THREE.MeshLambertMaterial;
+  rfBody: THREE.MeshStandardMaterial;
+  coax: THREE.MeshStandardMaterial;
   /** the woven mesh panel of an operator cage at the PAO */
-  mesh: THREE.MeshLambertMaterial;
+  mesh: THREE.MeshStandardMaterial;
 }
 
 /** Extra finishes for the equipment detail (rails, cords, cell cases…). */
 export function buildFinishes(): Finishes {
   return {
-    rail: new THREE.MeshLambertMaterial({ color: 0x1d2126 }),
-    bezel: new THREE.MeshLambertMaterial({ color: 0x33383f }),
-    trayFace: new THREE.MeshLambertMaterial({ color: 0xb9bfc7 }),
-    adapter: new THREE.MeshLambertMaterial({ color: 0x2f8f5b }),
-    adapterBlue: new THREE.MeshLambertMaterial({ color: 0x3763a8 }),
-    fibre: new THREE.MeshLambertMaterial({ color: 0xf2d024 }),
-    fibreRed: new THREE.MeshLambertMaterial({ color: 0xd8503f }),
-    steel: new THREE.MeshLambertMaterial({ color: 0xa9aeb5 }),
-    panel: new THREE.MeshLambertMaterial({ color: 0xd7dbdf }),
-    smoked: new THREE.MeshLambertMaterial({ color: 0x2b3138, transparent: true, opacity: 0.72 }),
-    breaker: new THREE.MeshLambertMaterial({ color: 0xecf0f2 }),
-    toggle: new THREE.MeshLambertMaterial({ color: 0x1b1f24 }),
-    cell: new THREE.MeshLambertMaterial({ color: 0x2b2f36 }),
-    module: new THREE.MeshLambertMaterial({ color: 0x4a525d }),
-    screen: new THREE.MeshBasicMaterial({ color: 0x184a44 }),
-    red: new THREE.MeshLambertMaterial({ color: 0xc0392b }),
-    cellCase: new THREE.MeshLambertMaterial({ color: 0x24272c }),
-    cellTop: new THREE.MeshLambertMaterial({ color: 0x3a3f46 }),
-    cellLabel: new THREE.MeshLambertMaterial({ color: 0xd8dde2 }),
-    copper: new THREE.MeshLambertMaterial({ color: 0xb87333 }),
-    cableBlack: new THREE.MeshLambertMaterial({ color: 0x24262a }),
-    cableBlue: new THREE.MeshLambertMaterial({ color: 0x2f5d9e }),
-    hatchPlate: new THREE.MeshLambertMaterial({ map: buildChequerTexture() }),
-    hatchWell: new THREE.MeshLambertMaterial({ color: 0x20242a }),
-    louvre: new THREE.MeshLambertMaterial({ color: 0x8f959c }),
-    passive: new THREE.MeshLambertMaterial({ color: 0xe3e7ea }),
-    rfBody: new THREE.MeshLambertMaterial({ color: 0x2a2d33 }),
-    coax: new THREE.MeshLambertMaterial({ color: 0x121417 }),
-    mesh: new THREE.MeshLambertMaterial({
+    rail: pbr(0x1d2126, 'steel'),
+    bezel: pbr(0x33383f, 'paint'),
+    trayFace: pbr(0xb9bfc7, 'paint'),
+    adapter: pbr(0x2f8f5b, 'plastic'),
+    adapterBlue: pbr(0x3763a8, 'plastic'),
+    fibre: pbr(0xf2d024, 'plastic'),
+    fibreRed: pbr(0xd8503f, 'plastic'),
+    steel: pbr(0xa9aeb5, 'brushed'),
+    panel: pbr(0xd7dbdf, 'paint'),
+    smoked: pbr(0x2b3138, 'plastic', { transparent: true, opacity: 0.72, roughness: 0.2 }),
+    breaker: pbr(0xecf0f2, 'plastic'),
+    toggle: pbr(0x1b1f24, 'plastic'),
+    cell: pbr(0x2b2f36, 'plastic'),
+    module: pbr(0x4a525d, 'paint'),
+    screen: new THREE.MeshBasicMaterial({ color: 0x184a44, toneMapped: false }),
+    red: pbr(0xc0392b, 'paint'),
+    cellCase: pbr(0x24272c, 'plastic'),
+    cellTop: pbr(0x3a3f46, 'plastic'),
+    cellLabel: pbr(0xd8dde2, 'matte'),
+    copper: pbr(0xb87333, 'copper'),
+    cableBlack: pbr(0x24262a, 'rubber'),
+    cableBlue: pbr(0x2f5d9e, 'rubber'),
+    hatchPlate: pbr(0xffffff, 'brushed', { map: buildChequerTexture() }),
+    hatchWell: pbr(0x20242a, 'matte'),
+    louvre: pbr(0x8f959c, 'brushed'),
+    passive: pbr(0xe3e7ea, 'paint'),
+    rfBody: pbr(0x2a2d33, 'paint'),
+    coax: pbr(0x121417, 'rubber'),
+    mesh: pbr(0xffffff, 'brushed', {
       map: buildMeshTexture(),
       transparent: true,
       alphaTest: 0.35,
