@@ -27,26 +27,49 @@ export function renderMigStrip(n: NetworkNode): string {
   );
 }
 
-/** The OLT equipment table, including the totals row when a node has more
- *  than one OLT. Empty string when the node has none (the PAO). */
+/**
+ * The OLT equipment table, including the totals row when a node has more than
+ * one OLT, and a footnote row for every OLT the pliego contradicts itself
+ * about. Empty string when the node has none (the PAO).
+ *
+ * Those contradictions — BLI/1B recording six active ports out of five,
+ * BLI/9B twelve out of eleven — used to live in a `title` attribute on the
+ * cards cell: invisible unless hovered, unreachable on a touch screen, and
+ * attached to the wrong column, since the discrepancy is in the ports. The
+ * whole point of transcribing them as-is instead of quietly correcting them
+ * is that a reader sees the discrepancy and knows it is the source's, so it
+ * has to be on the page.
+ */
 export function renderOltTable(n: NetworkNode): string {
   if (!n.olts.length) return '';
   const rows = n.olts
-    .map(
-      (o) =>
+    .map((o) => {
+      /* the note always concerns the port counts, so it marks that cell */
+      const odd = o.note ? ' warn' : '';
+      const flag = o.note ? ' <span aria-hidden="true">⚠</span>' : '';
+      return (
         `<tr><td class="mono">${esc(o.code)}</td><td>${esc(o.vendor)}</td>` +
-        `<td class="mono" title="${esc(o.note ?? '')}">${esc(cardLabel(o))}</td>` +
-        `<td class="mono">${o.portsActive} / ${o.portsTotal}</td><td class="mono">${o.onts}</td></tr>`,
-    )
+        `<td class="mono">${esc(cardLabel(o))}</td>` +
+        `<td class="mono${odd}">${o.portsActive} / ${o.portsTotal}${flag}</td>` +
+        `<td class="mono">${o.onts}</td></tr>`
+      );
+    })
     .join('');
   const totalRow =
     n.olts.length > 1
       ? `<tr class="total"><td colspan="4">Total del nodo</td><td class="mono">${ontCount(n)}</td></tr>`
       : '';
+  const noted = n.olts.filter((o) => o.note);
+  const notes = noted.length
+    ? `<tr class="olt-notes"><td colspan="5">` +
+      noted.map((o) => `<span><b>${esc(o.code)}</b> ${esc(o.note!)}</span>`).join('') +
+      `</td></tr>`
+    : '';
   return (
     '<tr><th>OLT</th><th>Equipo actual</th><th>Tarjetas</th><th>Puertos GPON act./tot.</th><th>ONT</th></tr>' +
     rows +
-    totalRow
+    totalRow +
+    notes
   );
 }
 
