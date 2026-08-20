@@ -40,7 +40,7 @@ const TOTAL_WEEKS = CONTRACT_WEEKS;
                   {n.name}
                 </h4>
                 {n.towns.length > 0 && (
-                  <div style="font-size:.7rem;color:var(--muted);margin-top:3px;line-height:1.4">
+                  <div class="towns">
                     {n.towns.slice(0, 3).join(' · ')}
                     {n.towns.length > 3 ? ` · +${n.towns.length - 3}` : ''}
                   </div>
@@ -128,13 +128,29 @@ const TOTAL_WEEKS = CONTRACT_WEEKS;
     border-radius: 50%;
     flex-shrink: 0;
   }
+  .ncard .towns {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  /* Two facts, each of which has to survive as a unit. The card floor is
+     230px and «1 OLT · 272 ONT» plus «⌂ INTERIOR sem 21–24» does not fit on
+     one line there, so without the nowrap the break lands mid-phrase and
+     leaves «ONT» alone on the second line. Wrapping the spans instead drops
+     the second one whole. */
   .ncard .meta {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.7rem;
     color: var(--muted);
-    margin-top: 6px;
+    margin-top: 8px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 2px 10px;
+  }
+  .ncard .meta > span {
+    white-space: nowrap;
   }
   .ncard .weeks {
     margin-top: 9px;
