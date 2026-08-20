@@ -59,12 +59,17 @@ h2 {
 section {
   padding: 88px 0;
 }
+/* Section eyebrows are structure, not technology, so they take the
+   institutional blue rather than the XGS-PON teal — teal means «the new
+   generation» everywhere else on the page and should not also mean «a
+   heading follows». The .warm variant keeps amber for the sections that are
+   about what is being replaced. */
 .eyebrow {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--xgs-tx);
+  color: var(--accent);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -73,8 +78,8 @@ section {
 .eyebrow::before {
   content: '';
   width: 26px;
-  height: 1px;
-  background: var(--xgs);
+  height: 2px;
+  background: var(--accent);
 }
 .eyebrow.warm {
   color: var(--gpon-tx);

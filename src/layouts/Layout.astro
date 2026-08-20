@@ -56,11 +56,8 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     <nav>
       <div class="wrap">
         <div class="brand">
-          <b>POTRU</b> · CON 06/2025
-          <span
-            style="color:var(--xgs-tx);font-size:.66rem;border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin-left:8px"
-            >v13 · PAO FOTO</span
-          >
+          <b>Potru<span class="dot">.</span></b>
+          <span class="build">v13 · PAO FOTO</span>
         </div>
         <ul>
           {
@@ -131,12 +128,34 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     height: 58px;
   }
   .brand {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
-    letter-spacing: 0.14em;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
   }
+  /* The wordmark, and the only place the display face runs at full weight.
+     The stop is the whole mark: a potru is a colt, the Asturcón's young
+     counterpart, so the name already says «related, not the same thing» —
+     it does not need a logotype to say it again. */
   .brand b {
-    color: var(--xgs-tx);
+    font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+    font-stretch: 78%;
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--txt);
+  }
+  .brand .dot {
+    color: var(--gpon);
+  }
+  .brand .build {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 2px 6px;
   }
   nav ul {
     display: flex;
@@ -144,10 +163,16 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     list-style: none;
   }
   nav a {
+    font-family: 'IBM Plex Mono', monospace;
     color: var(--muted);
     text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s;
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    padding: 4px 7px;
+    border-radius: 3px;
+    transition:
+      color 0.2s,
+      background-color 0.2s;
   }
   nav a:hover,
   nav a:focus-visible {
