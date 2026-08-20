@@ -58,9 +58,12 @@ export function currentTheme(): Theme {
 /** Names the *destination*, because that is what pressing the button does. */
 const label = (now: Theme) => (now === 'dark' ? 'Ver en claro' : 'Ver en oscuro');
 
+/* The icon is static markup, swapped by CSS keyed off data-theme — see
+   Layout.astro. All this sets is the accessible name, since a screen reader
+   gets no benefit from either glyph. */
 function paint(btn: HTMLButtonElement, now: Theme) {
-  btn.textContent = label(now);
   btn.setAttribute('aria-label', label(now));
+  btn.title = label(now);
 }
 
 /** Wires the nav's toggle. Safe to call on a page that has no toggle. */

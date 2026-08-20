@@ -353,7 +353,9 @@ test.describe('colour theme', () => {
     await page.goto('./');
     const btn = page.locator('#themeToggle');
     await expect(btn).toBeVisible();
-    await expect(btn).toHaveText(/Ver en (claro|oscuro)/);
+    /* an icon button now — the accessible name is what carries "Ver en
+       claro/oscuro", not visible text */
+    await expect(btn).toHaveAccessibleName(/Ver en (claro|oscuro)/);
   });
 
   test('the visitor with no stored choice follows the system', async ({ browser }) => {
