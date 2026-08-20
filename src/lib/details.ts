@@ -95,17 +95,13 @@ export const DETAILS: Record<string, string> = {
       {
         access: [4, 5, 6, 7, 8],
         dead: [3],
+        /* Tubes 1 and 2 already get a zoom below with the same "transporte
+           …" wording and their own leader line to the ring — a second label
+           here duplicated it and sat squarely in the path of tube 1's zoom
+           leader, so it read as crossed out. Tube 3 keeps its label: it's
+           the one ring mark (the dead cross) that isn't self-explanatory
+           without it. */
         labels: [
-          {
-            tubes: [1],
-            color: 'var(--muted)',
-            text: 'TUBO 1 · TRANSPORTE|Luarca→Cudillero|2 oc · 6 vacantes',
-          },
-          {
-            tubes: [2],
-            color: 'var(--muted)',
-            text: 'TUBO 2 · TRANSPORTE|Navia→Luarca|5 oc · 3 vacantes',
-          },
           { tubes: [3], color: 'var(--danger)', text: 'TUBO 3 · SIN SALIDA|segregado en Tapia' },
           {
             tubes: [4, 5, 6, 7, 8],
