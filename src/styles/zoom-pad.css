@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(12, 21, 36, 0.9);
+  background: var(--veil);
   color: var(--txt);
   border: 1px solid var(--line);
   border-radius: 9px;
@@ -29,7 +29,7 @@
 }
 .zoom-pad button:hover {
   border-color: var(--xgs);
-  color: var(--xgs);
+  color: var(--xgs-tx);
 }
 .zoom-pad button:focus-visible {
   outline: 2px solid var(--xgs);

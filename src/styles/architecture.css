@@ -18,7 +18,7 @@
 .arch-step .k {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.68rem;
-  color: var(--gpon);
+  color: var(--gpon-tx);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }

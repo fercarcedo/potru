@@ -32,12 +32,12 @@
   font-size: 0.8rem;
   opacity: 0;
   transition: opacity 0.15s;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 30px var(--scrim);
   max-width: 250px;
   z-index: 5;
 }
 .tooltip b {
-  color: var(--xgs);
+  color: var(--xgs-tx);
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.78rem;
 }

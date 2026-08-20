@@ -185,6 +185,6 @@ export const DETAILS: Record<string, string> = {
   'red-completa': `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <span style="color:#e8eef6;min-width:150px">Enlace por OLT hoy</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#ffb454" stroke-width="2"/></svg><span style="color:#c99a54">1 Gbps</span></div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
-    <span style="color:#e8eef6;min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs)">≥ 10 Gbps extremo a extremo</span></div>
+    <span style="color:#e8eef6;min-width:150px">Enlace renovado</span><svg viewBox="0 0 200 14" style="width:200px"><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="7"/><line x1="0" y1="7" x2="200" y2="7" stroke="#41e3d2" stroke-width="13" opacity=".2"/></svg><span style="color:var(--xgs-tx)">≥ 10 Gbps extremo a extremo</span></div>
     <div style="color:#8da0b8;margin-top:10px">Prioridad a portadores directos vacantes; CWDM o equipos nuevos del adjudicatario donde no los haya · los nodos cabecera pueden encadenar su área</div>`,
 };

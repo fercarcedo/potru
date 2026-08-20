@@ -38,7 +38,7 @@
 .phase .dur {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.74rem;
-  color: var(--xgs);
+  color: var(--xgs-tx);
   letter-spacing: 0.1em;
   margin: 4px 0 8px;
 }

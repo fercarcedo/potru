@@ -119,7 +119,14 @@ versioned.
   and data in Spanish.
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.
-- **No `localStorage` / `sessionStorage`** anywhere.
+- **Client-side storage is for one thing only: the colour theme.** `localStorage` holds the key
+  `potru:theme` (`"light"` / `"dark"`), written by `src/scripts/theme.ts` and by the pre-paint
+  inline script in `Layout.astro`, and nothing else. This used to be a blanket ban on
+  `localStorage` and `sessionStorage`; it was lifted deliberately when the site gained a theme
+  toggle, because the alternative — losing the visitor's choice on every navigation to
+  `/nodos/<id>` — is worse, and a preference the visitor asked for is not tracking. The ban stays
+  in force for everything else, and `tests/data/no-storage.test.ts` is what keeps it honest: it
+  allows exactly that one key in those two files and fails on any other use.
 - Honour `prefers-reduced-motion` (there is a global CSS rule, and `tour.ts` checks it).
 - Progressive enhancement: node cards and gantt bars are real anchors to `/nodos/<id>`; JS upgrades
   them to the modal.
