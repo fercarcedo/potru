@@ -251,8 +251,7 @@
     "rows": [
       { "name": "CWDM 8133 · Occidental", "channels": 8, "used": 8 },
       { "name": "CWDM 8140 · Suroccidental", "channels": 4, "used": 2 },
-      { "name": "CWDM 8133 · Suroriental", "channels": 8, "used": 8 },
-      { "name": "CWDM 8133 · Oriental", "channels": 8, "used": 8 }
+      { "name": "CWDM 8133 · Suroriental / Oriental (compartido)", "channels": 8, "used": 8 }
     ],
     "directLabel": "Caudal / Aller / Nalón",
     "directNote": "fibras DIRECTAS al 7750 de Mieres · sin CWDM",

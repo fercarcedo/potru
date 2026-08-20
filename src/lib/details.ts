@@ -175,13 +175,44 @@ export const DETAILS: Record<string, string> = {
       '2× Transmode 5800 cursan las 4 tramas del hospital · otros 2× 5800 llevan las 6 tramas (3+3) de las OLT de Cangas del Narcea',
     )}`,
 
-  /* south-east */
-  suroriente: `${occRow('CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes', 8, 8, CW8)}
-    <div style="color:var(--muted);margin-top:6px;padding-left:6px;padding-right:6px">Transmode 5800 4×1 Gbps sobre fibra alquilada · sin facilidades vacantes: uno de los motivos por los que el contrato permite aportar equipos de transporte nuevos · redundado con el PAO desde Llanes</div>`,
+  /* south-east: Tabla 65/70/74 of the pliego — the same table, verbatim, in
+     the fiches of Arriondas, Nava and Llanes — lado W (direct route through
+     the interior); lado E duplicates it channel for channel over the coastal
+     route via Llanes, so only one side is drawn */
+  suroriente: mkCWDM(
+    'CWDM 8133 · Gijón–Nava–Infiesto–Arriondas–Llanes (lado W · ruta directa)',
+    [
+      { l: 1511, to: 'OLT Colombres' },
+      { l: 1531, to: 'Hospital Grande Covián · Anillo 7' },
+      { l: 1551, to: 'Hospital Grande Covián · Anillo 7' },
+      { l: 1571, to: 'OLT Llanes' },
+      { l: 1471, to: 'OLT Llanes' },
+      { l: 1491, to: 'OLT Arriondas · redundante' },
+      { l: 1591, to: 'OLT Infiesto · redundante' },
+      { l: 1611, to: 'OLT Nava · redundante' },
+    ],
+    'Redundado en dos lados idénticos: <b>lado W</b> (interior, el de arriba) y <b>lado E</b> (costa, vía Llanes) · sin facilidades vacantes de portadores ni de transporte · los canales 2–3 alimentan además un anillo local (2× Transmode 5810, «Anillo 7») exclusivo para el Hospital Grande Covián de Arriondas',
+  ),
 
-  /* east */
-  oriente: `${occRow('CWDM 8133 · Gijón–Llanes–Colombres', 8, 8, CW8)}
-    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding-left:6px">
+  /* east: Colombres' own fiche names a DIFFERENT, smaller CWDM for its link
+     to Llanes — not the shared 8133 above. The pliego's own PAO equipment
+     summary lists «Área Oriental: CWDM 8133, 8 canales, todos ocupados»,
+     identical wording to the Suroriental line above; that reads as the
+     general chapter re-using boilerplate rather than a second literal 8133,
+     since Colombres' own equipment section — more specific — names a
+     smaller, distinct device. Transcribed as the node fiche states it. */
+  oriente:
+    mkCWDM(
+      'CWDM 8140 · Llanes–Colombres (lado E) · ruta redundante de Colombres',
+      [
+        { l: 1471, free: true },
+        { l: 1491, to: 'OLT Colombres · redundante' },
+        { l: 1591, free: true },
+        { l: 1611, to: 'OLT Colombres · redundante' },
+      ],
+      'Enfrentado con un CWDM 8140 (lado W) en Llanes · el enlace PRINCIPAL de Colombres va por el canal 1 del CWDM 8133 compartido con el Suroriente (panel anterior) — este 8140 es solo la ruta de respaldo · canales 5–8 en la misma rejilla de longitudes de onda que la tabla anterior, la ficha de Colombres no repite los nm · <b>el resumen general de equipos del PAO da esta área como «CWDM 8133, 8 canales, todos ocupados» — la misma cifra que el Suroriente; aquí se transcribe el dato de la ficha del propio nodo, más específico</b>',
+    ) +
+    `<div style="display:flex;align-items:center;gap:10px;margin-top:14px;padding-left:8px">
     <svg viewBox="0 0 150 34" style="width:150px"><path d="M6,26 C40,26 110,26 144,26" stroke="var(--gpon)" stroke-width="2.5" fill="none" stroke-dasharray="7 6"/><path d="M6,10 C50,-2 100,-2 144,10" stroke="var(--muted)" stroke-width="2" fill="none" stroke-dasharray="2 5"/><text x="75" y="8" fill="var(--muted)" font-size="8" text-anchor="middle">ruta redundante</text><text x="75" y="33" fill="#c99a54" font-size="8" text-anchor="middle">ruta principal</text></svg>
     <span style="color:var(--muted)">Si la principal cae, las tramas del Oriente y Suroriente vuelven al PAO por la segunda ruta desde Llanes</span></div>`,
 
