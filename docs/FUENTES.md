@@ -106,7 +106,15 @@ licitación en PLACSP.
 - **Incoherencias del propio pliego**, transcritas tal cual y anotadas en el dato: NVI/1C dice
   «7 tarjetas de 8 puertos» pero su tabla da 44 puertos totales; BLI/1B y BLI/9B registran más
   puertos activos que totales (6/5 y 12/11); y la prosa de MUR/1D dice «48 tarjetas» donde su
-  tabla dice 4 (4 × 8 = 32 puertos, que es lo que cuadra).
+  tabla dice 4 (4 × 8 = 32 puertos, que es lo que cuadra). El resumen general de equipos de
+  transporte del PAO da el Área geográfica Oriental como «CWDM TRANSMODE 8133, con 8 canales
+  ... todos ellos ocupados» — texto idéntico, palabra por palabra, al que da para el Área
+  Suroriental justo antes — pero la ficha del propio nodo de Colombres (más específica) nombra
+  un equipo distinto para su enlace con Llanes: CWDM TRANSMODE **8140**, de solo 4 canales, con
+  2 ocupados (6 y 8) y 2 libres (5 y 7); su enlace principal va, en realidad, por el canal 1 del
+  CWDM 8133 compartido con el Suroriente (Tabla 65/70/74, idéntica en las fichas de Arriondas,
+  Nava y Llanes). El panel «Oriente» del paseo transcribe el dato de la ficha de Colombres y
+  anota la discrepancia con el resumen general.
 - **Lo serigrafiado en el visor 3D sí es literal.** El bastidor de cada OLT lleva impreso su
   fabricante y modelo (`vendor`), su código del pliego (`code`) y su juego de tarjetas (`cards` y
   `cardModel`), y la balda de transporte el modelo que rotula el plano — en el sitio donde el
