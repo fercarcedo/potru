@@ -16,6 +16,12 @@
 import { PAO_TRANSPORT } from './data';
 import { CW8, mkCWDM, mkPAO, mkSection, occRow } from './graphics';
 
+/* Two mkSection cuts stacked in the same panel: each SVG's own bottom
+   padding varies with how much its zooms and labels fill it, so back to
+   back they can end up touching. A fixed gap between them beats relying on
+   that leftover space to be enough. */
+const SECTION_GAP = '<div style="height:28px"></div>';
+
 export const DETAILS: Record<string, string> = {
   /* PAO: unified panel, in the same visual language as the sections */
   pao: mkPAO(PAO_TRANSPORT),
@@ -59,6 +65,7 @@ export const DETAILS: Record<string, string> = {
       ],
       '',
     ) +
+    SECTION_GAP +
     mkSection(
       'Cable TROMIENSCFO128 · 128 ff.oo. · 16 tubos',
       16,
@@ -88,17 +95,13 @@ export const DETAILS: Record<string, string> = {
       {
         access: [4, 5, 6, 7, 8],
         dead: [3],
+        /* Tubes 1 and 2 already get a zoom below with the same "transporte
+           …" wording and their own leader line to the ring — a second label
+           here duplicated it and sat squarely in the path of tube 1's zoom
+           leader, so it read as crossed out. Tube 3 keeps its label: it's
+           the one ring mark (the dead cross) that isn't self-explanatory
+           without it. */
         labels: [
-          {
-            tubes: [1],
-            color: 'var(--muted)',
-            text: 'TUBO 1 · TRANSPORTE|Luarca→Cudillero|2 oc · 6 vacantes',
-          },
-          {
-            tubes: [2],
-            color: 'var(--muted)',
-            text: 'TUBO 2 · TRANSPORTE|Navia→Luarca|5 oc · 3 vacantes',
-          },
           { tubes: [3], color: 'var(--danger)', text: 'TUBO 3 · SIN SALIDA|segregado en Tapia' },
           {
             tubes: [4, 5, 6, 7, 8],
@@ -129,6 +132,7 @@ export const DETAILS: Record<string, string> = {
       ],
       'Anillo cian = tubos 4–8 de ACCESO, segregados en <b>Puerto de Vega</b> (Navia), <b>Figueras</b> (Castropol) y <b>La Caridad</b> (Tapia) · Tapia–Castropol: 3 oc/5 vac · regeneradores eléctrico-ópticos en Navia, Luarca y Muros · distancias: Castropol–Tapia 19 km · Tapia–Navia 16 · Navia–Luarca 22 · Luarca–Muros 49 · Muros–Gijón 60',
     ) +
+    SECTION_GAP +
     mkSection(
       'Cable CASTROPOL–VEGADEO · 96 ff.oo. · 12 tubos × 8 fibras',
       12,

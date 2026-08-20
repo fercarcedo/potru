@@ -231,59 +231,12 @@ export function mkSection(
   } else {
     placeRing(ring1, 0, nT > 8 ? 88 : 82, nT > 8 ? 18 : 24);
   }
-  /* radial labels, one per tube group */
   const CHAR_W = 7.4; /* advance width of IBM Plex Mono at 12.5px, for the clamps below */
   const MARGIN = 10;
-  labels.forEach((L) => {
-    const angs = L.tubes.map((t) => tubeAng[t]).filter((a): a is number => a !== undefined);
-    if (!angs.length) return;
-    /* circular mean angle */
-    let sx = 0,
-      sy = 0;
-    angs.forEach((a) => {
-      sx += Math.cos(a);
-      sy += Math.sin(a);
-    });
-    /* A tube set spread evenly around the circle (e.g. "all of them") sums to
-       a near-zero vector, and atan2 on floating-point noise near (0, 0) picks
-       an arbitrary quadrant instead of a meaningful direction — that quadrant
-       has landed the label past the edge of the canvas before now. Snap that
-       degenerate case to a fixed, safe direction instead of trusting the noise. */
-    const am = Math.hypot(sx, sy) < 1e-6 ? 0 : Math.atan2(sy, sx);
-    const ex = CX + Math.cos(am) * (Rsh + 14),
-      ey = CY + Math.sin(am) * (Rsh + 14);
-    const lx = CX + Math.cos(am) * (Rsh + 44),
-      ly = CY + Math.sin(am) * (Rsh + 44);
-    L.tubes.forEach((t) => {
-      const [tx, ty] = tubePos[t] || [CX, CY];
-      g += `<line x1="${tx + Math.cos(tubeAng[t]!) * 20}" y1="${ty + Math.sin(tubeAng[t]!) * 20}" x2="${ex}" y2="${ey}" stroke="${L.color || 'var(--muted)'}" stroke-width="1" opacity=".5"/>`;
-    });
-    g += `<line x1="${ex}" y1="${ey}" x2="${lx}" y2="${ly}" stroke="${L.color || 'var(--muted)'}" stroke-width="1.2"/>`;
-    const parts = L.text.split('|');
-    const textW = Math.max(...parts.map((p) => p.length)) * CHAR_W;
-    const vertical = Math.abs(Math.cos(am)) < 0.35; /* group above or below: centre the text */
-    let anchor: string, tx0: number, baseY: number;
-    if (vertical) {
-      anchor = 'middle';
-      tx0 = Math.min(Math.max(lx, MARGIN + textW / 2), 1180 - MARGIN - textW / 2);
-      baseY = ly + (Math.sin(am) < 0 ? -6 - (parts.length - 1) * 16 : 14);
-    } else {
-      const right = Math.cos(am) > 0;
-      anchor = right ? 'start' : 'end';
-      tx0 = right ? Math.min(lx + 6, 1180 - MARGIN - textW) : Math.max(lx - 6, MARGIN + textW);
-      baseY = ly + 4 - (parts.length - 1) * 8;
-    }
-    /* keep every line inside the viewBox top-to-bottom the same way, whether
-       the overflow is a real label direction or the fallback above */
-    const firstY = baseY,
-      lastY = baseY + (parts.length - 1) * 16;
-    if (firstY < 34) baseY += 34 - firstY;
-    else if (lastY > H - MARGIN) baseY -= lastY - (H - MARGIN);
-    parts.forEach((p, pi) => {
-      g += `<text x="${tx0}" y="${baseY + pi * 16}" fill="${L.color || 'var(--muted)'}" font-size="12.5" text-anchor="${anchor}" font-weight="${pi === 0 ? '600' : '400'}">${esc(p)}</text>`;
-    });
-  });
-  /* large zooms */
+  /* large zooms, drawn before the radial labels below: a zoom's leader line
+     can run right past where a label sits (both converge on the same tube),
+     and painting the label — with its own halo — on top afterwards is what
+     keeps the line from visibly cutting through the label's text. */
   zooms.forEach((z, zi) => {
     const zy = 100 + zi * 170,
       ZX = 760,
@@ -325,6 +278,59 @@ export function mkSection(
       z.sub.split('|').forEach((sl, si) => {
         g += `<text x="${ZX + ZR + 20}" y="${zy + 32 + si * 15}" fill="var(--muted)" font-size="11">${esc(sl)}</text>`;
       });
+  });
+  /* radial labels, one per tube group */
+  labels.forEach((L) => {
+    const angs = L.tubes.map((t) => tubeAng[t]).filter((a): a is number => a !== undefined);
+    if (!angs.length) return;
+    /* circular mean angle */
+    let sx = 0,
+      sy = 0;
+    angs.forEach((a) => {
+      sx += Math.cos(a);
+      sy += Math.sin(a);
+    });
+    /* A tube set spread evenly around the circle (e.g. "all of them") sums to
+       a near-zero vector, and atan2 on floating-point noise near (0, 0) picks
+       an arbitrary quadrant instead of a meaningful direction — that quadrant
+       has landed the label past the edge of the canvas before now. Snap that
+       degenerate case to a fixed, safe direction instead of trusting the noise. */
+    const am = Math.hypot(sx, sy) < 1e-6 ? 0 : Math.atan2(sy, sx);
+    const ex = CX + Math.cos(am) * (Rsh + 14),
+      ey = CY + Math.sin(am) * (Rsh + 14);
+    const lx = CX + Math.cos(am) * (Rsh + 44),
+      ly = CY + Math.sin(am) * (Rsh + 44);
+    L.tubes.forEach((t) => {
+      const [tx, ty] = tubePos[t] || [CX, CY];
+      g += `<line x1="${tx + Math.cos(tubeAng[t]!) * 20}" y1="${ty + Math.sin(tubeAng[t]!) * 20}" x2="${ex}" y2="${ey}" stroke="${L.color || 'var(--muted)'}" stroke-width="1" opacity=".5"/>`;
+    });
+    g += `<line x1="${ex}" y1="${ey}" x2="${lx}" y2="${ly}" stroke="${L.color || 'var(--muted)'}" stroke-width="1.2"/>`;
+    const parts = L.text.split('|');
+    const textW = Math.max(...parts.map((p) => p.length)) * CHAR_W;
+    const vertical = Math.abs(Math.cos(am)) < 0.35; /* group above or below: centre the text */
+    let anchor: string, tx0: number, baseY: number;
+    if (vertical) {
+      anchor = 'middle';
+      tx0 = Math.min(Math.max(lx, MARGIN + textW / 2), 1180 - MARGIN - textW / 2);
+      baseY = ly + (Math.sin(am) < 0 ? -6 - (parts.length - 1) * 16 : 14);
+    } else {
+      const right = Math.cos(am) > 0;
+      anchor = right ? 'start' : 'end';
+      tx0 = right ? Math.min(lx + 6, 1180 - MARGIN - textW) : Math.max(lx - 6, MARGIN + textW);
+      baseY = ly + 4 - (parts.length - 1) * 8;
+    }
+    /* keep every line inside the viewBox top-to-bottom the same way, whether
+       the overflow is a real label direction or the fallback above — and
+       clear the title's own baseline by more than a hair, since an
+       upward-pointing label (bold first line, same as the title) lands
+       close enough at 34 to read as touching it. */
+    const firstY = baseY,
+      lastY = baseY + (parts.length - 1) * 16;
+    if (firstY < 52) baseY += 52 - firstY;
+    else if (lastY > H - MARGIN) baseY -= lastY - (H - MARGIN);
+    parts.forEach((p, pi) => {
+      g += `<text x="${tx0}" y="${baseY + pi * 16}" fill="${L.color || 'var(--muted)'}" font-size="12.5" text-anchor="${anchor}" font-weight="${pi === 0 ? '600' : '400'}">${esc(p)}</text>`;
+    });
   });
   g += '</svg>';
   return (
