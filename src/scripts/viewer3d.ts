@@ -782,26 +782,9 @@ export function buildRoom(n: NetworkNode) {
   };
 
   /* ---- camera and controls ---- */
-  /* Face the way you came in. Aiming at the middle of the room is wrong
-     wherever the room is not a box: in Blimea's L it is the inner corner, so
-     the visitor arrived facing a blank wall. Straight in from the doorway is
-     right everywhere, and it is what you would actually see. */
-  let lookAt: [number, number] = [0, 0];
-  const d0 = room.doors[0];
-  if (d0) {
-    const [ax, az] = poly[d0.edge]!;
-    const [bx, bz] = poly[(d0.edge + 1) % poly.length]!;
-    const ang = Math.atan2(bz - az, bx - ax);
-    const mid = d0.at + d0.width / 2;
-    const dx = ax + Math.cos(ang) * mid,
-      dz = az + Math.sin(ang) * mid;
-    const nx = -Math.sin(ang),
-      nz = Math.cos(ang);
-    const sign = pointInPolygon(poly, dx + nx * 0.1, dz + nz * 0.1) ? 1 : -1;
-    const reach = Math.hypot(W, D);
-    lookAt = [dx + nx * sign * reach, dz + nz * sign * reach];
-  }
-
+  /* Where the visitor lands and which way they face are both initControls'
+     to decide: the second depends on the first, and only it knows where the
+     walk-in stopped. See arrivalAim() in walkable.ts. */
   const controls = initControls({
     cam,
     canvas,
@@ -811,7 +794,6 @@ export function buildRoom(n: NetworkNode) {
     poly,
     solids,
     startDoor: room.doors[0],
-    lookAt,
     leds,
     software,
   });
