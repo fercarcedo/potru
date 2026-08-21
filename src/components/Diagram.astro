@@ -14,20 +14,22 @@ import { DOM } from '../lib/dom-ids';
       con OLT → red troncal → punto de acceso de operadores. Cambia entre la red actual y la
       renovada, y pulsa cada elemento para conocer su papel.
     </p>
-    <div class="mode-toggle" role="tablist" aria-label="Estado de la red">
-      <button id={DOM.btnGpon} class="active-gpon" role="tab" aria-selected="true"
-        >◉ RED ACTUAL · GPON</button
-      >
-      <button id={DOM.btnXgs} role="tab" aria-selected="false">◎ RED RENOVADA · GPON/XGS-PON</button
-      >
-    </div>
     {
-      /* Fullscreen (scripts/fullscreen.ts) moves this whole wrapper, info-box
-        included — not just .diagram-shell — so the click-an-element-for-its-
-        info panel keeps working: leaving the info-box behind on the page
-        would put it out of sight the moment fullscreen covers the page. */
+      /* Fullscreen (scripts/fullscreen.ts) moves this whole wrapper — the
+        mode toggle and the info-box, not just .diagram-shell — so both the
+        GPON ↔ XGS-PON switch and the click-an-element-for-its-info panel
+        keep working: leaving either behind on the page would put it out of
+        sight the moment fullscreen covers the page. */
     }
     <div id={DOM.diagramShell}>
+      <div class="mode-toggle" role="tablist" aria-label="Estado de la red">
+        <button id={DOM.btnGpon} class="active-gpon" role="tab" aria-selected="true"
+          >◉ RED ACTUAL · GPON</button
+        >
+        <button id={DOM.btnXgs} role="tab" aria-selected="false"
+          >◎ RED RENOVADA · GPON/XGS-PON</button
+        >
+      </div>
       <div class="diagram-shell">
         <svg
           id={DOM.netDiagram}

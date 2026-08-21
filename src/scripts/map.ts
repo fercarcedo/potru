@@ -568,7 +568,7 @@ export function initMap(openNode: (id: string) => void): {
       : '○ Poblaciones servidas: ocultas';
   };
 
-  const { fitAspect } = initViewport(svg, {
+  const { fitAspect, clearFit } = initViewport(svg, {
     zoomIn: document.getElementById(DOM.mapZoomIn) as HTMLButtonElement | null,
     zoomOut: document.getElementById(DOM.mapZoomOut) as HTMLButtonElement | null,
   });
@@ -602,6 +602,10 @@ export function initMap(openNode: (id: string) => void): {
       if (!fsBg.classList.contains('open') && savedForFullscreen) {
         svg.setAttribute('viewBox', savedForFullscreen.join(' '));
         savedForFullscreen = null;
+        /* fitAspect narrowed how far zoom-out can go to the fullscreen crop —
+           without this, the in-page map would keep that narrower ceiling
+           forever, unable to zoom back out to its own true home extent. */
+        clearFit();
       }
     }).observe(fsBg, { attributes: true, attributeFilter: ['class'] });
   }
