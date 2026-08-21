@@ -154,13 +154,25 @@
   margin-bottom: 22px;
 }
 .ruler-wrap {
-  position: relative;
   margin-bottom: 14px;
 }
 .xgs-ruler {
   width: 100%;
   height: auto;
   display: block;
+}
+/* The ruler is wide and short (viewBox 1000x160): on a phone it renders
+   only ~55px tall, so .zoom-pad's usual top:12px;right:12px overlay — sized
+   for the map/diagram's much taller boxes — would cover most of that
+   height, including the axis labels near the bottom. Dropping it out of
+   the overlay and into normal flow, right-aligned below the ruler, keeps
+   the button off the drawing at any width instead of chasing a safe corner
+   that shrinks along with the image. */
+.ruler-wrap .zoom-pad {
+  position: static;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 .xgs-source {
   font-family: 'IBM Plex Mono', monospace;
