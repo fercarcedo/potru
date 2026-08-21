@@ -114,7 +114,7 @@ export const cardLabel = (o: Olt): string =>
     ? `${o.cards} × ${o.cardModel} (${o.portsPerCard} puertos)`
     : `${o.cards} tarjetas de ${o.portsPerCard} puertos`;
 
-/** Prepends the site base ('/potru/') to a relative path from the JSON. */
+/** Prepends the site base (astro.config's `base`) to a relative path from the JSON. */
 export const asset = (path: string): string => import.meta.env.BASE_URL + path;
 
 /**

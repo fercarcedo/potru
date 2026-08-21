@@ -1,12 +1,12 @@
 /// <reference types="vitest/config" />
 import { getViteConfig } from 'astro/config';
 
-// Reuses the site's own Vite/Astro config. Note: under Vitest's SSR test
-// runner import.meta.env.BASE_URL always resolves to '/', not astro.config's
-// '/potru/' — that's a Vite dev-mode quirk isolated to the test runner and
-// does not affect `npm run build`, which resolves it correctly (verified
-// separately). Tests that touch asset()/BASE_URL assert against the runtime
-// value rather than assuming '/potru/'.
+// Reuses the site's own Vite/Astro config. astro.config's base is '/' too,
+// so there's no longer a gap between what Vitest's SSR test runner resolves
+// import.meta.env.BASE_URL to and what `npm run build` resolves it to — but
+// tests that touch asset()/BASE_URL still assert against the runtime value
+// rather than hardcoding '/', so a future base-path change wouldn't reopen
+// the gap silently.
 export default getViteConfig({
   test: {
     projects: [

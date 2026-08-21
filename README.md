@@ -79,9 +79,11 @@ Ver [`docs/FUENTES.md`](docs/FUENTES.md).
 
 ## Despliegue
 
-GitHub Pages como sitio de proyecto: `https://fercarcedo.github.io/potru/`. El workflow
-`.github/workflows/deploy.yml` construye y publica en cada push a `main`. Como el sitio
-cuelga de `/potru/`, todo enlace o recurso propio pasa por `import.meta.env.BASE_URL`.
+Cloudflare Workers (static assets) en `https://potru.app/`. El workflow
+`.github/workflows/deploy.yml` construye y publica en cada push a `main`, vía
+`wrangler deploy` (`wrangler.jsonc`); necesita los secretos `CLOUDFLARE_API_TOKEN` y
+`CLOUDFLARE_ACCOUNT_ID` en el repositorio. Para desplegar a mano: `npm run deploy`. Todo
+enlace o recurso propio pasa por `import.meta.env.BASE_URL`, aunque hoy la base sea `/`.
 
 ## Licencia
 

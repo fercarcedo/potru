@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to Cloudflare
 
 on:
   push:
@@ -6,14 +6,9 @@ on:
   # allows re-running the deploy by hand from the Actions tab
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 # one deploy at a time; never cancel one that is already running
 concurrency:
-  group: pages
+  group: cloudflare
   cancel-in-progress: false
 
 jobs:
@@ -32,23 +27,23 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
 
-  build:
+  deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the site
-        uses: withastro/action@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
-          package-manager: npm
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Requires the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repo
+      # secrets (Settings → Secrets and variables → Actions) — a token
+      # scoped to this Worker's "Edit" permission is enough, no account-wide
+      # access needed.
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy

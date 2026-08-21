@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Potru** — an independent, Spanish-language explanatory site about the GPON → XGS-PON renewal of
 the **Red Asturcón**, the public FTTH network of Asturias, as described by the public tender
-**pliego CON 06/2025** (GIT, Principado de Asturias). Static Astro site, no server code, deployed to
-GitHub Pages at `https://fercarcedo.github.io/potru/`.
+**pliego CON 06/2025** (GIT, Principado de Asturias). Static Astro site, no server code, deployed as
+static assets on Cloudflare Workers at `https://potru.app/`.
 
 ## The golden rule
 
@@ -36,7 +36,10 @@ npm run verify    # check + test + build + test:e2e, in that order
 
 Node 24 (`.nvmrc`). `npm run verify` is the full gate; run it (or at least `check` and `test`) before
 calling a change done. `test:e2e` builds and serves the real `dist/` output rather than the dev
-server, so it exercises the same static HTML, base path and asset URLs GitHub Pages serves.
+server, so it exercises the same static HTML, base path and asset URLs Cloudflare serves.
+`npm run deploy` builds and runs `wrangler deploy` (`wrangler.jsonc`); `npm run cf:dev` builds and
+serves that same output locally through Wrangler's own runtime, closer to production than
+`npm run preview`.
 
 When reading `astro check` output, filter rather than truncate — `tail` has clipped real errors:
 
@@ -113,8 +116,11 @@ versioned.
 
 ## Conventions
 
-- **Base path**: the site is served from `/potru/`. Every internal link or asset goes through
-  `import.meta.env.BASE_URL` (or `asset()` from `src/lib/data.ts`).
+- **Base path**: the site is served from the domain root (`base: '/'` in `astro.config.mjs`) —
+  it used to be `/potru/`, back when it lived on GitHub Pages as a project site. Every internal
+  link or asset still goes through `import.meta.env.BASE_URL` (or `asset()` from
+  `src/lib/data.ts`) rather than a hardcoded `/`, so the convention holds if the base ever moves
+  again.
 - **Language**: code, comments and identifiers in English; all user-facing copy, URLs (`/nodos/…`)
   and data in Spanish.
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network

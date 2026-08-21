@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "potru",
+  "compatibility_date": "2026-08-21",
+  "assets": {
+    "directory": "./dist",
+    // Potru is a real multi-page site (/, /nodos/<id>/…), not a client-routed
+    // SPA, so a genuinely missing path should 404, not silently serve the
+    // homepage — that's what "single-page-application" mode would do here.
+    "not_found_handling": "none",
+  },
+}
