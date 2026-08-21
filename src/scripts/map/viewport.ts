@@ -57,12 +57,23 @@ export function initPannableZoom(
   svg: SVGSVGElement,
   minWidth?: number,
   onViewBoxChange?: (vb: ViewBox, home: ViewBox, minW: number) => void,
-): { zoom: (factor: number) => void; fitAspect: (containerW: number, containerH: number) => void } {
+): {
+  zoom: (factor: number) => void;
+  fitAspect: (containerW: number, containerH: number) => void;
+  clearFit: () => void;
+} {
   const home = readViewBox(svg);
   const [homeX, homeY, HOME_W, HOME_H] = home;
   const MIN_W = minWidth ?? HOME_W * MIN_FRACTION;
+  /* Pan (and the "is there room to pan" / cursor logic in sync() below)
+     always measures against the *true* home extent — the whole real map,
+     never reduced — so panning past whatever fitAspect last framed always
+     reaches the rest of it. ceilingW/H is a *separate*, narrower "how far
+     out can zoom go" limit fitAspect can set — see its own comment. */
   const clampX = (x: number, w: number) => Math.max(homeX, Math.min(homeX + HOME_W - w, x));
   const clampY = (y: number, h: number) => Math.max(homeY, Math.min(homeY + HOME_H - h, y));
+  let ceilingW = HOME_W,
+    ceilingH = HOME_H;
   const vb = () => readViewBox(svg);
   const r2 = (v: number) => Math.round(v * 100) / 100;
   /* A mouse drag over any of this svg's <text> labels would otherwise
@@ -71,20 +82,20 @@ export function initPannableZoom(
   svg.style.userSelect = 'none';
 
   /**
-   * Clamps `targetW` to [MIN_W, HOME_W] and derives height by preserving
-   * `origW`:`origH`'s ratio — except when that would push past HOME_H,
+   * Clamps `targetW` to [MIN_W, ceilingW] and derives height by preserving
+   * `origW`:`origH`'s ratio — except when that would push past ceilingH,
    * where height is simply capped there rather than also pulling width
    * back down to match. Pulling width down is what made zooming *out*
    * able to get stuck: fitAspect below can leave a view with height
-   * already pinned at HOME_H but width still well short of HOME_W, and
-   * re-deriving width from a height that's just been capped back to
-   * HOME_H reproduces the *original*, too-narrow width — a zoom-out that
-   * undoes itself. Once height has nothing further to give, width simply
-   * keeps growing on its own clamp instead.
+   * already pinned at the ceiling but width still well short of it, and
+   * re-deriving width from a height that's just been capped reproduces
+   * the *original*, too-narrow width — a zoom-out that undoes itself.
+   * Once height has nothing further to give, width simply keeps growing
+   * on its own clamp instead.
    */
   function fitSize(origW: number, origH: number, targetW: number): [number, number] {
-    const nw = Math.max(MIN_W, Math.min(HOME_W, targetW));
-    const nh = Math.min(HOME_H, origH * (nw / origW));
+    const nw = Math.max(MIN_W, Math.min(ceilingW, targetW));
+    const nh = Math.min(ceilingH, origH * (nw / origW));
     return [nw, nh];
   }
 
@@ -142,6 +153,21 @@ export function initPannableZoom(
     const nx = clampX(cx - nw / 2, nw);
     const ny = clampY(cy - nh / 2, nh);
     svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
+    /* This crop becomes the new "how far out can zoom go" ceiling: without
+       it, zoom()/fitSize still clamp against the true HOME_W/H, so zooming
+       out afterward keeps converging back toward the full, un-cropped map —
+       shrinking the rendered box right back to its non-fullscreen size,
+       since the svg is laid out at width:100%;height:auto. */
+    ceilingW = nw;
+    ceilingH = nh;
+  }
+
+  /** Restores the zoom-out ceiling to the true home extent — call once
+   *  whatever used fitAspect (fullscreen closing) is done with it, so the
+   *  in-page view's own zoom-out range goes back to normal. */
+  function clearFit() {
+    ceilingW = HOME_W;
+    ceilingH = HOME_H;
   }
 
   function sync() {
@@ -154,7 +180,9 @@ export function initPannableZoom(
        pinch works from the very first, zoomed-all-the-way-out frame, not
        only once there is already somewhere to pan. */
     svg.style.touchAction = zoomedIn ? 'none' : 'pan-y';
-    onViewBoxChange?.(vb(), home, MIN_W);
+    /* the zoom-out button's own disabled state should reflect the ceiling
+       fitAspect narrowed, not the true (and now unreachable-by-zoom) home */
+    onViewBoxChange?.(vb(), [homeX, homeY, ceilingW, ceilingH], MIN_W);
   }
   new MutationObserver(sync).observe(svg, { attributes: true, attributeFilter: ['viewBox'] });
   sync();
@@ -256,7 +284,7 @@ export function initPannableZoom(
     true,
   );
 
-  return { zoom, fitAspect };
+  return { zoom, fitAspect, clearFit };
 }
 
 export interface ViewportOptions {
@@ -276,19 +304,23 @@ export interface ViewportOptions {
 export function initViewport(
   svg: SVGSVGElement,
   opts: ViewportOptions = {},
-): { zoom: (factor: number) => void; fitAspect: (containerW: number, containerH: number) => void } {
+): {
+  zoom: (factor: number) => void;
+  fitAspect: (containerW: number, containerH: number) => void;
+  clearFit: () => void;
+} {
   const { zoomIn, zoomOut } = opts;
   /**
    * Keeps the pad honest: grey out whichever button can no longer do
    * anything. Runs on every viewBox change, including ones made elsewhere
    * (the guided tour rewrites the map's viewBox directly to frame each stop).
    */
-  const { zoom, fitAspect } = initPannableZoom(
+  const { zoom, fitAspect, clearFit } = initPannableZoom(
     svg,
     opts.minWidth,
-    ([, , w, h], [, , HOME_W, HOME_H], minW) => {
+    ([, , w, h], [, , ceilW, ceilH], minW) => {
       if (zoomIn) zoomIn.disabled = w <= minW + 0.5;
-      if (zoomOut) zoomOut.disabled = !(w < HOME_W - 0.5 || h < HOME_H - 0.5);
+      if (zoomOut) zoomOut.disabled = !(w < ceilW - 0.5 || h < ceilH - 0.5);
     },
   );
   /* Never let a pad button take focus: one low enough on screen to be
@@ -298,5 +330,5 @@ export function initViewport(
   zoomOut?.addEventListener('pointerdown', (e) => e.preventDefault());
   zoomIn?.addEventListener('click', () => zoom(0.72));
   zoomOut?.addEventListener('click', () => zoom(1 / 0.72));
-  return { zoom, fitAspect };
+  return { zoom, fitAspect, clearFit };
 }
