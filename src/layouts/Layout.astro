@@ -186,12 +186,16 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
      the section eyebrows, so the nav reads as part of the same system.
      .active is the same treatment, kept on for whichever section navspy.ts
      finds under the header as the visitor scrolls, not just under the
-     pointer. */
+     pointer — plus its own font-weight, so it doesn't read as "just
+     hovered" the moment the pointer lands on a different link. */
   nav a:hover,
   nav a:focus-visible,
   nav a.active {
     color: var(--accent);
     background: var(--accent-soft);
+  }
+  nav a.active {
+    font-weight: 600;
   }
   nav a:focus-visible {
     outline: 2px solid var(--xgs);
