@@ -263,21 +263,42 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
        resolving against a container that, by definition, had no explicit
        width to resolve against. It silently did nothing: the list still
        ran off the screen, just now as real page overflow instead of a
-       contained scrollbar (see navmenu.ts). Replaced with a proper
-       collapsible menu: the list becomes a dropdown panel under the bar,
-       opened by the hamburger.
+       contained scrollbar (see navmenu.ts).
+       Replaced with a collapsible menu, opened by the hamburger — but as
+       part of the bar's own normal flow (a css grid, .nav-right's box
+       suspended via display:contents so its children — the list and the
+       two buttons — place directly into it) rather than an overlay
+       floating on top: the list grows the sticky nav and pushes the page
+       down, instead of covering whatever is directly under it.
        Without JS none of this collapsing happens — nav ul stays block-flex
-       and simply prints every link, so navigation keeps working. */
+       and simply prints every link in the header's own height, so
+       navigation keeps working. */
     nav .wrap {
-      height: 58px;
-      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 10px;
+      height: auto;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .brand {
+      grid-column: 1;
+      grid-row: 1;
     }
     .nav-right {
-      gap: 10px;
+      display: contents;
+    }
+    .theme-toggle {
+      grid-column: 2;
+      grid-row: 1;
     }
     .nav-toggle {
       display: grid;
       place-items: center;
+      grid-column: 3;
+      grid-row: 1;
       width: 34px;
       height: 34px;
       color: var(--muted);
@@ -286,7 +307,6 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       border-radius: 9px;
       padding: 0;
       cursor: pointer;
-      flex: none;
     }
     .nav-toggle svg {
       width: 17px;
@@ -296,16 +316,10 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       display: none;
     }
     nav ul {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
+      grid-column: 1 / -1;
+      grid-row: 2;
       flex-direction: column;
       gap: 2px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--line);
-      padding: 8px 24px 14px;
-      box-shadow: 0 12px 24px var(--scrim);
     }
     /* Author rules beat the UA stylesheet's own [hidden]{display:none} only
        because this one is more specific than nav ul{display:flex} above —
