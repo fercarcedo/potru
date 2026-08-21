@@ -57,7 +57,7 @@ export function initPannableZoom(
   svg: SVGSVGElement,
   minWidth?: number,
   onViewBoxChange?: (vb: ViewBox, home: ViewBox, minW: number) => void,
-): { zoom: (factor: number) => void } {
+): { zoom: (factor: number) => void; fitAspect: (containerW: number, containerH: number) => void } {
   const home = readViewBox(svg);
   const [homeX, homeY, HOME_W, HOME_H] = home;
   const MIN_W = minWidth ?? HOME_W * MIN_FRACTION;
@@ -65,31 +65,80 @@ export function initPannableZoom(
   const clampY = (y: number, h: number) => Math.max(homeY, Math.min(homeY + HOME_H - h, y));
   const vb = () => readViewBox(svg);
   const r2 = (v: number) => Math.round(v * 100) / 100;
+  /* A mouse drag over any of this svg's <text> labels would otherwise
+     start a native text selection instead of (or as well as) our own pan —
+     there's no "copy this label" use case here to preserve. */
+  svg.style.userSelect = 'none';
 
   /**
-   * Clamps `targetW` to [MIN_W, HOME_W] and derives the matching height
-   * from `origW`×`origH`'s aspect ratio. `origW` has to be the actual
-   * pre-zoom width, not already-scaled — the ratio and the clamp both
-   * need to agree on what "1×" means, or clamping the width and deriving
-   * the height from it fight each other into a wildly wrong aspect ratio
-   * once `targetW` lands outside the clampable range.
+   * Clamps `targetW` to [MIN_W, HOME_W] and derives height by preserving
+   * `origW`:`origH`'s ratio — except when that would push past HOME_H,
+   * where height is simply capped there rather than also pulling width
+   * back down to match. Pulling width down is what made zooming *out*
+   * able to get stuck: fitAspect below can leave a view with height
+   * already pinned at HOME_H but width still well short of HOME_W, and
+   * re-deriving width from a height that's just been capped back to
+   * HOME_H reproduces the *original*, too-narrow width — a zoom-out that
+   * undoes itself. Once height has nothing further to give, width simply
+   * keeps growing on its own clamp instead.
    */
   function fitSize(origW: number, origH: number, targetW: number): [number, number] {
-    let nw = Math.max(MIN_W, Math.min(HOME_W, targetW));
-    let nh = origH * (nw / origW);
-    if (nh > HOME_H) {
-      nh = HOME_H;
-      nw = origW * (nh / origH);
-    }
+    const nw = Math.max(MIN_W, Math.min(HOME_W, targetW));
+    const nh = Math.min(HOME_H, origH * (nw / origW));
     return [nw, nh];
   }
 
-  /** Zooms about the middle of the current view, keeping its aspect ratio. */
+  /** Zooms about the middle of the current view, keeping its aspect ratio
+   *  (or converging back toward home's, past HOME_H — see fitSize). */
   function zoom(factor: number) {
     const [x, y, w, h] = vb();
     const cx = x + w / 2,
       cy = y + h / 2;
     const [nw, nh] = fitSize(w, h, w * factor);
+    const nx = clampX(cx - nw / 2, nw);
+    const ny = clampY(cy - nh / 2, nh);
+    svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
+  }
+
+  /**
+   * Reframes to the largest view matching `containerW`:`containerH`'s own
+   * aspect ratio that still fits inside the home extent, centered on the
+   * current view. For content much wider than it is tall (the map, ~2.5:1)
+   * shown in a container much taller than it is wide (a phone in
+   * fullscreen), width-fit sizing — the default everywhere else — leaves
+   * most of that height empty; this is the fix, and it stays a real zoom
+   * (not a CSS trick sizing the svg past its container), so pan and the
+   * zoom buttons keep working on it exactly as they do at any other zoom
+   * level: nothing about them assumes zooming in only ever happens by the
+   * factor the + button uses.
+   */
+  function fitAspect(containerW: number, containerH: number) {
+    const ca = containerW / containerH;
+    const homeAspect = HOME_W / HOME_H;
+    let nw: number, nh: number;
+    if (ca >= homeAspect) {
+      nw = HOME_W;
+      nh = HOME_W / ca;
+    } else {
+      nh = HOME_H;
+      nw = HOME_H * ca;
+    }
+    /* A container narrow enough (relative to the map's own aspect) can ask
+       for a width below MIN_W here — no fitSize, on purpose: fitSize would
+       clamp nw up but then keep it exactly ca-proportioned to nh, which
+       (nh already pinned at HOME_H) forces nh straight back past HOME_H,
+       and *its own* correction for that undoes the clamp right back to
+       the too-narrow width. Letting the aspect go slightly off instead —
+       floor nw, keep nh at whatever that implies, capped at HOME_H — costs
+       a sliver of unused height in that one edge case, not a floor that
+       silently doesn't hold. */
+    if (nw < MIN_W) {
+      nw = MIN_W;
+      nh = Math.min(HOME_H, MIN_W / ca);
+    }
+    const [x, y, w, h] = vb();
+    const cx = x + w / 2,
+      cy = y + h / 2;
     const nx = clampX(cx - nw / 2, nw);
     const ny = clampY(cy - nh / 2, nh);
     svg.setAttribute('viewBox', `${r2(nx)} ${r2(ny)} ${r2(nw)} ${r2(nh)}`);
@@ -207,7 +256,7 @@ export function initPannableZoom(
     true,
   );
 
-  return { zoom };
+  return { zoom, fitAspect };
 }
 
 export interface ViewportOptions {
@@ -220,15 +269,21 @@ export interface ViewportOptions {
 }
 
 /** Wires zoom and pan for an svg's viewBox, with its own zoom-in/out pad.
- *  Call once, after the svg has its initial (= "home") viewBox set. */
-export function initViewport(svg: SVGSVGElement, opts: ViewportOptions = {}): void {
+ *  Call once, after the svg has its initial (= "home") viewBox set.
+ *  Returns the same zoom/fitAspect initPannableZoom does, for a caller
+ *  that needs more than the pad — map.ts uses fitAspect to reframe the map
+ *  for fullscreen on a portrait phone. */
+export function initViewport(
+  svg: SVGSVGElement,
+  opts: ViewportOptions = {},
+): { zoom: (factor: number) => void; fitAspect: (containerW: number, containerH: number) => void } {
   const { zoomIn, zoomOut } = opts;
   /**
    * Keeps the pad honest: grey out whichever button can no longer do
    * anything. Runs on every viewBox change, including ones made elsewhere
    * (the guided tour rewrites the map's viewBox directly to frame each stop).
    */
-  const { zoom } = initPannableZoom(
+  const { zoom, fitAspect } = initPannableZoom(
     svg,
     opts.minWidth,
     ([, , w, h], [, , HOME_W, HOME_H], minW) => {
@@ -236,6 +291,12 @@ export function initViewport(svg: SVGSVGElement, opts: ViewportOptions = {}): vo
       if (zoomOut) zoomOut.disabled = !(w < HOME_W - 0.5 || h < HOME_H - 0.5);
     },
   );
+  /* Never let a pad button take focus: one low enough on screen to be
+     partly out of view would otherwise get smooth-scrolled into view the
+     instant it's pressed (see fullscreen.ts's own note on this). */
+  zoomIn?.addEventListener('pointerdown', (e) => e.preventDefault());
+  zoomOut?.addEventListener('pointerdown', (e) => e.preventDefault());
   zoomIn?.addEventListener('click', () => zoom(0.72));
   zoomOut?.addEventListener('click', () => zoom(1 / 0.72));
+  return { zoom, fitAspect };
 }

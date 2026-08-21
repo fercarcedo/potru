@@ -11,13 +11,14 @@ html {
      this each one lands with its heading tucked underneath the bar — on
      «Arquitectura» the accent of «Asturcón» was the part that disappeared,
      which is how this got noticed at all. Kept in step with the nav's own
-     breakpoint in Layout.astro, where it stacks and doubles in height. */
-  --nav-h: 59px;
+     height in Layout.astro (content-sized, not fixed — the brand's tagline
+     line means it isn't the same height at every width). */
+  --nav-h: 56px;
   scroll-padding-top: calc(var(--nav-h) + 1.25rem);
 }
 @media (max-width: 760px) {
   html {
-    --nav-h: 107px;
+    --nav-h: 58px;
   }
 }
 body {

@@ -57,6 +57,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
       <div class="wrap">
         <div class="brand">
           <b>Potru<span class="dot">.</span></b>
+          <span class="tagline">La siguiente generación de Asturcón</span>
         </div>
         <div class="nav-right">
           <ul id={DOM.navMenu}>
@@ -166,7 +167,9 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 58px;
+    /* content-sized, not a fixed height: the two-line brand below needs
+       more room than the single wordmark this used to be pinned to fit. */
+    padding: 9px 0;
   }
   .nav-right {
     display: flex;
@@ -177,7 +180,13 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   /* The wordmark, and the only place the display face runs at full weight.
      The stop is the whole mark: a potru is a colt, the Asturcón's young
      counterpart, so the name already says «related, not the same thing» —
-     it does not need a logotype to say it again. */
+     the tagline underneath is what spells that pun out for a visitor who
+     doesn't already know the breed. */
+  .brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
   .brand b {
     font-family: 'Bricolage Grotesque Variable', system-ui, sans-serif;
     font-stretch: 78%;
@@ -189,6 +198,17 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   }
   .brand .dot {
     color: var(--gpon);
+  }
+  .brand .tagline {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
   nav ul {
     display: flex;

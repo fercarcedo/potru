@@ -53,10 +53,14 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     if (panelSvg && id) detZoom.set(id, initPannableZoom(panelSvg).zoom);
   });
   let currentDetZoom: ((factor: number) => void) | null = null;
-  document.getElementById(DOM.cableZoomIn)?.addEventListener('click', () => currentDetZoom?.(0.72));
-  document
-    .getElementById(DOM.cableZoomOut)
-    ?.addEventListener('click', () => currentDetZoom?.(1 / 0.72));
+  const cableZoomIn = document.getElementById(DOM.cableZoomIn),
+    cableZoomOut = document.getElementById(DOM.cableZoomOut);
+  /* Never let a pad button take focus and get smooth-scrolled into view on
+     press — see fullscreen.ts's own note on this; same pad, same risk. */
+  cableZoomIn?.addEventListener('pointerdown', (e) => e.preventDefault());
+  cableZoomOut?.addEventListener('pointerdown', (e) => e.preventDefault());
+  cableZoomIn?.addEventListener('click', () => currentDetZoom?.(0.72));
+  cableZoomOut?.addEventListener('click', () => currentDetZoom?.(1 / 0.72));
   let idx = -1,
     animId: number | null = null,
     pulses: SVGElement[] = [];

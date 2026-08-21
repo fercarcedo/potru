@@ -52,6 +52,14 @@
 .zoom-pad button.fs-trigger {
   font-size: 1.05rem;
 }
+/* The trigger travels with the rest of the zoom-pad into #fsHost — pointless
+   once you're already looking at the fullscreen view it opens, and the
+   close button is the way out from there instead. #fsHost .fs-trigger
+   (two classes) already outranks .zoom-pad button (one class, one type)
+   by specificity, so this doesn't need !important. */
+#fsHost .fs-trigger {
+  display: none;
+}
 @media (max-width: 760px) {
   .fs-host {
     padding: 54px 8px 8px;

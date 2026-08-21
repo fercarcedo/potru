@@ -13,7 +13,7 @@ import { HOST_ONLY, NODES, byId, ontCount } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { placeMapLabels } from './map/place-labels';
-import { initViewport } from './map/viewport';
+import { initViewport, readViewBox } from './map/viewport';
 import { svgEl, type SvgAttrs } from './svg';
 
 /** Screen position of each primary node's dot. Exported (with SECONDARY and
@@ -568,10 +568,43 @@ export function initMap(openNode: (id: string) => void): {
       : '○ Poblaciones servidas: ocultas';
   };
 
-  initViewport(svg, {
+  const { fitAspect } = initViewport(svg, {
     zoomIn: document.getElementById(DOM.mapZoomIn) as HTMLButtonElement | null,
     zoomOut: document.getElementById(DOM.mapZoomOut) as HTMLButtonElement | null,
   });
+
+  /* On a portrait phone the map's ~2.5:1 aspect ratio, width-fit like
+     everywhere else, leaves most of fullscreen's own height empty — the
+     one thing fullscreen (scripts/fullscreen.ts) was supposed to fix.
+     Reframing to fill that height is a real, correct zoom (fitAspect), not
+     a CSS trick, so it's undone the same way any other zoom would be:
+     remembered before, restored after, rather than left to bleed back into
+     the small in-page map once fullscreen closes. Watching #fsBg's own
+     class rather than the fullscreen module's return value keeps this
+     content-agnostic on that module's side — it doesn't need to know the
+     map is special, just that something under #mapWrap wants a say once
+     its target actually lands in the DOM at fullscreen size. */
+  const mapFsBtn = document.querySelector<HTMLButtonElement>(`#${DOM.mapWrap} .fs-trigger`);
+  const fsBg = document.getElementById(DOM.fsBg);
+  let savedForFullscreen: ReturnType<typeof readViewBox> | null = null;
+  mapFsBtn?.addEventListener('click', () => {
+    if (!matchMedia('(max-width: 760px) and (orientation: portrait)').matches) return;
+    requestAnimationFrame(() => {
+      const host = document.getElementById(DOM.fsHost);
+      if (!host) return;
+      const r = host.getBoundingClientRect();
+      savedForFullscreen = readViewBox(svg);
+      fitAspect(r.width, r.height);
+    });
+  });
+  if (fsBg) {
+    new MutationObserver(() => {
+      if (!fsBg.classList.contains('open') && savedForFullscreen) {
+        svg.setAttribute('viewBox', savedForFullscreen.join(' '));
+        savedForFullscreen = null;
+      }
+    }).observe(fsBg, { attributes: true, attributeFilter: ['class'] });
+  }
   /* Twice on purpose: the placement pass measures text with getBBox(), which
      reports the fallback monospace until IBM Plex Mono has loaded, so on a
      cold cache the first pass places every label against the wrong metrics
