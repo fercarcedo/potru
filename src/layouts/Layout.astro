@@ -168,8 +168,12 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     align-items: center;
     justify-content: space-between;
     /* content-sized, not a fixed height: the two-line brand below needs
-       more room than the single wordmark this used to be pinned to fit. */
-    padding: 9px 0;
+       more room than the single wordmark this used to be pinned to fit.
+       padding-top/bottom only — shorthand padding here would zero out
+       the left/right .wrap already sets, same mistake the mobile rule
+       below was careful to avoid. */
+    padding-top: 9px;
+    padding-bottom: 9px;
   }
   .nav-right {
     display: flex;
