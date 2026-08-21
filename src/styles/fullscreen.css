@@ -60,6 +60,22 @@
 #fsHost .fs-trigger {
   display: none;
 }
+/* A lone fs-trigger, kept out of the usual absolute top-right .zoom-pad
+   overlay: at a wide/short drawing's own aspect ratio (the wavelength
+   ruler at ~6:1, the map and diagram both around 2.5:1 on a phone), that
+   overlay lands on top of real labels rather than empty margin — there's
+   no corner of the drawing that stays clear at every width once the
+   button is that large relative to the image. .zoom-pad.fs-row (two
+   classes) outranks the bare .zoom-pad it's paired with, dropping it into
+   normal flow, right-aligned, below whatever it sits after instead of on
+   top of it — the zoom in/out pad (if any) keeps the usual overlay, since
+   those are meant to be pressed while looking at the drawing itself. */
+.zoom-pad.fs-row {
+  position: static;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
 @media (max-width: 760px) {
   .fs-host {
     padding: 54px 8px 8px;
