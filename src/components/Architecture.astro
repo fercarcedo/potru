@@ -53,13 +53,24 @@ import { DOM } from '../lib/dom-ids';
         </div>
       </div>
       <p class="xgs-prose">{XGS_EXPLAINER.prose}</p>
-      <svg
-        class="xgs-ruler"
-        viewBox="0 0 1000 160"
-        role="img"
-        aria-label="Ocupación del espectro sobre una misma fibra, con las bandas GPON y XGS-PON"
-        set:html={mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo)}
-      />
+      <div class="ruler-wrap" id={DOM.rulerWrap}>
+        <svg
+          class="xgs-ruler"
+          viewBox="0 0 1000 160"
+          role="img"
+          aria-label="Ocupación del espectro sobre una misma fibra, con las bandas GPON y XGS-PON"
+          set:html={mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo)}
+        />
+        <div class="zoom-pad" role="group" aria-label="Pantalla completa del espectro">
+          <button
+            type="button"
+            class="fs-trigger"
+            data-fs-target={DOM.rulerWrap}
+            aria-label="Ver el espectro a pantalla completa"
+            title="Pantalla completa">⛶</button
+          >
+        </div>
+      </div>
       <p class="xgs-source">
         <b>
           ⚠ {XGS_EXPLAINER.source.split('. ')[0]}.

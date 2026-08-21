@@ -153,11 +153,14 @@
   color: var(--txt);
   margin-bottom: 22px;
 }
+.ruler-wrap {
+  position: relative;
+  margin-bottom: 14px;
+}
 .xgs-ruler {
   width: 100%;
   height: auto;
   display: block;
-  margin-bottom: 14px;
 }
 .xgs-source {
   font-family: 'IBM Plex Mono', monospace;

@@ -63,6 +63,7 @@ export const DOM = {
 
   // Architecture.astro
   ontBars: 'ontBars',
+  rulerWrap: 'rulerWrap',
 
   // Phases.astro
   gantt: 'gantt',
