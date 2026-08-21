@@ -11,8 +11,11 @@
  * CLAUDE.md's architecture notes for the fuller picture.
  */
 export const DOM = {
-  // Layout.astro — the nav's colour-theme toggle, wired by scripts/theme.ts
+  // Layout.astro — the nav's colour-theme toggle (scripts/theme.ts) and its
+  // mobile hamburger menu (scripts/navmenu.ts)
   themeToggle: 'themeToggle',
+  navToggle: 'navToggle',
+  navMenu: 'navMenu',
 
   // NetworkMap.astro — the schematic map and the guided tour built on it
   astMap: 'astMap',
@@ -32,12 +35,16 @@ export const DOM = {
   tpExit: 'tpExit',
   tpDetBtn: 'tpDetBtn',
   tpDet: 'tpDet',
+  cableZoomIn: 'cableZoomIn',
+  cableZoomOut: 'cableZoomOut',
 
   // Diagram.astro
   netDiagram: 'netDiagram',
   infoBox: 'infoBox',
   btnGpon: 'btnGpon',
   btnXgs: 'btnXgs',
+  diagZoomIn: 'diagZoomIn',
+  diagZoomOut: 'diagZoomOut',
 
   // Hero.astro
   heroFiber: 'heroFiber',
@@ -47,6 +54,7 @@ export const DOM = {
 
   // Phases.astro
   gantt: 'gantt',
+  ganttList: 'ganttList',
 
   // NodeModal.astro
   modalBg: 'modalBg',

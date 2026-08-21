@@ -439,6 +439,34 @@ export const ganttViewBox = (nodes: NetworkNode[]): string =>
   `0 0 ${GW} ${GTOP + nodes.length * GROW + 14}`;
 
 /**
+ * Mobile alternative to gantt(): the same week-by-week calendar as a
+ * stacked list instead of an svg plotted against a shared week axis —
+ * scaled down to phone width, a single 1080-unit viewBox either forces
+ * horizontal scroll (the min-width floor this replaced) or shrinks 20 rows
+ * of names and dates below legibility, and unlike the schematic map or the
+ * end-to-end diagram, a gantt's row labels and bars can't be panned to
+ * independently: they're both text on the same line, so zooming in on one
+ * loses the other. Same information per row as gantt() — name, area colour,
+ * week range, and where that range sits in the full contract span, this
+ * time as a div's proportional width instead of a plotted bar — and every
+ * row keeps data-node so the same click-to-open wiring works on both.
+ */
+export function ganttList(nodes: NetworkNode[]): string {
+  return nodes
+    .map((n) => {
+      const name = n.name + (HOST_ONLY.includes(n.id) ? ' *' : '');
+      const left = ((n.weekFrom - GW0) / GSPAN) * 100;
+      const width = Math.max(((n.weekTo + 1 - n.weekFrom) / GSPAN) * 100, 1.5);
+      return `<div class="gr" data-node="${n.id}">
+        <div class="gr-name">${esc(name)}</div>
+        <div class="gr-track"><div class="gr-bar" style="left:${left}%;width:${width}%;background:${n.color}"></div></div>
+        <div class="gr-weeks">s${n.weekFrom}–${n.weekTo}</div>
+      </div>`;
+    })
+    .join('');
+}
+
+/**
  * Week-by-week migration calendar: one bar per node, coloured by area.
  * Returns the inside of the <svg>; every bar carries data-node so the island
  * can open the node's record when it is clicked.

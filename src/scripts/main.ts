@@ -47,3 +47,8 @@ document.querySelectorAll<SVGGElement>(`#${DOM.gantt} g[data-node]`).forEach((g)
   g.addEventListener('mouseenter', () => bar.setAttribute('opacity', '1'));
   g.addEventListener('mouseleave', () => bar.setAttribute('opacity', '0.85'));
 });
+/* Its mobile-list stand-in (ganttList in graphics.ts): same click-to-open,
+   no hover state to wire since touch has none. */
+document.querySelectorAll<HTMLElement>(`#${DOM.ganttList} [data-node]`).forEach((row) => {
+  row.addEventListener('click', () => openNode(row.dataset.node!));
+});

@@ -59,7 +59,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
           <b>Potru<span class="dot">.</span></b>
         </div>
         <div class="nav-right">
-          <ul>
+          <ul id={DOM.navMenu}>
             {
               nav.map(([href, label]) => (
                 <li>
@@ -91,6 +91,30 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
               ></path>
             </svg>
           </button>
+          {
+            /* Mobile-only hamburger, same hidden-until-JS pattern as the theme
+              toggle above: without JS the link list already renders in full
+              (see the no-JS nav ul rules below), so a button that cannot do
+              anything must not appear. navmenu.ts reveals it and takes over
+              collapsing #navMenu once it runs. */
+          }
+          <button
+            id={DOM.navToggle}
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls={DOM.navMenu}
+            hidden
+          >
+            <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">
+              <path
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                d="M3 5.5h14M3 10h14M3 14.5h14"></path>
+            </svg>
+            <span class="sr-only">Menú</span>
+          </button>
         </div>
       </div>
     </nav>
@@ -118,8 +142,10 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
 
 <script>
   import { initTheme } from '../scripts/theme';
+  import { initNavMenu } from '../scripts/navmenu';
 
   initTheme();
+  initNavMenu();
 </script>
 
 <style>
@@ -205,6 +231,14 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
      760px, so navigation vanished in between. The rule is dropped and the
      max-width:760px sliding block below takes over. */
 
+  /* Desktop default; the max-width:760px block below turns it on. Has to sit
+     before that block — same specificity, so source order is what decides,
+     and this unconditional rule would otherwise win over the media query's
+     at every width. */
+  .nav-toggle {
+    display: none;
+  }
+
   footer {
     border-top: 1px solid var(--line);
     padding: 36px 0 48px;
@@ -223,36 +257,70 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   }
 
   @media (max-width: 760px) {
-    /* align-items:flex-start del .wrap encogía el <ul> a su contenido, así
-       que overflow-x no tenía nada que recortar y la lista se salía de la
-       pantalla */
-    nav ul {
-      display: flex;
-      width: 100%;
-      overflow-x: auto;
-      gap: 16px;
-      padding-bottom: 2px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+    /* Previously: an <ul> that overflow-x:auto'd horizontally, scrolling
+       under its own steam because .wrap's align-items:flex-start left it
+       shrink-to-fit instead of full-width — the fix relied on width:100%
+       resolving against a container that, by definition, had no explicit
+       width to resolve against. It silently did nothing: the list still
+       ran off the screen, just now as real page overflow instead of a
+       contained scrollbar (see navmenu.ts). Replaced with a proper
+       collapsible menu: the list becomes a dropdown panel under the bar,
+       opened by the hamburger.
+       Without JS none of this collapsing happens — nav ul stays block-flex
+       and simply prints every link, so navigation keeps working. */
+    nav .wrap {
+      height: 58px;
+      position: relative;
     }
-    nav ul::-webkit-scrollbar {
-      display: none;
+    .nav-right {
+      gap: 10px;
     }
-    /* sin esto los <li> encogen y parten el rótulo: «Red en vivo» caía en
-       tres líneas */
-    nav li {
+    .nav-toggle {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 0;
+      cursor: pointer;
       flex: none;
     }
-    nav li a {
-      white-space: nowrap;
+    .nav-toggle svg {
+      width: 17px;
+      height: 17px;
     }
-    nav .wrap {
-      height: auto;
+    .nav-toggle[hidden] {
+      display: none;
+    }
+    nav ul {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-      padding-top: 10px;
-      padding-bottom: 10px;
+      gap: 2px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 24px 14px;
+      box-shadow: 0 12px 24px var(--scrim);
+    }
+    /* Author rules beat the UA stylesheet's own [hidden]{display:none} only
+       because this one is more specific than nav ul{display:flex} above —
+       without it navmenu.ts closing the menu would have no visible effect. */
+    nav ul[hidden] {
+      display: none;
+    }
+    nav li {
+      flex: none;
+      width: 100%;
+    }
+    nav li a {
+      display: block;
+      white-space: normal;
+      padding: 11px 8px;
     }
     footer .wrap {
       flex-direction: column;
@@ -306,5 +374,16 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
   }
   .theme-toggle[hidden] {
     display: none;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
