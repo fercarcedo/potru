@@ -36,17 +36,27 @@ export function initFullscreen(): void {
 
   function open(target: HTMLElement) {
     close();
+    document.body.style.overflow = 'hidden';
     placeholder = document.createComment('fs-slot');
     target.replaceWith(placeholder);
     host!.appendChild(target);
+    host!.scrollTop = 0;
     current = target;
     overlay!.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
   document.querySelectorAll<HTMLButtonElement>('[data-fs-target]').forEach((btn) => {
     const target = document.getElementById(btn.dataset.fsTarget!);
-    if (target) btn.addEventListener('click', () => open(target));
+    if (!target) return;
+    /* A trigger low enough in a tall panel (the Gijón/PAO cable detail, for
+       one) sits only partly on screen when it's actually pressed — clicking
+       a not-fully-visible button is exactly when a browser's default
+       "scroll the newly focused element into view" kicks in, animated
+       (html has scroll-behavior:smooth), right before the overlay covers
+       the whole page anyway. Never letting the button take focus in the
+       first place is what stops that scroll from firing at all. */
+    btn.addEventListener('pointerdown', (e) => e.preventDefault());
+    btn.addEventListener('click', () => open(target));
   });
   closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', (e) => {
