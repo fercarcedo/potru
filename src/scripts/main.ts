@@ -18,12 +18,14 @@ import { initMap } from './map';
 import { initTour } from './tour';
 import { initWalk } from './walk';
 import { initLightbox } from './lightbox';
+import { initNavSpy } from './navspy';
 
 initHeroFiber();
 initDiagram();
 initOntBars();
 initWalk();
 initLightbox();
+initNavSpy();
 
 const { openNode } = initModal();
 const map = initMap(openNode);
