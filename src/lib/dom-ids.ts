@@ -19,6 +19,7 @@ export const DOM = {
 
   // NetworkMap.astro — the schematic map and the guided tour built on it
   astMap: 'astMap',
+  mapWrap: 'mapWrap',
   mapTip: 'mapTip',
   areaLegend: 'areaLegend',
   mapZoomIn: 'mapZoomIn',
@@ -40,11 +41,22 @@ export const DOM = {
 
   // Diagram.astro
   netDiagram: 'netDiagram',
+  diagramShell: 'diagramShell',
   infoBox: 'infoBox',
   btnGpon: 'btnGpon',
   btnXgs: 'btnXgs',
   diagZoomIn: 'diagZoomIn',
   diagZoomOut: 'diagZoomOut',
+
+  // FullscreenViewer.astro (scripts/fullscreen.ts) — one shared overlay that
+  // the map, the diagram and the cable-detail panels each open via their own
+  // [data-fs-target] button, for the same reason the map already zooms:
+  // a phone-width container is what makes these svgs' text small to begin
+  // with, and fullscreen is the most direct fix — more container, not a
+  // shrunk drawing.
+  fsBg: 'fsBg',
+  fsHost: 'fsHost',
+  fsClose: 'fsClose',
 
   // Hero.astro
   heroFiber: 'heroFiber',
@@ -93,7 +105,11 @@ export const DOM = {
   svCanvas: 'svCanvas',
   svExit: 'svExit',
   svMode: 'svMode',
+  svWarn: 'svWarn',
+  svWarnToggle: 'svWarnToggle',
+  svWarnClose: 'svWarnClose',
   svLegend: 'svLegend',
+  svLegendToggle: 'svLegendToggle',
   svLoading: 'svLoading',
   svPad: 'svPad',
   svZoomIn: 'svZoomIn',

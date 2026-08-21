@@ -5,7 +5,10 @@
  * from a CDN.
  */
 import { byId } from '../lib/data';
+import { initCollapsible } from './collapsible';
 import { DOM } from '../lib/dom-ids';
+
+const COLLAPSE_ON_MOBILE = '(max-width: 760px)';
 
 type Viewer = typeof import('./viewer3d');
 let viewer: Viewer | null = null;
@@ -47,4 +50,20 @@ export function initWalk() {
       closeWalk();
     }
   });
+
+  /* The disclaimer and the equipment legend collapse to an icon on mobile
+     by default (unchanged, expanded on desktop) — both used to permanently
+     claim a third of a phone screen with no way to close either. */
+  const warnToggle = document.getElementById(DOM.svWarnToggle) as HTMLButtonElement,
+    warn = document.getElementById(DOM.svWarn)!;
+  const { setOpen: setWarnOpen } = initCollapsible(warnToggle, warn, {
+    collapseWhen: COLLAPSE_ON_MOBILE,
+  });
+  document.getElementById(DOM.svWarnClose)!.onclick = () => setWarnOpen(false);
+
+  initCollapsible(
+    document.getElementById(DOM.svLegendToggle) as HTMLButtonElement,
+    document.getElementById(DOM.svLegend)!,
+    { collapseWhen: COLLAPSE_ON_MOBILE },
+  );
 }

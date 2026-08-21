@@ -34,17 +34,54 @@
   font-stretch: 85%;
   font-size: 1rem;
 }
-.sv-warn {
+/* Icon-sized trigger in .sv-top; the disclaimer itself is the full-width
+   .sv-warn block below, collapsed by default on mobile (walk.ts) so it
+   stops permanently claiming a third of the screen there — same text
+   either way, just not forced on screen. */
+.sv-warn-toggle {
   background: rgba(255, 180, 84, 0.14);
   border: 1px solid rgba(255, 180, 84, 0.5);
-  color: var(--gpon);
+  color: var(--gpon-tx);
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 7px 12px;
+  cursor: pointer;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
-  line-height: 1.4;
-  max-width: 520px;
+  white-space: nowrap;
+}
+.sv-warn-toggle:hover,
+.sv-warn-toggle[aria-expanded='true'] {
+  border-color: var(--gpon);
+  background: rgba(255, 180, 84, 0.26);
+}
+.sv-warn {
+  position: relative;
+  background: rgba(255, 180, 84, 0.14);
+  border-bottom: 1px solid rgba(255, 180, 84, 0.5);
+  color: var(--gpon);
+  padding: 10px 44px 10px 18px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+.sv-warn[hidden] {
+  display: none;
+}
+.sv-warn-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--gpon-tx);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 5px 7px;
+}
+.sv-warn-close:hover {
+  color: var(--gpon);
 }
 .sv-exit {
   margin-left: auto;
@@ -90,6 +127,54 @@
   border-radius: 99px;
   border: 1px solid rgba(255, 180, 84, 0.3);
 }
+/* Icon-sized toggle, same spot the legend itself used to sit pinned at —
+   #svLegend is still the innerHTML target viewer3d.ts writes to, just
+   collapsible now, and positioned by this class instead of an inline
+   style (which used to force every mobile override below into !important
+   to outrank it). */
+.sv-legend-wrap {
+  position: absolute;
+  right: 18px;
+  top: 118px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.sv-legend-toggle {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--veil);
+  color: var(--txt);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  flex: none;
+}
+.sv-legend-toggle:hover,
+.sv-legend-toggle[aria-expanded='true'] {
+  border-color: var(--xgs);
+  color: var(--xgs-tx);
+}
+.sv-legend {
+  max-width: 290px;
+  background: rgba(6, 11, 20, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 13px 15px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.55;
+  backdrop-filter: blur(4px);
+}
+.sv-legend[hidden] {
+  display: none;
+}
 .sv-pad {
   position: absolute;
   right: 18px;
@@ -129,8 +214,11 @@
 }
 @media (max-width: 760px) {
   .sv-warn {
-    font-size: 0.6rem;
-    max-width: 100%;
+    font-size: 0.62rem;
+  }
+  .sv-warn-toggle {
+    font-size: 0.64rem;
+    padding: 6px 10px;
   }
   .sv-top {
     gap: 8px;
@@ -139,11 +227,11 @@
   .sv-help {
     display: none;
   }
-  /* en móvil la leyenda del visor va debajo del mando de zoom. Viewer3D.astro
-     posiciona #svLegend con un style inline, así que sólo !important gana */
-  #svLegend {
-    top: 104px !important;
-    max-width: 210px !important;
-    font-size: 0.62rem !important;
+  .sv-legend-wrap {
+    top: 104px;
+  }
+  .sv-legend {
+    max-width: 210px;
+    font-size: 0.62rem;
   }
 }
