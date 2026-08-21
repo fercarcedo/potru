@@ -1,11 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// GitHub Pages project site: https://fercarcedo.github.io/potru/
+// Cloudflare Workers static assets, served from the domain root: https://potru.app/
 // Every internal link or asset must go through import.meta.env.BASE_URL.
 export default defineConfig({
-  site: 'https://fercarcedo.github.io',
-  base: '/potru/',
+  site: 'https://potru.app',
+  base: '/',
   trailingSlash: 'ignore',
   build: {
     // The plans live in public/ and are served as-is; every other asset

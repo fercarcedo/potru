@@ -10,8 +10,6 @@ import { expect, test } from '@playwright/test';
 
 test.describe('schematic map label placement', () => {
   test.beforeEach(async ({ page }) => {
-    // '/' would resolve against the origin and drop the '/potru/' base path
-    // WHATWG-URL-style; './' keeps it, matching how the site is actually served.
     await page.goto('./');
     await page.waitForSelector('#astMap text.lbl-node');
     // map.ts re-places the labels once IBM Plex Mono has loaded (getBBox()

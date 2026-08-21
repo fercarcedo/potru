@@ -1,6 +1,7 @@
 # build output
 dist/
 .astro/
+.wrangler/
 
 # test artifacts
 test-results/

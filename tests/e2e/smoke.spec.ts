@@ -1,7 +1,7 @@
 /**
  * End-to-end smoke tests against the real production build (see
  * playwright.config.ts: baseURL/webServer run `npm run preview`, not `dev`),
- * so these exercise the same static output GitHub Pages actually serves —
+ * so these exercise the same static output Cloudflare actually serves —
  * base path, asset URLs, lazy chunks and all. Headless Chrome is the tool
  * CLAUDE.md already asks for when verifying UI changes; this formalises it.
  */
@@ -31,7 +31,7 @@ test('progressive enhancement: node cards are real anchors to /nodos/<id> withou
   const card = page.locator('a.ncard[data-node]').first();
   const id = await card.getAttribute('data-node');
   await card.click();
-  await expect(page).toHaveURL(new RegExp(`/potru/nodos/${id}/?$`));
+  await expect(page).toHaveURL(new RegExp(`/nodos/${id}/?$`));
   await context.close();
 });
 
@@ -43,7 +43,7 @@ test('progressive enhancement: with JS, the same click opens the modal and updat
   const id = await card.getAttribute('data-node');
   await card.click();
   await expect(page.locator('#modalBg')).toHaveClass(/open/);
-  await expect(page).toHaveURL(new RegExp(`/potru/nodos/${id}/?$`));
+  await expect(page).toHaveURL(new RegExp(`/nodos/${id}/?$`));
 });
 
 test("reloading while a node modal is open lands on that node's standalone page", async ({
@@ -52,7 +52,7 @@ test("reloading while a node modal is open lands on that node's standalone page"
   await page.goto('./');
   await page.locator('a.ncard[data-node="muros"]').click();
   await expect(page.locator('#modalBg')).toHaveClass(/open/);
-  await expect(page).toHaveURL(/\/potru\/nodos\/muros\/?$/);
+  await expect(page).toHaveURL(/\/nodos\/muros\/?$/);
 
   await page.reload();
   await expect(page.getByRole('cell', { name: 'MUR/1D', exact: true })).toBeVisible();
@@ -74,7 +74,7 @@ test('closing the modal restores the home URL, and back/forward reopen it in pla
 
   await page.goBack();
   await expect(page.locator('#modalBg')).toHaveClass(/open/);
-  await expect(page).toHaveURL(new RegExp(`/potru/nodos/${id}/?$`));
+  await expect(page).toHaveURL(new RegExp(`/nodos/${id}/?$`));
 
   await page.goForward();
   await expect(page.locator('#modalBg')).not.toHaveClass(/open/);
@@ -211,26 +211,6 @@ test('the modal and the static node page render the same OLT and shared-PON data
   expect(modalPon).toBe(staticPon);
 });
 
-test('every internal link and asset on the home page stays under the /potru/ base path', async ({
-  page,
-}) => {
-  await page.goto('./');
-  const offenders = await page.evaluate(() => {
-    const bad: string[] = [];
-    for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')) {
-      if (!a.getAttribute('href')!.startsWith('/potru/')) bad.push(a.getAttribute('href')!);
-    }
-    for (const el of document.querySelectorAll<HTMLImageElement | HTMLScriptElement>(
-      'img[src^="/"], script[src^="/"]',
-    )) {
-      const src = el.getAttribute('src')!;
-      if (!src.startsWith('/potru/')) bad.push(src);
-    }
-    return bad;
-  });
-  expect(offenders).toEqual([]);
-});
-
 test.describe('plans open full size', () => {
   // The plans are 1891 x 1310 drawings shown at ~330 px in the record, so the
   // dimension chains they exist for are only readable full size.
@@ -275,7 +255,7 @@ test.describe('plans open full size', () => {
         links.map((a) => (a as HTMLAnchorElement).getAttribute('href') ?? ''),
       );
     expect(hrefs.length).toBeGreaterThan(1);
-    for (const href of hrefs) expect(href).toMatch(/^\/potru\/planos\/.+\.jpg$/);
+    for (const href of hrefs) expect(href).toMatch(/^\/planos\/.+\.jpg$/);
   });
 });
 
