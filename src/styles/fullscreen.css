@@ -1,0 +1,59 @@
+/* Shared "view fullscreen" overlay (FullscreenViewer.astro + scripts/
+   fullscreen.ts) for the map, the end-to-end diagram and the tour's
+   cable-detail panels. Sits above the sticky nav (z-index 50) and below the
+   node modal and lightbox (100, 150) — those can still open from inside it
+   (the map's node click opens the modal) and correctly land on top. */
+.fs-bg {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+}
+.fs-bg.open {
+  display: flex;
+}
+.fs-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  background: var(--panel);
+  color: var(--txt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+}
+.fs-close:hover {
+  border-color: var(--xgs);
+  color: var(--xgs-tx);
+}
+.fs-host {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px 16px;
+}
+/* the moved-in shell (.map-wrap, #diagramShell or #tpDet) keeps its own
+   layout — this just gives it the room a phone's page column never could */
+.fs-host > * {
+  width: 100%;
+  max-width: 1100px;
+}
+/* .zoom-pad button{font-size} already applies and outranks a bare class by
+   specificity — .zoom-pad's own selector is what has to match it to win. */
+.zoom-pad button.fs-trigger {
+  font-size: 1.05rem;
+}
+@media (max-width: 760px) {
+  .fs-host {
+    padding: 54px 8px 8px;
+  }
+}

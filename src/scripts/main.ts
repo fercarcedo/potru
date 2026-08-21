@@ -19,6 +19,7 @@ import { initTour } from './tour';
 import { initWalk } from './walk';
 import { initLightbox } from './lightbox';
 import { initNavSpy } from './navspy';
+import { initFullscreen } from './fullscreen';
 
 initHeroFiber();
 initDiagram();
@@ -26,6 +27,7 @@ initOntBars();
 initWalk();
 initLightbox();
 initNavSpy();
+initFullscreen();
 
 const { openNode } = initModal();
 const map = initMap(openNode);

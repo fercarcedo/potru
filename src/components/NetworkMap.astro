@@ -31,7 +31,7 @@ import { DOM } from '../lib/dom-ids';
         >
       </div>
     </div>
-    <div class="map-wrap" style="margin-top:30px">
+    <div class="map-wrap" id={DOM.mapWrap} style="margin-top:30px">
       <div class="map-shell">
         <svg
           id={DOM.astMap}
@@ -47,6 +47,13 @@ import { DOM } from '../lib/dom-ids';
         >
         <button id={DOM.mapZoomOut} type="button" aria-label="Alejar el mapa" title="Alejar"
           >−</button
+        >
+        <button
+          type="button"
+          class="fs-trigger"
+          data-fs-target={DOM.mapWrap}
+          aria-label="Ver el mapa a pantalla completa"
+          title="Pantalla completa">⛶</button
         >
       </div>
     </div>
@@ -79,6 +86,13 @@ import { DOM } from '../lib/dom-ids';
           >
           <button id={DOM.cableZoomOut} type="button" aria-label="Alejar el detalle" title="Alejar"
             >−</button
+          >
+          <button
+            type="button"
+            class="fs-trigger"
+            data-fs-target={DOM.tpDet}
+            aria-label="Ver el detalle a pantalla completa"
+            title="Pantalla completa">⛶</button
           >
         </div>
       </div>

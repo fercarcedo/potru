@@ -21,36 +21,51 @@ import { DOM } from '../lib/dom-ids';
       <button id={DOM.btnXgs} role="tab" aria-selected="false">◎ RED RENOVADA · GPON/XGS-PON</button
       >
     </div>
-    <div class="diagram-shell">
-      <svg
-        id={DOM.netDiagram}
-        viewBox="0 0 1160 430"
-        role="img"
-        aria-label="Esquema de la Red Asturcón"></svg>
-      <div class="zoom-pad" role="group" aria-label="Zoom del esquema">
-        <button id={DOM.diagZoomIn} type="button" aria-label="Acercar el esquema" title="Acercar"
-          >+</button
-        >
-        <button id={DOM.diagZoomOut} type="button" aria-label="Alejar el esquema" title="Alejar"
-          >−</button
-        >
+    {
+      /* Fullscreen (scripts/fullscreen.ts) moves this whole wrapper, info-box
+        included — not just .diagram-shell — so the click-an-element-for-its-
+        info panel keeps working: leaving the info-box behind on the page
+        would put it out of sight the moment fullscreen covers the page. */
+    }
+    <div id={DOM.diagramShell}>
+      <div class="diagram-shell">
+        <svg
+          id={DOM.netDiagram}
+          viewBox="0 0 1160 430"
+          role="img"
+          aria-label="Esquema de la Red Asturcón"></svg>
+        <div class="zoom-pad" role="group" aria-label="Zoom del esquema">
+          <button id={DOM.diagZoomIn} type="button" aria-label="Acercar el esquema" title="Acercar"
+            >+</button
+          >
+          <button id={DOM.diagZoomOut} type="button" aria-label="Alejar el esquema" title="Alejar"
+            >−</button
+          >
+          <button
+            type="button"
+            class="fs-trigger"
+            data-fs-target={DOM.diagramShell}
+            aria-label="Ver el esquema a pantalla completa"
+            title="Pantalla completa">⛶</button
+          >
+        </div>
+        <div class="diag-caption">
+          <span
+            ><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gbps ↓</span
+          >
+          <span
+            ><span class="dot" style="background:var(--xgs)"></span> Portadora XGS-PON · 10 Gbps ↓</span
+          >
+          <span
+            ><span class="dot" style="background:var(--dim)"></span> Elemento pasivo (no cambia)</span
+          >
+          <span class="mono" style="margin-left:auto">▶ pulsos = tráfico descendente</span>
+        </div>
       </div>
-      <div class="diag-caption">
-        <span
-          ><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gbps ↓</span
-        >
-        <span
-          ><span class="dot" style="background:var(--xgs)"></span> Portadora XGS-PON · 10 Gbps ↓</span
-        >
-        <span
-          ><span class="dot" style="background:var(--dim)"></span> Elemento pasivo (no cambia)</span
-        >
-        <span class="mono" style="margin-left:auto">▶ pulsos = tráfico descendente</span>
+      <div class="info-box" id={DOM.infoBox}>
+        <b>Explora el esquema.</b> Haz clic sobre la ONT, los splitters, el nodo OLT, la troncal o el
+        PAO para ver qué son y cómo les afecta la renovación.
       </div>
-    </div>
-    <div class="info-box" id={DOM.infoBox}>
-      <b>Explora el esquema.</b> Haz clic sobre la ONT, los splitters, el nodo OLT, la troncal o el PAO
-      para ver qué son y cómo les afecta la renovación.
     </div>
   </div>
 </section>

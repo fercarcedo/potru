@@ -9,17 +9,36 @@ import { DOM } from '../lib/dom-ids';
 <div class="sv-bg" id={DOM.svBg}>
   <div class="sv-top">
     <h4 id={DOM.svTitle}></h4>
-    <div class="sv-warn">
-      ⚠ RECREACIÓN A ESCALA — el recinto, la puerta y la posición de cada armario están tomados del
-      plano de planta del pliego; el número de OLT, sus tarjetas y sus puertos GPON, de las tablas
-      de equipamiento; y lo serigrafiado en cada bastidor —fabricante, modelo, código y juego de
-      tarjetas— de esas mismas fuentes. Los acabados, los colores y el aspecto de los equipos siguen
-      siendo interpretación por mucho que el render haya mejorado: saber que un OLT es un Alcatel
-      7342 no es tener una foto de un Alcatel 7342, y el pliego no la trae. No es una fotografía ni
-      un modelo real del nodo.
-    </div>
+    {
+      /* Collapsed by default on mobile (scripts/collapsible.ts, wired in
+        walk.ts), expanded on desktop — same disclaimer either way, just not
+        permanently claiming a third of a phone screen with no way to close
+        it. The golden rule (CLAUDE.md) is what makes this non-optional
+        content in the first place; collapsing it is only about it not
+        being *forced* content. */
+    }
+    <button
+      class="sv-warn-toggle"
+      id={DOM.svWarnToggle}
+      type="button"
+      aria-expanded="false"
+      aria-controls={DOM.svWarn}
+      title="Aviso sobre esta recreación"
+    >
+      ⚠ Aviso
+    </button>
     <button class="tour-btn" id={DOM.svMode} style="white-space:nowrap">⇄ Ver renovado</button>
     <button class="sv-exit" id={DOM.svExit}>✕ Salir</button>
+  </div>
+  <div class="sv-warn" id={DOM.svWarn}>
+    ⚠ RECREACIÓN A ESCALA — el recinto, la puerta y la posición de cada armario están tomados del
+    plano de planta del pliego; el número de OLT, sus tarjetas y sus puertos GPON, de las tablas de
+    equipamiento; y lo serigrafiado en cada bastidor —fabricante, modelo, código y juego de
+    tarjetas— de esas mismas fuentes. Los acabados, los colores y el aspecto de los equipos siguen
+    siendo interpretación por mucho que el render haya mejorado: saber que un OLT es un Alcatel 7342
+    no es tener una foto de un Alcatel 7342, y el pliego no la trae. No es una fotografía ni un
+    modelo real del nodo.
+    <button class="sv-warn-close" id={DOM.svWarnClose} aria-label="Cerrar el aviso">✕</button>
   </div>
   <div style="position:relative;flex:1;display:flex">
     <canvas id={DOM.svCanvas}></canvas>
@@ -31,10 +50,22 @@ import { DOM } from '../lib/dom-ids';
       <button id={DOM.svZoomIn} type="button" aria-label="Ampliar" title="Ampliar">+</button>
       <button id={DOM.svZoomOut} type="button" aria-label="Reducir" title="Reducir">−</button>
     </div>
-    <div
-      id={DOM.svLegend}
-      style="position:absolute;right:18px;top:118px;max-width:290px;background:rgba(6,11,20,.82);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:.7rem;color:var(--muted);line-height:1.55;backdrop-filter:blur(4px)"
-    >
+    <div class="sv-legend-wrap">
+      {
+        /* Same collapse-on-mobile treatment as sv-warn above. #svLegend
+          itself stays the innerHTML target viewer3d.ts already writes to —
+          only its wrapper and this toggle are new, so that wiring didn't
+          need to change. */
+      }
+      <button
+        class="sv-legend-toggle"
+        id={DOM.svLegendToggle}
+        type="button"
+        aria-expanded="false"
+        aria-controls={DOM.svLegend}
+        title="Equipamiento del recinto">ⓘ</button
+      >
+      <div class="sv-legend" id={DOM.svLegend}></div>
     </div>
     <div class="sv-pad" id={DOM.svPad}>
       <button class="up" data-k="f">▲</button>

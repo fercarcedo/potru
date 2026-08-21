@@ -6,6 +6,7 @@
  * past that point.
  */
 import { DOM } from '../lib/dom-ids';
+import { initCollapsible } from './collapsible';
 
 const BREAKPOINT = '(max-width: 760px)';
 
@@ -15,21 +16,17 @@ export function initNavMenu(): void {
   if (!toggle || !menu) return;
   toggle.hidden = false;
 
-  function setOpen(open: boolean) {
-    menu!.hidden = !open;
-    toggle!.setAttribute('aria-expanded', String(open));
-  }
+  const { setOpen } = initCollapsible(toggle, menu, { collapseWhen: BREAKPOINT });
 
-  const mq = matchMedia(BREAKPOINT);
-  const sync = () => setOpen(!mq.matches);
-  mq.addEventListener('change', sync);
-  sync();
-
-  toggle.addEventListener('click', () => setOpen(!!menu.hidden));
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
   document.addEventListener('click', (e) => {
     const target = e.target as Node;
-    if (mq.matches && !menu.hidden && !menu.contains(target) && !toggle.contains(target)) {
+    if (
+      matchMedia(BREAKPOINT).matches &&
+      !menu.hidden &&
+      !menu.contains(target) &&
+      !toggle.contains(target)
+    ) {
       setOpen(false);
     }
   });
