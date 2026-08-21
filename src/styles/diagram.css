@@ -36,7 +36,7 @@
   background: linear-gradient(180deg, var(--panel), var(--ink));
   border-radius: 10px;
   padding: 10px 6px 2px;
-  overflow-x: auto;
+  position: relative;
 }
 #netDiagram {
   width: 100%;
@@ -80,11 +80,10 @@
 .node-el:hover {
   filter: brightness(1.5);
 }
-@media (max-width: 900px) {
-  #netDiagram {
-    min-width: 880px;
-  }
-}
+/* No forced min-width here on purpose, same reasoning as the map
+   (src/styles/map.css): #netDiagram now has its own pan/zoom (see
+   diagram.ts), so it can shrink to the container's real width instead of
+   forcing horizontal scroll to hold every label at a fixed size. */
 @media (max-width: 760px) {
   .mode-toggle {
     width: 100%;

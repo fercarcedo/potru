@@ -8,10 +8,11 @@
  */
 import { DIAGRAM_INFO } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
+import { initViewport } from './map/viewport';
 import { svgEl, type SvgAttrs } from './svg';
 
 export function initDiagram() {
-  const ND = document.getElementById(DOM.netDiagram)!;
+  const ND = document.getElementById(DOM.netDiagram) as unknown as SVGSVGElement;
   const infoBox = document.getElementById(DOM.infoBox)!;
   let mode: 'gpon' | 'xgs' = 'gpon';
   const INFO = DIAGRAM_INFO;
@@ -394,6 +395,10 @@ export function initDiagram() {
     });
   }
   buildDiagram();
+  initViewport(ND, {
+    zoomIn: document.getElementById(DOM.diagZoomIn) as HTMLButtonElement | null,
+    zoomOut: document.getElementById(DOM.diagZoomOut) as HTMLButtonElement | null,
+  });
   const bG = document.getElementById(DOM.btnGpon)!,
     bX = document.getElementById(DOM.btnXgs)!;
   function setMode(m: 'gpon' | 'xgs') {

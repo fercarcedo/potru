@@ -568,7 +568,10 @@ export function initMap(openNode: (id: string) => void): {
       : '○ Poblaciones servidas: ocultas';
   };
 
-  initViewport(svg);
+  initViewport(svg, {
+    zoomIn: document.getElementById(DOM.mapZoomIn) as HTMLButtonElement | null,
+    zoomOut: document.getElementById(DOM.mapZoomOut) as HTMLButtonElement | null,
+  });
   /* Twice on purpose: the placement pass measures text with getBBox(), which
      reports the fallback monospace until IBM Plex Mono has loaded, so on a
      cold cache the first pass places every label against the wrong metrics

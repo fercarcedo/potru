@@ -59,13 +59,28 @@ import { DOM } from '../lib/dom-ids';
       >
       <div
         id={DOM.tpDet}
-        style="display:none;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.7;color:var(--muted);overflow-x:auto"
+        style="display:none;position:relative;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.7;color:var(--muted);overflow-x:auto"
       >
         {
           TOUR_STOPS.filter((s) => DETAILS[s.id]).map((s) => (
             <div data-det={s.id} hidden set:html={DETAILS[s.id]} />
           ))
         }
+        {
+          /* One shared pad: only one [data-det] panel is ever visible, so
+            tour.ts points these two buttons at whichever svg that is,
+            instead of every panel carrying (and paying the layout cost of)
+            its own. Panning works without the buttons too, straight off
+            the svg via drag/touch — see initPannableZoom. */
+        }
+        <div class="zoom-pad" role="group" aria-label="Zoom del detalle">
+          <button id={DOM.cableZoomIn} type="button" aria-label="Acercar el detalle" title="Acercar"
+            >+</button
+          >
+          <button id={DOM.cableZoomOut} type="button" aria-label="Alejar el detalle" title="Alejar"
+            >−</button
+          >
+        </div>
       </div>
       <div class="tour-nav">
         <button class="tour-btn ghost" id={DOM.tpPrev}>◀ Anterior</button>

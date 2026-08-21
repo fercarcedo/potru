@@ -50,8 +50,9 @@
   font-size: 0.76rem;
   color: var(--muted);
 }
-@media (max-width: 900px) {
-  #astMap {
-    min-width: 840px;
-  }
-}
+/* No forced min-width here on purpose: the map already has pan and zoom
+   (src/scripts/map/viewport.ts, pointer-based so it works with touch too) via
+   the buttons in .zoom-pad, so it can shrink to the container's real width —
+   an overview at first, with the same buttons/pinch-drag to get a legible
+   close-up — instead of forcing horizontal scroll to keep every label at a
+   fixed size regardless of screen width. */

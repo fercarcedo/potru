@@ -12,7 +12,7 @@
  */
 import { TOUR_STOPS, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
-import { readViewBox, type ViewBox } from './map/viewport';
+import { initPannableZoom, readViewBox, type ViewBox } from './map/viewport';
 import { svgEl } from './svg';
 
 export interface TourDeps {
@@ -39,6 +39,24 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     tpDet.style.display = open ? 'none' : 'block';
     tpDetBtn.textContent = open ? '■■ Ver los cables por dentro' : '■■ Ocultar los cables';
   };
+
+  /* Each of the 9 cable-detail panels gets its own pan + zoom(factor), so a
+     panel that has been shrunk to fit a phone's width — text and all, same
+     as every svg here — can still be read up close. Only one panel is ever
+     visible, so the pad's two buttons are shared: they call whichever
+     panel's zoom the current stop points them at, rather than each panel
+     carrying its own pad. */
+  const detZoom = new Map<string, (factor: number) => void>();
+  tpDet.querySelectorAll<HTMLElement>('[data-det]').forEach((panel) => {
+    const panelSvg = panel.querySelector<SVGSVGElement>('svg');
+    const id = panel.dataset.det;
+    if (panelSvg && id) detZoom.set(id, initPannableZoom(panelSvg).zoom);
+  });
+  let currentDetZoom: ((factor: number) => void) | null = null;
+  document.getElementById(DOM.cableZoomIn)?.addEventListener('click', () => currentDetZoom?.(0.72));
+  document
+    .getElementById(DOM.cableZoomOut)
+    ?.addEventListener('click', () => currentDetZoom?.(1 / 0.72));
   let idx = -1,
     animId: number | null = null,
     pulses: SVGElement[] = [];
@@ -115,6 +133,7 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     tpDet.style.display = 'none';
     tpDetBtn.style.display = det ? 'inline-block' : 'none';
     tpDetBtn.textContent = '■■ Ver los cables por dentro';
+    currentDetZoom = detZoom.get(s.id) ?? null;
     (tpPrev as HTMLButtonElement).disabled = i === 0;
     tpNext.textContent = i === TOUR_STOPS.length - 1 ? 'Terminar ✓' : 'Siguiente ▶';
     tpEnter.style.display = s.node && byId[s.node]!.gallery.length > 1 ? 'inline-block' : 'none';

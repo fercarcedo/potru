@@ -1,11 +1,14 @@
 ---
 import { NODES } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
-import { gantt, ganttViewBox } from '../lib/graphics';
+import { gantt, ganttList, ganttViewBox } from '../lib/graphics';
 
 // The gantt is deterministic, so it is drawn at build time from nodes.json.
-// The island only binds click and hover to each bar.
+// The island only binds click and hover to each bar. Below 760px the plotted
+// svg (bars) gives way to a stacked list (rows) with the same per-node
+// data-node — see ganttList's own comment for why a gantt can't just shrink.
 const bars = gantt(NODES);
+const rows = ganttList(NODES);
 const viewBox = ganttViewBox(NODES);
 ---
 
@@ -59,6 +62,7 @@ const viewBox = ganttViewBox(NODES);
             aria-label="Gantt de migración de nodos"
             set:html={bars}
           />
+          <div class="gantt-list" id={DOM.ganttList} set:html={rows} />
           <div class="gantt-note">
             Cada barra cubre desde el replanteo hasta el fin de la migración de usuarios del nodo,
             según el pliego. Colores por área geográfica.

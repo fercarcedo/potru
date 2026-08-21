@@ -89,3 +89,57 @@
   color: var(--muted);
   padding: 10px 4px 8px;
 }
+/* The stacked-list alternative to the svg gantt (ganttList in graphics.ts) —
+   hidden on desktop, where the plotted bars already read fine. */
+.gantt-list {
+  display: none;
+}
+@media (max-width: 760px) {
+  .gantt-shell {
+    overflow-x: visible;
+  }
+  /* #gantt, not .gantt-svg: the id selector at the top of this file already
+     sets display:block and outranks a class by specificity regardless of
+     which comes later in the cascade — this has to match it to win. */
+  #gantt {
+    display: none;
+  }
+  .gantt-list {
+    display: block;
+  }
+  .gr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+    row-gap: 4px;
+    padding: 9px 4px;
+    cursor: pointer;
+  }
+  .gr:not(:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+  .gr-name {
+    font-size: 0.86rem;
+    color: var(--txt);
+  }
+  .gr-weeks {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .gr-track {
+    grid-column: 1 / -1;
+    position: relative;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--panel2);
+  }
+  .gr-bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+}
