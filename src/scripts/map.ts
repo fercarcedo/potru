@@ -612,9 +612,23 @@ export function initMap(openNode: (id: string) => void): {
   /* Twice on purpose: the placement pass measures text with getBBox(), which
      reports the fallback monospace until IBM Plex Mono has loaded, so on a
      cold cache the first pass places every label against the wrong metrics
-     and nothing would ever correct it. The pass is idempotent. */
+     and nothing would ever correct it. The pass is idempotent.
+
+     document.fonts.load() for this exact font, not document.fonts.ready:
+     .ready only waits for fonts the browser has already decided are
+     needed, and that decision's timing turns out to depend on unrelated
+     fonts elsewhere on the page — confirmed by a real regression, not a
+     hypothetical one: switching the hero's headline face to
+     font-display:optional made .ready resolve near-instantly, before IBM
+     Plex Mono itself had even started loading, since nothing else was
+     left pending to wait for, so this correction pass fired too early and
+     labels stayed measured against the fallback (e2e caught Oyanco's
+     label 10+ units from its dot instead of tight against it). load()
+     asks for this exact font directly, kicking off its own fetch if one
+     hasn't started, so this no longer rides on some other font's loading
+     speed to happen to be slow enough. */
   placeMapLabels(svg);
-  void document.fonts?.ready.then(() => placeMapLabels(svg));
+  void document.fonts?.load('10px "IBM Plex Mono"').then(() => placeMapLabels(svg));
 
   return { svg, TR };
 }
