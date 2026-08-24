@@ -28,8 +28,36 @@
  * Two new families for +12 KB, because the two they replace are gone.
  */
 
-/* display — headlines, section titles, the wordmark */
-@import '@fontsource-variable/bricolage-grotesque/wdth.css';
+/* display — headlines, section titles, the wordmark. Latin only, like the
+ * two families below — the package's own wdth.css also ships vietnamese and
+ * latin-ext, unused on a Spanish-only site. Hand-declared rather than
+ * @import'd so font-display can be `optional` instead of the package's own
+ * `swap`: h1/h2/h3/.display (base.css) set font-stretch:85%, which a
+ * fallback font ignores (nothing to match that width to) but this variable
+ * font's own wdth axis honours for real — on the hero's own giant h1,
+ * condensing at swap-in time can be enough to rewrap it onto fewer lines,
+ * jumping everything below it up the moment the download lands, however
+ * fast or slow that is (confirmed even fully local and unthrottled — swap's
+ * window is never zero). `optional` gives it one short beat: use it if it's
+ * already there, otherwise commit to the fallback for this page view rather
+ * than yanking the layout later. (Do not reintroduce this as a duplicate
+ * @font-face alongside the package's own import to "override" it — tried
+ * that first: browsers keep both as independent candidates for the same
+ * text, and once the `swap` one finishes downloading it swaps in anyway,
+ * `optional` or not. Replacing the import is what actually removes the
+ * `swap` rule from consideration.) */
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  src: url('@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /* prose — the italic is only ever the hero's «(longitud de) onda» */
 @import '@fontsource/newsreader/latin-400.css';

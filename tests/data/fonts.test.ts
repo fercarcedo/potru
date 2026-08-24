@@ -36,9 +36,23 @@ const FACES = [
 const FALLBACKS = new Set(['Georgia', 'Archivo']);
 
 describe('web fonts', () => {
-  it('imports exactly the three faces the design uses', () => {
-    const imported = [...FONTS.matchAll(/@import '(@fontsource[^/']*\/[^/']+)/g)].map((m) => m[1]!);
-    expect([...new Set(imported)].sort()).toEqual(FACES.map((f) => f.pkg).sort());
+  it('imports the two static faces', () => {
+    /* Bricolage is deliberately not among these — see the next test. */
+    const imported = [...FONTS.matchAll(/@import '(@fontsource\/[^/']+)/g)].map((m) => m[1]!);
+    const staticFaces = FACES.filter((f) => f.pkg.startsWith('@fontsource/'));
+    expect([...new Set(imported)].sort()).toEqual(staticFaces.map((f) => f.pkg).sort());
+  });
+
+  it('hand-declares Bricolage instead of @import-ing it, for font-display:optional', () => {
+    /* @fontsource-variable/bricolage-grotesque's own wdth.css sets
+       font-display:swap, which (confirmed against the built site) reflows
+       the hero's condensed h1 once it loads, however fast or slow that is —
+       see fonts.css's own comment. Guards against silently reverting to the
+       @import, which would bring that flicker straight back. */
+    expect(FONTS).not.toMatch(/@import '@fontsource-variable\/bricolage-grotesque/);
+    expect(FONTS).toContain("font-family: 'Bricolage Grotesque Variable'");
+    expect(FONTS).toContain('@fontsource-variable/bricolage-grotesque/files/');
+    expect(FONTS).toContain('font-display: optional');
   });
 
   it('depends on each of them in package.json', () => {
