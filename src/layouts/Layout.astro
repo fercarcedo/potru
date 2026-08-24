@@ -1,6 +1,16 @@
 ---
 import { DOM } from '../lib/dom-ids';
 import '../styles/global.css';
+/* The headline face, preloaded below — see fonts.css for why it's
+ * font-display:optional rather than @fontsource's own swap (the h1's own
+ * condensed width only takes effect once this loads, and swapping it in
+ * late enough can rewrap the headline and jump everything below it: the
+ * reported "flicker when the page finishes loading"). Imported here (not
+ * written as a bare url() in the preload below) so Vite resolves it to the
+ * exact same hashed asset fonts.css's own @font-face already references —
+ * one fetch, not two — and so `optional`'s short window has the best
+ * chance of the font already being there when it's checked. */
+import bricolageWdthUrl from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -34,6 +44,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="preload" as="font" type="font/woff2" href={bricolageWdthUrl} crossorigin />
     {
       /*
       Stamps the visitor's stored theme before the first paint. This cannot be
