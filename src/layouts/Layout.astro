@@ -81,6 +81,30 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
             }
           </ul>
           {
+            /* Stamps the collapsed state before the first paint, same
+              reason and same trick as the theme script in <head> — a
+              module script (navmenu.ts) is deferred, so without this a
+              mobile visitor saw the full link list at first paint and then
+              watched it vanish once that script ran moments later. Can't
+              live in <head> like the theme one: it needs #navMenu to
+              already exist, so it runs right after the element instead,
+              inline and synchronous, before the browser has anything here
+              to paint yet. document.currentScript.previousElementSibling
+              is the <ul> itself, so this needs no id repeated into the
+              script text. navmenu.ts's own initCollapsible still runs
+              after and takes over for real (clicks, resize, Escape) — this
+              only has to get the very first frame right. */
+          }
+          <script is:inline>
+            try {
+              if (matchMedia('(max-width: 760px)').matches) {
+                document.currentScript.previousElementSibling.hidden = true;
+              }
+            } catch (e) {
+              /* matchMedia unavailable: same first-frame flash as before, not worse */
+            }
+          </script>
+          {
             /* Two icons, always both in the markup, one shown at a time by CSS
               keyed off data-theme — see the .theme-toggle rules below. Each
               names the *destination*: the sun shows in dark mode because
