@@ -1,22 +1,24 @@
 ---
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // Shell of the node record modal. src/scripts/modal.ts fills it from
 // nodes.json; the /nodos/<id> pages serve the same material statically for
 // anyone arriving by direct link or without JavaScript.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).nodeModal;
+const shared = ui(locale).shared;
 ---
 
 <div class="modal-bg" id={DOM.modalBg} role="dialog" aria-modal="true">
   <div class="modal">
     <div class="mimg">
-      <span class="interior-badge" id={DOM.mBadge} style="display:none"
-        >VISTA INTERIOR · PLANOS DEL PLIEGO</span
-      >
+      <span class="interior-badge" id={DOM.mBadge} style="display:none">{t.interiorBadge}</span>
       <a class="plan-link" id={DOM.mImgLink} data-plan href="#" target="_blank" rel="noopener">
-        <img id={DOM.mImg} alt="Plano del nodo" />
+        <img id={DOM.mImg} alt={t.placeholderAlt} />
       </a>
       <div class="gal-tabs" id={DOM.mTabs}></div>
-      <button class="close" id={DOM.mClose} aria-label="Cerrar">✕</button>
+      <button class="close" id={DOM.mClose} aria-label={shared.close}>✕</button>
     </div>
     <div class="mbody">
       <h3 id={DOM.mTitle}></h3>
@@ -27,17 +29,16 @@ import { DOM } from '../lib/dom-ids';
       <div class="olt-wrap"><table class="olt-table" id={DOM.mOlt}></table></div>
       <div class="mig-strip" id={DOM.mMig}></div>
       <button class="tour-btn" id={DOM.mWalk} style="margin-bottom:18px;width:100%"
-        >🚶 Recorrer el interior en 3D <span style="color:var(--muted);font-size:.66rem"
-          >· simulación generada a partir de planta y alzados</span
-        ></button
+        >🚶 {shared.walkLabel}
+        <span style="color:var(--muted);font-size:.66rem">· {shared.walkNote}</span></button
       >
-      <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
+      <div class="act-label">{shared.actionsAffecting}</div>
       <div class="act-links" id={DOM.mActs}></div>
       <a
         class="mono"
         id={DOM.mPerma}
         href="#"
-        style="display:block;margin-top:16px;font-size:.72rem">↗ Abrir la ficha completa</a
+        style="display:block;margin-top:16px;font-size:.72rem">↗ {t.permalink}</a
       >
     </div>
   </div>

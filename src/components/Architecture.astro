@@ -2,6 +2,11 @@
 import { ARCHITECTURE_STEPS, XGS_EXPLAINER } from '../lib/data';
 import { mkSpectrum } from '../lib/graphics';
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
+
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).architecture;
+const shared = ui(locale).shared;
 ---
 
 <section
@@ -9,13 +14,10 @@ import { DOM } from '../lib/dom-ids';
   style="background:linear-gradient(180deg,transparent,rgba(255,180,84,.03),transparent)"
 >
   <div class="wrap">
-    <div class="eyebrow warm">Situación de partida</div>
-    <h2>Arquitectura actual de la Red Asturcón</h2>
+    <div class="eyebrow warm">{t.eyebrow}</div>
+    <h2>{t.heading}</h2>
     <p class="lead">
-      Red FTTH pública, neutra y mayorista, operada por GIT desde 2004 para llevar banda ancha donde
-      la iniciativa privada no despliega. Los operadores minoristas prestan sus servicios (HSI,
-      TVoIP, VoD, VoIP, CATV en RF y telefonía POTS) sobre una misma ONT, con conectividad
-      transparente hasta el PAO.
+      {t.lead}
     </p>
     <div class="arch-flow">
       {
@@ -29,17 +31,16 @@ import { DOM } from '../lib/dom-ids';
       }
     </div>
     <div class="ont-bars">
-      <h3 style="font-size:1.05rem;margin-bottom:6px">Parque de ONT en producción</h3>
+      <h3 style="font-size:1.05rem;margin-bottom:6px">{t.ontHeading}</h3>
       <p style="font-size:.85rem;color:var(--muted)">
-        La heterogeneidad y antigüedad del parque motiva el suministro de hasta 7.000 ONT GPON
-        nuevas en la parte variable del contrato.
+        {t.ontSub}
       </p>
       <div id={DOM.ontBars} style="margin-top:16px"></div>
     </div>
 
     <div class="xgs-explain">
-      <div class="eyebrow">La tecnología</div>
-      <h3>Dos generaciones sobre el mismo hilo</h3>
+      <div class="eyebrow">{t.techEyebrow}</div>
+      <h3>{t.techHeading}</h3>
       <div class="xgs-cols">
         <div class="xgs-col g">
           <h4>{XGS_EXPLAINER.gpon.label}</h4>
@@ -58,16 +59,16 @@ import { DOM } from '../lib/dom-ids';
           class="xgs-ruler"
           viewBox="0 0 1000 160"
           role="img"
-          aria-label="Ocupación del espectro sobre una misma fibra, con las bandas GPON y XGS-PON"
+          aria-label={t.spectrumAria}
           set:html={mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo)}
         />
-        <div class="zoom-pad fs-row" role="group" aria-label="Pantalla completa del espectro">
+        <div class="zoom-pad fs-row" role="group" aria-label={t.fsGroupLabel}>
           <button
             type="button"
             class="fs-trigger"
             data-fs-target={DOM.rulerWrap}
-            aria-label="Ver el espectro a pantalla completa"
-            title="Pantalla completa">⛶</button
+            aria-label={t.fsBtnLabel}
+            title={shared.fullscreenTitle}>⛶</button
           >
         </div>
       </div>

@@ -1,26 +1,28 @@
 ---
 import ActionCard from './ActionCard.astro';
 import { CONTRACT_ACTIONS } from '../lib/data';
+import { ui } from '../i18n/ui';
 
 const fija = CONTRACT_ACTIONS.filter((a) => a.part === 'fija');
 const variable = CONTRACT_ACTIONS.filter((a) => a.part === 'variable');
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).actions;
 ---
 
 <section id="actuaciones">
   <div class="wrap">
-    <div class="eyebrow">Objeto del contrato</div>
-    <h2>Actuaciones previstas</h2>
+    <div class="eyebrow">{t.eyebrow}</div>
+    <h2>{t.heading}</h2>
     <p class="lead">
-      Parte fija llave en mano de alcance cerrado + parte variable activada según necesidades. Cada
-      actuación indica los nodos a los que afecta: pulsa un nombre para abrir su ficha.
+      {t.lead}
     </p>
 
-    <h3 style="margin:34px 0 14px;font-size:1.1rem">Parte fija</h3>
+    <h3 style="margin:34px 0 14px;font-size:1.1rem">{t.fixed}</h3>
     <div class="grid g3">
       {fija.map((a) => <ActionCard action={a} />)}
     </div>
 
-    <h3 style="margin:34px 0 14px;font-size:1.1rem">Parte variable</h3>
+    <h3 style="margin:34px 0 14px;font-size:1.1rem">{t.variable}</h3>
     <div class="grid g3">
       {variable.map((a) => <ActionCard action={a} />)}
     </div>

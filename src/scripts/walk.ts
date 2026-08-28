@@ -7,6 +7,7 @@
 import { byId } from '../lib/data';
 import { initCollapsible } from './collapsible';
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 const COLLAPSE_ON_MOBILE = '(max-width: 760px)';
 
@@ -16,18 +17,19 @@ let viewer: Viewer | null = null;
 export async function openWalk(id: string) {
   const n = byId[id];
   if (!n || n.gallery.length < 2) return;
+  const t = ui(document.documentElement.lang === 'en' ? 'en' : 'es').viewer3d;
 
   const bg = document.getElementById(DOM.svBg)!;
   bg.classList.add('open');
   document.body.style.overflow = 'hidden';
-  document.getElementById(DOM.svTitle)!.textContent = 'Interior simulado · ' + n.name;
+  document.getElementById(DOM.svTitle)!.textContent = t.svTitlePrefix + n.name;
   const loading = document.getElementById(DOM.svLoading)!;
   loading.style.display = 'flex';
 
   try {
     viewer ??= await import('./viewer3d');
   } catch {
-    alert('No se pudo cargar el motor 3D (¿sin conexión?)');
+    alert(t.loadError);
     closeWalk();
     return;
   }

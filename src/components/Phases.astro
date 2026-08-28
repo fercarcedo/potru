@@ -2,6 +2,7 @@
 import { NODES } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { gantt, ganttList, ganttViewBox } from '../lib/graphics';
+import { ui } from '../i18n/ui';
 
 // The gantt is deterministic, so it is drawn at build time from nodes.json.
 // The island only binds click and hover to each bar. Below 760px the plotted
@@ -10,72 +11,60 @@ import { gantt, ganttList, ganttViewBox } from '../lib/graphics';
 const bars = gantt(NODES);
 const rows = ganttList(NODES);
 const viewBox = ganttViewBox(NODES);
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).phases;
 ---
 
 <section id="fases" style="padding-top:30px">
   <div class="wrap">
-    <div class="eyebrow">Ejecución</div>
-    <h2>Tres fases, migración secuencial</h2>
+    <div class="eyebrow">{t.eyebrow}</div>
+    <h2>{t.heading}</h2>
     <p class="lead">
-      Nada se corta hasta superar todas las pruebas de conformidad, y cada nodo dispone de
-      procedimiento de retorno a la situación anterior.
+      {t.lead}
     </p>
 
     <div class="timeline">
       <div class="phase">
-        <h3>Fase 1 · Instalación inicial y pruebas</h3>
-        <div class="dur">SEMANAS 1–12</div>
+        <h3>{t.phase1Heading}</h3>
+        <div class="dur">{t.phase1Dur}</div>
         <p>
-          Replanteo conjunto, instalación de los 2 enrutadores (PAO Gijón y Mieres), nodo de pruebas
-          en GIT Oviedo, nuevos gestores de elementos y adaptación de los OSS. Pruebas de
-          compatibilidad con las ONT en producción, conformidad de ONT GPON y XGS-PON nuevas y de la
-          combinación GPON/XGS-PON. Formación de hasta 15 personas (mín. 25 h). Superar todas las
-          pruebas es condición indispensable para continuar.
+          {t.phase1Body}
         </p>
       </div>
       <div class="phase">
-        <h3>Fase 2 · Despliegue y migración de los 20 nodos</h3>
-        <div class="dur">SEMANAS 13–58 · 46 SEMANAS</div>
+        <h3>{t.phase2Heading}</h3>
+        <div class="dur">{t.phase2Dur}</div>
         <p>
-          Instalación del nuevo equipamiento nodo a nodo, comenzando por Muros de Nalón como piloto
-          y siguiendo por los nodos cabecera de cada área. GIT migra a los usuarios; el
-          adjudicatario suministra las ONT GPON de sustitución y los repuestos. La duración por nodo
-          depende de las ONT en servicio:
+          {t.phase2Body}
         </p>
         <div class="node-times">
-          <div class="nt"><b>≤ 512 ONT</b>5 semanas · 3 instalación + 2 migración</div>
-          <div class="nt"><b>≤ 768 ONT</b>7 semanas · 4 instalación + 3 migración</div>
-          <div class="nt"><b>≤ 1024 ONT</b>8 semanas · 4 instalación + 4 migración</div>
+          <div class="nt"><b>≤ 512 ONT</b>{t.nt1}</div>
+          <div class="nt"><b>≤ 768 ONT</b>{t.nt2}</div>
+          <div class="nt"><b>≤ 1024 ONT</b>{t.nt3}</div>
         </div>
         <h4 style="margin:26px 0 4px;font-size:.95rem">
-          Calendario de migración por nodo <span
-            class="mono"
-            style="font-size:.7rem;color:var(--muted)"
-            >(planificación inicial · pulsa una barra)</span
-          >
+          {t.calendarHeading}{' '}
+          <span class="mono" style="font-size:.7rem;color:var(--muted)">{t.calendarNote}</span>
         </h4>
         <div class="gantt-shell">
           <svg
             id={DOM.gantt}
             viewBox={viewBox}
             role="img"
-            aria-label="Gantt de migración de nodos"
+            aria-label={t.ganttAria}
             set:html={bars}
           />
           <div class="gantt-list" id={DOM.ganttList} set:html={rows} />
           <div class="gantt-note">
-            Cada barra cubre desde el replanteo hasta el fin de la migración de usuarios del nodo,
-            según el pliego. Colores por área geográfica.
+            {t.ganttNote}
           </div>
         </div>
       </div>
       <div class="phase">
-        <h3>Fase 3 · Seguimiento del contrato</h3>
-        <div class="dur">SOLAPADA CON FASE 2 → FIN DE CONTRATO</div>
+        <h3>{t.phase3Heading}</h3>
+        <div class="dur">{t.phase3Dur}</div>
         <p>
-          Activación de la parte variable: licencias de uso, servicio de reparación y sustitución de
-          averías, hasta 5 nodos nuevos, ampliaciones de capacidad, consultas y asesoramiento
-          técnico de nivel 3, y suministro de ONT GPON adicionales y ONT XGS-PON.
+          {t.phase3Body}
         </p>
       </div>
     </div>

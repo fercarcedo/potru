@@ -12,6 +12,7 @@
 import { HOST_ONLY, NODES, byId, ontCount } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
+import { ui } from '../i18n/ui';
 import { placeMapLabels } from './map/place-labels';
 import { initViewport, readViewBox } from './map/viewport';
 import { svgEl, type SvgAttrs } from './svg';
@@ -116,6 +117,12 @@ export function initMap(openNode: (id: string) => void): {
   svg: SVGSVGElement;
   TR: Record<string, SVGElement>;
 } {
+  /* Only this function's own toggle-state label needs the locale — the
+     map's tooltips and legends are still Spanish-only (see CLAUDE.md) — so
+     it's read here, not at module scope: tests/data/map-layout.test.ts
+     imports this module's exported constants under Node, with no
+     `document`, and initMap() itself is never called there. */
+  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').map;
   const svg = document.getElementById(DOM.astMap) as unknown as SVGSVGElement;
   const tip = document.getElementById(DOM.mapTip)!;
   const shell = svg.parentElement!;
@@ -563,9 +570,7 @@ export function initMap(openNode: (id: string) => void): {
   townsBtn.onclick = () => {
     townsOn = !townsOn;
     townsLayer.style.display = townsOn ? '' : 'none';
-    townsBtn.textContent = townsOn
-      ? '◉ Poblaciones servidas: visibles'
-      : '○ Poblaciones servidas: ocultas';
+    townsBtn.textContent = townsOn ? `◉ ${T.townsVisible}` : `○ ${T.townsHidden}`;
   };
 
   const { fitAspect, clearFit } = initViewport(svg, {

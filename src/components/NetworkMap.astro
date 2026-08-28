@@ -2,42 +2,34 @@
 import { TOUR_STOPS } from '../lib/data';
 import { DETAILS } from '../lib/details';
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // The map is drawn by the src/scripts/map.ts island, which the tour
 // (src/scripts/tour.ts) builds on. The 9 "see inside the cables" panels do
 // arrive rendered from the build: the island only reveals the current one.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).map;
+const shared = ui(locale).shared;
 ---
 
 <section id="mapa" style="padding-top:20px">
   <div class="wrap">
-    <div class="eyebrow">Territorio</div>
-    <h2>7 áreas geográficas · 20 nodos primarios · 9 secundarios pasivos</h2>
+    <div class="eyebrow">{t.eyebrow}</div>
+    <h2>{t.heading}</h2>
     <p class="lead">
-      La red está presente en 24 de los 78 concejos asturianos. Los círculos sólidos son nodos
-      primarios (con OLT a renovar); los huecos, nodos secundarios: emplazamientos sin electrónica,
-      solo con repartidores ópticos pasivos colgados de un primario por fibra — la renovación no
-      actúa en ellos. Los puntos pequeños son las poblaciones servidas desde cada nodo. Pulsa
-      cualquier nodo para su ficha o inicia el paseo guiado.
+      {t.lead}
     </p>
     <div class="tour-bar">
-      <button class="tour-btn" id={DOM.tourStart}>▶ Iniciar paseo por la red</button>
-      <button class="tour-btn ghost" id={DOM.townsToggle}>◉ Poblaciones servidas: visibles</button>
+      <button class="tour-btn" id={DOM.tourStart}>▶ {t.tourStart}</button>
+      <button class="tour-btn ghost" id={DOM.townsToggle}>◉ {t.townsVisible}</button>
       <div class="tr-leg">
-        <span
-          ><span class="tr-line"></span> Fibra propia (p. ej. Cudillero–Vegadeo, Autovía Minera)</span
-        >
-        <span
-          ><span class="tr-line rent"></span> Fibra alquilada + CWDM (p. ej. Cudillero–Gijón, suroriente)</span
-        >
+        <span><span class="tr-line"></span> {t.legendOwn}</span>
+        <span><span class="tr-line rent"></span> {t.legendRented}</span>
       </div>
     </div>
     <div class="map-wrap" id={DOM.mapWrap} style="margin-top:30px">
       <div class="map-shell">
-        <svg
-          id={DOM.astMap}
-          viewBox="0 0 1160 470"
-          role="img"
-          aria-label="Mapa esquemático de los nodos de la Red Asturcón"></svg>
+        <svg id={DOM.astMap} viewBox="0 0 1160 470" role="img" aria-label={t.mapAria}></svg>
         <div class="tooltip" id={DOM.mapTip}></div>
         {
           /* Kept off the svg entirely, unlike the zoom buttons below: the
@@ -49,22 +41,22 @@ import { DOM } from '../lib/dom-ids';
             map and the area legend below, so it reads as the map's own
             control rather than the legend's. */
         }
-        <div class="zoom-pad fs-row" role="group" aria-label="Pantalla completa del mapa">
+        <div class="zoom-pad fs-row" role="group" aria-label={t.fsGroupLabel}>
           <button
             type="button"
             class="fs-trigger"
             data-fs-target={DOM.mapWrap}
-            aria-label="Ver el mapa a pantalla completa"
-            title="Pantalla completa">⛶</button
+            aria-label={t.fsBtnLabel}
+            title={shared.fullscreenTitle}>⛶</button
           >
         </div>
         <div class="area-legend" id={DOM.areaLegend}></div>
       </div>
-      <div class="zoom-pad" role="group" aria-label="Zoom del mapa">
-        <button id={DOM.mapZoomIn} type="button" aria-label="Acercar el mapa" title="Acercar"
+      <div class="zoom-pad" role="group" aria-label={t.zoomGroupLabel}>
+        <button id={DOM.mapZoomIn} type="button" aria-label={t.zoomInLabel} title={t.zoomInTitle}
           >+</button
         >
-        <button id={DOM.mapZoomOut} type="button" aria-label="Alejar el mapa" title="Alejar"
+        <button id={DOM.mapZoomOut} type="button" aria-label={t.zoomOutLabel} title={t.zoomOutTitle}
           >−</button
         >
       </div>
@@ -74,7 +66,7 @@ import { DOM } from '../lib/dom-ids';
       <h4 id={DOM.tpTitle}></h4>
       <p id={DOM.tpText}></p>
       <button class="tour-btn ghost" id={DOM.tpDetBtn} style="margin-top:12px"
-        >■■ Ver los cables por dentro</button
+        >■■ {t.cableOpen}</button
       >
       <div
         id={DOM.tpDet}
@@ -92,28 +84,34 @@ import { DOM } from '../lib/dom-ids';
             its own. Panning works without the buttons too, straight off
             the svg via drag/touch — see initPannableZoom. */
         }
-        <div class="zoom-pad" role="group" aria-label="Zoom del detalle">
-          <button id={DOM.cableZoomIn} type="button" aria-label="Acercar el detalle" title="Acercar"
-            >+</button
+        <div class="zoom-pad" role="group" aria-label={t.cableZoomGroupLabel}>
+          <button
+            id={DOM.cableZoomIn}
+            type="button"
+            aria-label={t.cableZoomInLabel}
+            title={t.zoomInTitle}>+</button
           >
-          <button id={DOM.cableZoomOut} type="button" aria-label="Alejar el detalle" title="Alejar"
-            >−</button
+          <button
+            id={DOM.cableZoomOut}
+            type="button"
+            aria-label={t.cableZoomOutLabel}
+            title={t.zoomOutTitle}>−</button
           >
           <button
             type="button"
             class="fs-trigger"
             data-fs-target={DOM.tpDet}
-            aria-label="Ver el detalle a pantalla completa"
-            title="Pantalla completa">⛶</button
+            aria-label={t.cableFsLabel}
+            title={shared.fullscreenTitle}>⛶</button
           >
         </div>
       </div>
       <div class="tour-nav">
-        <button class="tour-btn ghost" id={DOM.tpPrev}>◀ Anterior</button>
-        <button class="tour-btn" id={DOM.tpNext}>Siguiente ▶</button>
-        <button class="tour-btn" id={DOM.tpEnter} style="display:none">⌂ Entrar en el nodo</button>
+        <button class="tour-btn ghost" id={DOM.tpPrev}>◀ {t.tourPrev}</button>
+        <button class="tour-btn" id={DOM.tpNext}>{t.tourNext} ▶</button>
+        <button class="tour-btn" id={DOM.tpEnter} style="display:none">⌂ {t.tourEnter}</button>
         <button class="tour-btn ghost" id={DOM.tpExit} style="margin-left:auto"
-          >✕ Salir del paseo</button
+          >✕ {t.tourExit}</button
         >
       </div>
     </div>

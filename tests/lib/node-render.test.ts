@@ -13,7 +13,12 @@
  */
 import { describe, expect, it } from 'vitest';
 import { byId, ontCount } from '../../src/lib/data';
-import { renderOltTable } from '../../src/lib/node-render';
+import {
+  renderAreaTag,
+  renderMigStrip,
+  renderOltTable,
+  renderTownsBlock,
+} from '../../src/lib/node-render';
 
 const blimea = byId['blimea']!;
 const HTML = renderOltTable(blimea);
@@ -74,5 +79,51 @@ describe('the OLT table shows the pliego contradicting itself', () => {
       expect(renderOltTable(n), `${n.id} grew a footnote`).not.toContain('olt-notes');
       expect(renderOltTable(n), `${n.id} grew a warn cell`).not.toContain('mono warn');
     }
+  });
+});
+
+describe('locale: every export defaults to Spanish and translates on demand', () => {
+  const llanes = byId['llanes']!; // carries both towns and a ponGroups tree
+  const pao = byId['pao']!;
+
+  it('renderOltTable: same figures, translated headers', () => {
+    const es = renderOltTable(blimea);
+    const en = renderOltTable(blimea, 'en');
+    expect(es).toContain('<th>Equipo actual</th>');
+    expect(en).toContain('<th>Current equipment</th>');
+    /* the pliego's own contradiction is a figure, not prose: it must not move */
+    expect(en).toContain('6 / 5');
+    expect(en).toContain('12 / 11');
+    expect(en).not.toContain('Equipo actual');
+  });
+
+  it('renderMigStrip: PAO branch translates, keeps its week numbers', () => {
+    const en = renderMigStrip(pao, 'en');
+    expect(en).toContain('<b>Phase 1</b><span>weeks 1–12</span>');
+    expect(en).toContain('No migration');
+    expect(en).not.toContain('Fase 1');
+  });
+
+  it('renderMigStrip: regular node keeps its week numbers, translates the labels', () => {
+    const en = renderMigStrip(blimea, 'en');
+    expect(en).toContain(`Week ${blimea.weekFrom}`);
+    expect(en).toContain(`Week ${blimea.weekTo}`);
+    expect(en).toContain(`${ontCount(blimea)} ONT`);
+    expect(en).toContain('to migrate');
+  });
+
+  it('renderTownsBlock: town names are pliego data and stay untranslated', () => {
+    const en = renderTownsBlock(llanes, 'en');
+    expect(en).toContain('Towns served by this node');
+    expect(en).toContain('Shared PON trees (technical detail)');
+    expect(en).toContain('SAME PON');
+    for (const town of llanes.towns) expect(en).toContain(town);
+  });
+
+  it('renderAreaTag: only the "AREA" word translates, not the area name', () => {
+    const en = renderAreaTag(blimea, 'en');
+    const es = renderAreaTag(blimea);
+    expect(en).toContain(`AREA ${blimea.area.toUpperCase()}`);
+    expect(es).toContain(`ÁREA ${blimea.area.toUpperCase()}`);
   });
 });

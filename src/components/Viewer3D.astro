@@ -1,9 +1,13 @@
 ---
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // Wrapper for the 3D viewer. The scene is built by src/scripts/viewer3d.ts,
 // loaded on demand (dynamic import) when "Recorrer el interior en 3D" is
 // pressed. The simulation notice lives here, in the header, NOT inside the room.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).viewer3d;
+const shared = ui(locale).shared;
 ---
 
 <div class="sv-bg" id={DOM.svBg}>
@@ -23,32 +27,30 @@ import { DOM } from '../lib/dom-ids';
       type="button"
       aria-expanded="false"
       aria-controls={DOM.svWarn}
-      title="Aviso sobre esta recreación"
+      title={t.warnToggleTitle}
     >
-      ⚠ Aviso
+      ⚠ {t.warnToggleLabel}
     </button>
-    <button class="tour-btn" id={DOM.svMode} style="white-space:nowrap">⇄ Ver renovado</button>
-    <button class="sv-exit" id={DOM.svExit}>✕ Salir</button>
+    <button class="tour-btn" id={DOM.svMode} style="white-space:nowrap">⇄ {t.modeRenewed}</button>
+    <button class="sv-exit" id={DOM.svExit}>✕ {shared.exit}</button>
   </div>
   <div class="sv-warn" id={DOM.svWarn}>
-    ⚠ RECREACIÓN A ESCALA — el recinto, la puerta y la posición de cada armario están tomados del
-    plano de planta del pliego; el número de OLT, sus tarjetas y sus puertos GPON, de las tablas de
-    equipamiento; y lo serigrafiado en cada bastidor —fabricante, modelo, código y juego de
-    tarjetas— de esas mismas fuentes. Los acabados, los colores y el aspecto de los equipos siguen
-    siendo interpretación por mucho que el render haya mejorado: saber que un OLT es un Alcatel 7342
-    no es tener una foto de un Alcatel 7342, y el pliego no la trae. No es una fotografía ni un
-    modelo real del nodo.
-    <button class="sv-warn-close" id={DOM.svWarnClose} aria-label="Cerrar el aviso">✕</button>
+    ⚠ {t.warnText}
+    <button class="sv-warn-close" id={DOM.svWarnClose} aria-label={t.warnClose}>✕</button>
   </div>
   <div style="position:relative;flex:1;display:flex">
     <canvas id={DOM.svCanvas}></canvas>
-    <div class="sv-wm">simulación · no es imagen real</div>
+    <div class="sv-wm">{t.watermark}</div>
     <div class="sv-help">
-      ARRASTRA para mirar · W A S D / flechas para moverte · RUEDA o PELLIZCA para ampliar
+      {t.help}
     </div>
-    <div class="zoom-pad sv-zoom" role="group" aria-label="Zoom de la vista">
-      <button id={DOM.svZoomIn} type="button" aria-label="Ampliar" title="Ampliar">+</button>
-      <button id={DOM.svZoomOut} type="button" aria-label="Reducir" title="Reducir">−</button>
+    <div class="zoom-pad sv-zoom" role="group" aria-label={t.zoomGroupLabel}>
+      <button id={DOM.svZoomIn} type="button" aria-label={t.zoomInTitle} title={t.zoomInTitle}
+        >+</button
+      >
+      <button id={DOM.svZoomOut} type="button" aria-label={t.zoomOutTitle} title={t.zoomOutTitle}
+        >−</button
+      >
     </div>
     <div class="sv-legend-wrap">
       {
@@ -63,7 +65,7 @@ import { DOM } from '../lib/dom-ids';
         type="button"
         aria-expanded="false"
         aria-controls={DOM.svLegend}
-        title="Equipamiento del recinto">ⓘ</button
+        title={t.legendToggleTitle}>ⓘ</button
       >
       <div class="sv-legend" id={DOM.svLegend}></div>
     </div>
@@ -71,6 +73,6 @@ import { DOM } from '../lib/dom-ids';
       <button class="up" data-k="f">▲</button>
       <button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button>
     </div>
-    <div class="sv-loading" id={DOM.svLoading} style="display:none">CARGANDO SALA…</div>
+    <div class="sv-loading" id={DOM.svLoading} style="display:none">{t.loading}</div>
   </div>
 </div>

@@ -1,18 +1,20 @@
 ---
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // The end-to-end schematic is drawn by the src/scripts/diagram.ts island: its
 // contents change with the GPON ↔ XGS-PON toggle and it carries animated pulses.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).diagram;
+const shared = ui(locale).shared;
 ---
 
 <section id="viz">
   <div class="wrap">
-    <div class="eyebrow">Visualización inmersiva</div>
-    <h2>Del salón del usuario al PAO de Gijón</h2>
+    <div class="eyebrow">{t.eyebrow}</div>
+    <h2>{t.heading}</h2>
     <p class="lead">
-      Cadena completa de la red: ONT → red de acceso pasiva (splitters 1:16 y 1:4) → nodo primario
-      con OLT → red troncal → punto de acceso de operadores. Cambia entre la red actual y la
-      renovada, y pulsa cada elemento para conocer su papel.
+      {t.lead}
     </p>
     {
       /* Fullscreen (scripts/fullscreen.ts) moves this whole wrapper — the
@@ -22,26 +24,23 @@ import { DOM } from '../lib/dom-ids';
         sight the moment fullscreen covers the page. */
     }
     <div id={DOM.diagramShell}>
-      <div class="mode-toggle" role="tablist" aria-label="Estado de la red">
+      <div class="mode-toggle" role="tablist" aria-label={t.modeGroupLabel}>
         <button id={DOM.btnGpon} class="active-gpon" role="tab" aria-selected="true"
-          >◉ RED ACTUAL · GPON</button
+          >◉ {t.modeCurrent}</button
         >
-        <button id={DOM.btnXgs} role="tab" aria-selected="false"
-          >◎ RED RENOVADA · GPON/XGS-PON</button
-        >
+        <button id={DOM.btnXgs} role="tab" aria-selected="false">◎ {t.modeRenewed}</button>
       </div>
       <div class="diagram-shell">
-        <svg
-          id={DOM.netDiagram}
-          viewBox="0 0 1160 430"
-          role="img"
-          aria-label="Esquema de la Red Asturcón"></svg>
-        <div class="zoom-pad" role="group" aria-label="Zoom del esquema">
-          <button id={DOM.diagZoomIn} type="button" aria-label="Acercar el esquema" title="Acercar"
+        <svg id={DOM.netDiagram} viewBox="0 0 1160 430" role="img" aria-label={t.diagramAria}></svg>
+        <div class="zoom-pad" role="group" aria-label={t.zoomGroupLabel}>
+          <button id={DOM.diagZoomIn} type="button" aria-label={t.zoomInLabel} title={t.zoomInTitle}
             >+</button
           >
-          <button id={DOM.diagZoomOut} type="button" aria-label="Alejar el esquema" title="Alejar"
-            >−</button
+          <button
+            id={DOM.diagZoomOut}
+            type="button"
+            aria-label={t.zoomOutLabel}
+            title={t.zoomOutTitle}>−</button
           >
         </div>
         {
@@ -54,31 +53,24 @@ import { DOM } from '../lib/dom-ids';
             after it, so it reads as this drawing's own control rather than
             the legend's. */
         }
-        <div class="zoom-pad fs-row" role="group" aria-label="Pantalla completa del esquema">
+        <div class="zoom-pad fs-row" role="group" aria-label={t.fsGroupLabel}>
           <button
             type="button"
             class="fs-trigger"
             data-fs-target={DOM.diagramShell}
-            aria-label="Ver el esquema a pantalla completa"
-            title="Pantalla completa">⛶</button
+            aria-label={t.fsBtnLabel}
+            title={shared.fullscreenTitle}>⛶</button
           >
         </div>
         <div class="diag-caption">
-          <span
-            ><span class="dot" style="background:var(--gpon)"></span> Portadora GPON · 2,5 Gbps ↓</span
-          >
-          <span
-            ><span class="dot" style="background:var(--xgs)"></span> Portadora XGS-PON · 10 Gbps ↓</span
-          >
-          <span
-            ><span class="dot" style="background:var(--dim)"></span> Elemento pasivo (no cambia)</span
-          >
-          <span class="mono" style="margin-left:auto">▶ pulsos = tráfico descendente</span>
+          <span><span class="dot" style="background:var(--gpon)"></span> {t.captionGpon}</span>
+          <span><span class="dot" style="background:var(--xgs)"></span> {t.captionXgs}</span>
+          <span><span class="dot" style="background:var(--dim)"></span> {t.captionPassive}</span>
+          <span class="mono" style="margin-left:auto">▶ {t.captionPulses}</span>
         </div>
       </div>
       <div class="info-box" id={DOM.infoBox}>
-        <b>Explora el esquema.</b> Haz clic sobre la ONT, los splitters, el nodo OLT, la troncal o el
-        PAO para ver qué son y cómo les afecta la renovación.
+        <b>{t.infoDefaultBold}</b>{t.infoDefaultRest}
       </div>
     </div>
   </div>
