@@ -69,6 +69,17 @@ cable panels of the guided tour, and the 21 node record pages.
   (`TOUR_STOPS[i].id`), not an array: the panel and the stop's prose used to be two arrays lined up
   by index, so reordering a stop silently mismatched them. `tests/lib/details.test.ts` guards the
   key contract.
+- `src/i18n/ui.ts` — the site-chrome dictionary: two objects, `es` and `en`, both satisfying one
+  `UiStrings` interface, so a missing translation is a compile error rather than a silent fallback.
+  `ui(locale)` resolves the right one (defaulting to Spanish). `tests/lib/ui.test.ts` walks both
+  trees leaf by leaf and fails if any string is still identical between locales — TypeScript catches
+  a missing key, not a copy-pasted one. Covers structural chrome (nav, footer, buttons, aria-labels)
+  and node-record labels; pliego-derived prose still lives in `content.json`, untranslated so far —
+  see "Language" under Conventions.
+- `src/lib/node-render.ts` — the HTML fragments a node record is made of (OLT table, migration
+  strip, served towns, the "ÁREA" tag), shared between `NodeDetail.astro` (build time) and
+  `src/scripts/modal.ts` (runtime, for the home-page modal) so an escaping fix or a markup change
+  can't drift between the two. Every export takes an optional `locale`, defaulting to Spanish.
 - `src/pages/[...locale]/nodos/[id].astro` — one static page per node via `getStaticPaths()`,
   crossed with locale (see below): 42 pages, not 21.
 
@@ -78,9 +89,13 @@ matches **zero** path segments when `getStaticPaths()` gives it `undefined`, whi
 Spanish unprefixed at `/nodos/<id>` while English renders at `/en/nodos/<id>` from the same file.
 `Astro.currentLocale` resolves purely from the URL, so any component in the tree can read it — no
 prop-drilling needed — and `getRelativeLocaleUrl()` (from `astro:i18n`) builds the other locale's
-equivalent of the current path, which is how `Layout.astro` computes the manual toggle's target.
-Only the routing and the toggle exist so far: `/en/` mirrors every Spanish page byte-for-byte in
-copy, pending the translation work described in "Language" under Conventions.
+equivalent of the current path, which is how `Layout.astro` computes the manual toggle's target, and
+how every component that links to `/nodos/<id>` (`NodeGrid.astro`, `AffectedNodes.astro`,
+`NodeDetail.astro`'s back-link and action links) builds a same-locale href instead of always
+pointing at the Spanish tree. `src/scripts/modal.ts` is the one client-side exception:
+`getRelativeLocaleUrl` isn't available in a plain browser script, so it composes the English prefix
+itself (`${BASE_URL}en/`) — safe only because `prefixDefaultLocale: false` fixes that prefix's shape.
+See "Language" under Conventions for what is translated and what still isn't.
 
 **Client islands** (`src/scripts/`, started from `main.ts`, which also wires build-rendered node
 cards and gantt bars to the modal):
@@ -99,6 +114,16 @@ cards and gantt bars to the modal):
 - `modal.ts` / `walk.ts` / `viewer3d.ts` — node record modal; and the 3D viewer, which
   dynamic-imports `three` only when the visitor presses "Recorrer el interior en 3D" (keep it that
   way — it is the only heavy chunk).
+
+`map.ts`, `tour.ts`, `viewer3d.ts` and `walk.ts` each overwrite a handful of their own DOM nodes'
+text on interaction (a toggle's label, the tour's step counter, the 3D mode switch) — a translated
+static label that snapped back to Spanish on the first click would be worse than not translating it
+at all, so those specific strings read `document.documentElement.lang` and pull from `ui.ts` too.
+This is narrower than full i18n support for these islands: their tooltips, the tour stops' own
+prose and the 3D equipment legend are still Spanish-only. `node-render.ts`'s functions run at build
+time as well as here, so they take `locale` as an explicit argument instead (`modal.ts` resolves it
+once, from the same `document.documentElement.lang`, and passes it through) — reading the DOM
+directly would break at build time, when there is no DOM to read.
 
 Everything type-checks, including `src/scripts/map.ts` — once a literal, `// @ts-nocheck`'d port of
 the legacy JavaScript. The shared `svgEl()` in `src/scripts/svg.ts` takes a typed `SvgAttrs =
@@ -140,17 +165,28 @@ versioned.
   and data in Spanish, with every page also rendering under `/en/`. Spanish is the pliego's own
   language and the site's default; `defaultLocale: 'es'` with `prefixDefaultLocale: false`
   (`astro.config.mjs`) keeps it unprefixed, so no existing URL moved when the `/en/` tree was
-  added. **The `/en/` rendering is routing and chrome only so far — its copy is still the Spanish
-  original.** Translating it means: site chrome (nav, footer, buttons) into a small dictionary
-  components read by locale; pliego-derived prose in `content.json` nested per string alongside
-  the Spanish (`{ "es": "…", "en": "…" }`) rather than forked into a parallel file, so a pliego
-  correction can't land in one language and not the other; and the `set:html` markup `graphics.ts`
-  and `details.ts` generate, which will need a locale argument threaded through since it embeds
-  text directly. A translation is of _this site's_ Spanish summary, not of the pliego, which
-  exists only in Spanish: proper nouns, enclosure codes, OLT models and «pliego CON 06/2025» stay
-  untranslated, and the disclaimer vocabulary («ilustrativo», «sin desglose en el pliego»,
-  «recreación interpretada», the 3D viewer's `sv-warn` notice) needs an English equivalent that
-  concedes exactly as much — see the golden rule above.
+  added. A translation is of _this site's_ Spanish summary, not of the pliego, which exists only in
+  Spanish: proper nouns, enclosure codes, OLT models and «pliego CON 06/2025» stay untranslated, and
+  the disclaimer vocabulary («ilustrativo», «sin desglose en el pliego», «recreación interpretada»,
+  the 3D viewer's `sv-warn` notice) gets an English equivalent that concedes exactly as much — see
+  the golden rule above.
+
+  **What is translated so far**: every string hardcoded directly in a component's own template
+  (headings, leads, buttons, aria-labels — via `src/i18n/ui.ts`), the node record's own labels
+  (`node-render.ts`: OLT table headers, migration-strip text, served-towns headings), and the
+  runtime toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts` that would otherwise
+  overwrite that same chrome with Spanish on the first click. **Not translated yet**: pliego-derived
+  prose in `content.json` (the architecture-layer summaries, the diagram's click-to-learn text, the
+  contract-action cards, the 9 guided-tour stops' own words, the PAO's transport occupancy) and
+  `nodes.json`'s per-action descriptions (`ACTION_DESC`) — both need `{ "es": "…", "en": "…" }`
+  nested per string rather than forked into a parallel file, so a pliego correction can't land in
+  one language and not the other; the free-text per-node fields in `nodes.json` (`address`,
+  `enclosure`, `extra`, `townsNote`, `ponGroups.note`) and the plan gallery's own labels (`planta`,
+  `alzado`, …); and the markup `graphics.ts`/`details.ts` generate via `set:html` (map labels, the
+  gantt, the CWDM/spectrum diagrams, the tour's cable-detail panels) plus what the client islands
+  build from it at runtime (map tooltips, the 3D viewer's equipment legend, the diagram's
+  click-an-element info panel) — all of it needs a `locale` argument threaded through the
+  generators that don't have one yet.
 
   The visitor's language follows their browser on first visit to `/` only: an inline pre-paint
   script in `Layout.astro` (mirroring the theme script below it, and gated to fire only there)
@@ -160,6 +196,10 @@ versioned.
   by `src/scripts/lang.ts`) — an explicit choice always wins, and a deep link to `/nodos/<id>` or
   `/en/…` is never auto-redirected, so a shared URL always opens in the language it was shared as.
   `/es/` does not exist as a real route; `public/_redirects` sends it to the unprefixed default.
+  `playwright.config.ts` pins `locale: 'es-ES'` for exactly this reason: a Chromium build whose own
+  default locale matches `/^en/i` (this varies) would otherwise make the redirect above fire on a
+  plain `page.goto('./')`, which almost none of `tests/e2e/smoke.spec.ts` is testing for. The
+  `language` describe block opts individual tests into `'en-US'` where that is the point.
 
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.

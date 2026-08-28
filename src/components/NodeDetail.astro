@@ -1,5 +1,7 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { asset, type NetworkNode } from '../lib/data';
+import { ui } from '../i18n/ui';
 import {
   renderActionLinks,
   renderAreaTag,
@@ -13,16 +15,21 @@ interface Props {
 }
 
 const { node: n } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale);
 /* The record leads with the node's first plan, the way the modal leads with
    whichever tab is open; the rest go in the grid at the foot of the card, so
    no plan is shown twice. */
 const [hero, ...plans] = n.gallery;
-const towns = renderTownsBlock(n);
-const olts = renderOltTable(n);
+const towns = renderTownsBlock(n, locale);
+const olts = renderOltTable(n, locale);
+/* Where "elsewhere" (renderActionLinks' own base param) resolves to: this
+   locale's home page, not the plain BASE_URL — on /en/nodos/<id> the
+   #act-* anchors it points at live at /en/, not /. */
+const homeHref = getRelativeLocaleUrl(locale, '');
 ---
 
-<a class="back-link" href={`${base}#nodos`}>◀ Volver a los 20 nodos</a>
+<a class="back-link" href={`${homeHref}#nodos`}>◀ {t.nodeDetail.backLink}</a>
 
 <article class="node-detail">
   {
@@ -45,7 +52,7 @@ const olts = renderOltTable(n);
   <div class="node-body">
     <h1>
       {n.name}
-      <Fragment set:html={renderAreaTag(n)} />
+      <Fragment set:html={renderAreaTag(n, locale)} />
     </h1>
     <div class="addr">📍 {n.address}</div>
     <p class="env">{n.enclosure}</p>
@@ -56,7 +63,7 @@ const olts = renderOltTable(n);
     {
       olts && (
         <>
-          <div class="act-label">Equipamiento OLT en producción</div>
+          <div class="act-label">{t.nodeDetail.oltHeading}</div>
           <div class="olt-wrap">
             <table class="olt-table" set:html={olts} />
           </div>
@@ -64,26 +71,24 @@ const olts = renderOltTable(n);
       )
     }
 
-    <div class="mig-strip" set:html={renderMigStrip(n)} />
+    <div class="mig-strip" set:html={renderMigStrip(n, locale)} />
 
     {
       n.gallery.length > 1 && (
         <button class="tour-btn" data-walk={n.id}>
-          🚶 Recorrer el interior en 3D{' '}
-          <span style="color:var(--muted);font-size:.66rem">
-            · simulación generada a partir de planta y alzados
-          </span>
+          🚶 {t.shared.walkLabel}{' '}
+          <span style="color:var(--muted);font-size:.66rem">· {t.shared.walkNote}</span>
         </button>
       )
     }
 
-    <div class="act-label">Actuaciones del contrato que afectan a este nodo</div>
-    <div class="act-links" set:html={renderActionLinks(n, base)} />
+    <div class="act-label">{t.shared.actionsAffecting}</div>
+    <div class="act-links" set:html={renderActionLinks(n, homeHref)} />
 
     {
       plans.length > 0 && (
         <>
-          <div class="act-label plans-label">Resto de planos del pliego</div>
+          <div class="act-label plans-label">{t.nodeDetail.remainingPlans}</div>
           <div class="detail-gallery">
             {plans.map((g) => (
               <figure>

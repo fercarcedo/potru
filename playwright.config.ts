@@ -9,6 +9,13 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:4321/',
+    // Pinned so the suite's default `page` fixture is deterministic: without
+    // this, a browser install whose own default locale happens to match
+    // /^en/i (Chromium's varies by build/OS) makes Layout.astro's pre-paint
+    // script redirect a plain `page.goto('./')` to /en/, which is not what
+    // most of this suite is testing. The 'language' describe block in
+    // smoke.spec.ts opts individual tests into 'en-US' explicitly instead.
+    locale: 'es-ES',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {

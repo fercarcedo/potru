@@ -1,5 +1,6 @@
 ---
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // Full-size view of a plan. The plans are 1891 x 1310 CAD drawings shown at
 // ~330 px in the record, which is far too small to read the dimension chains
@@ -10,15 +11,12 @@ import { DOM } from '../lib/dom-ids';
 // is a real <a href> to the image file, so no-JS, middle-click and ⌘-click
 // all still open the original. src/scripts/lightbox.ts only upgrades the
 // plain left-click.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).lightbox;
+const shared = ui(locale).shared;
 ---
 
-<div
-  class="lb-bg"
-  id={DOM.lbBg}
-  role="dialog"
-  aria-modal="true"
-  aria-label="Plano a tamaño completo"
->
+<div class="lb-bg" id={DOM.lbBg} role="dialog" aria-modal="true" aria-label={t.ariaLabel}>
   <div class="lb-top">
     <span class="lb-cap" id={DOM.lbCap}></span>
     <span class="lb-count" id={DOM.lbCount}></span>
@@ -28,25 +26,23 @@ import { DOM } from '../lib/dom-ids';
         counter and the strip; this is what replaces it for everyone else. */
     }
     <span class="lb-said" id={DOM.lbSaid} aria-live="polite"></span>
-    <a class="lb-open" id={DOM.lbOpen} href="#" target="_blank" rel="noopener"
-      >↗ Abrir el original</a
+    <a class="lb-open" id={DOM.lbOpen} href="#" target="_blank" rel="noopener">↗ {t.openOriginal}</a
     >
-    <button class="lb-close" id={DOM.lbClose} aria-label="Cerrar">✕ Salir</button>
+    <button class="lb-close" id={DOM.lbClose} aria-label={shared.close}>✕ {shared.exit}</button>
   </div>
 
   <div class="lb-stage">
     <figure class="lb-fig" id={DOM.lbFig}>
       <img id={DOM.lbImg} alt="" />
     </figure>
-    <button class="lb-nav prev" id={DOM.lbPrev} aria-label="Plano anterior">‹</button>
-    <button class="lb-nav next" id={DOM.lbNext} aria-label="Plano siguiente">›</button>
+    <button class="lb-nav prev" id={DOM.lbPrev} aria-label={t.prevAria}>‹</button>
+    <button class="lb-nav next" id={DOM.lbNext} aria-label={t.nextAria}>›</button>
   </div>
 
   <div class="lb-bottom">
-    <div class="lb-thumbs" id={DOM.lbThumbs} role="tablist" aria-label="Planos del nodo"></div>
+    <div class="lb-thumbs" id={DOM.lbThumbs} role="tablist" aria-label={t.thumbsAria}></div>
     <div class="lb-help">
-      PULSA el plano para verlo a tamaño real · ARRASTRA para moverte · ← → para cambiar de plano ·
-      ESC para salir
+      {t.help}
     </div>
   </div>
 </div>

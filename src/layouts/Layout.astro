@@ -1,6 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 import '../styles/global.css';
 /* The headline face, preloaded below — see fonts.css for why it's
  * font-display:optional rather than @fontsource's own swap (the h1's own
@@ -18,25 +19,28 @@ interface Props {
   description?: string;
 }
 
-const {
-  title,
-  description = 'Visor divulgativo de la renovación GPON → XGS-PON de la Red Asturcón, la red pública FTTH de Asturias, según el pliego CON 06/2025 de GIT. Proyecto independiente.',
-} = Astro.props;
+const { title, description } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
-const nav = [
-  ['#viz', 'Red en vivo'],
-  ['#mapa', 'Mapa'],
-  ['#nodos', 'Nodos'],
-  ['#arquitectura', 'Arquitectura'],
-  ['#actuaciones', 'Actuaciones'],
-  ['#fases', 'Fases'],
-];
 
 /* Astro.currentLocale resolves from the URL alone, so it is available here
    even though Layout is a child component, not the page — see astro.config
    .mjs's i18n block. Spanish is the default and stays unprefixed. */
 const locale = (Astro.currentLocale ?? 'es') as 'es' | 'en';
+const t = ui(locale);
+/* A default has to be locale-aware too, or a page that doesn't pass its own
+   description (the home page currently doesn't) would get the Spanish one
+   on /en/ as well. */
+const desc = description ?? t.meta.defaultDescription;
+const nav = [
+  ['#viz', t.nav.viz],
+  ['#mapa', t.nav.map],
+  ['#nodos', t.nav.nodes],
+  ['#arquitectura', t.nav.architecture],
+  ['#actuaciones', t.nav.actions],
+  ['#fases', t.nav.phases],
+];
+
 const otherLocale = locale === 'es' ? 'en' : 'es';
 const homePath = getRelativeLocaleUrl(locale, '');
 
@@ -60,7 +64,7 @@ const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'Vie
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={desc} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <link rel="preload" as="font" type="font/woff2" href={bricolageWdthUrl} crossorigin />
@@ -224,7 +228,7 @@ const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'Vie
                 stroke-linecap="round"
                 d="M3 5.5h14M3 10h14M3 14.5h14"></path>
             </svg>
-            <span class="sr-only">Menú</span>
+            <span class="sr-only">{t.nav.menuSrOnly}</span>
           </button>
         </div>
       </div>
@@ -234,14 +238,8 @@ const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'Vie
 
     <footer>
       <div class="wrap">
-        <span class="disclaimer"
-          ><b>Proyecto independiente</b>, no afiliado a GIT ni al Principado de Asturias · fuente:
-          pliego público CON 06/2025</span
-        >
-        <span
-          >Fuente: Pliego de Condiciones Técnicas · EXPTE CON 06/2025 · aprobado 22-12-2025 · Datos,
-          planos y calendario extraídos del propio pliego</span
-        >
+        <span class="disclaimer"><b>{t.footer.independentBold}</b>{t.footer.independentRest}</span>
+        <span>{t.footer.source}</span>
         <span class="mono"
           >GIT · Gestión de Infraestructuras Públicas de Telecomunicaciones del Principado de
           Asturias S.A.U., M.P.</span

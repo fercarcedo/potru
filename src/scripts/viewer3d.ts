@@ -23,6 +23,7 @@ import roomData from '../data/rooms.json';
 import { cardCount, cardLabel, type NetworkNode } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
+import { ui } from '../i18n/ui';
 import { initControls } from './viewer3d/controls';
 import { createEquipmentBuilders, type UnitBuilder } from './viewer3d/equipment';
 import { pointInPolygon } from './viewer3d/geometry';
@@ -263,6 +264,9 @@ export function buildRoom(n: NetworkNode) {
   stopRoom();
   const room = ROOMS[n.id];
   if (!room) return;
+  /* Only the mode-toggle label below needs this — the equipment legend body
+     a few lines up is still Spanish-only (see CLAUDE.md). */
+  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').viewer3d;
 
   const canvas = document.getElementById(DOM.svCanvas) as HTMLCanvasElement;
   const holder = canvas.parentElement!;
@@ -772,13 +776,13 @@ export function buildRoom(n: NetworkNode) {
 
   const modeBtn = document.getElementById(DOM.svMode)!;
   let renewed = false;
-  modeBtn.textContent = '⇄ Ver renovado';
+  modeBtn.textContent = `⇄ ${T.modeRenewed}`;
   modeBtn.onclick = () => {
     renewed = !renewed;
     oldChassis.forEach((r) => (r.visible = !renewed));
     newChassis.forEach((r) => (r.visible = renewed));
     halo.intensity = renewed ? HALO : 0;
-    modeBtn.textContent = renewed ? '⇄ Ver actual' : '⇄ Ver renovado';
+    modeBtn.textContent = renewed ? `⇄ ${T.modeCurrent}` : `⇄ ${T.modeRenewed}`;
   };
 
   /* ---- camera and controls ---- */

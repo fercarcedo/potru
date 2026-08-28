@@ -1,12 +1,21 @@
 ---
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 
 // One shared "view fullscreen" overlay for the map, the end-to-end diagram
 // and the tour's cable-detail panels — see scripts/fullscreen.ts, which
 // moves whichever one was opened in here rather than cloning it.
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale);
 ---
 
-<div class="fs-bg" id={DOM.fsBg} role="dialog" aria-modal="true" aria-label="Vista ampliada">
-  <button class="fs-close" id={DOM.fsClose}>✕ Salir</button>
+<div
+  class="fs-bg"
+  id={DOM.fsBg}
+  role="dialog"
+  aria-modal="true"
+  aria-label={t.fullscreenViewer.ariaLabel}
+>
+  <button class="fs-close" id={DOM.fsClose}>✕ {t.shared.exit}</button>
   <div class="fs-host" id={DOM.fsHost}></div>
 </div>

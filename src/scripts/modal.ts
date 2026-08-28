@@ -8,6 +8,7 @@
 import { asset, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
+import type { Locale } from '../i18n/ui';
 import {
   renderActionLinks,
   renderAreaTag,
@@ -30,7 +31,17 @@ export interface ModalApi {
  *  children). Call once; the returned openNode/closeModal are also what
  *  map.ts and tour.ts need to open a node record from the map or the tour. */
 export function initModal(): ModalApi {
-  const base = import.meta.env.BASE_URL;
+  /* Layout.astro stamps <html lang> at build time per page; node-render.ts's
+     functions run at build time (NodeDetail.astro) and here at runtime, so
+     they take locale as a plain argument rather than reading the DOM
+     themselves — this is the one place on the client side that resolves it. */
+  const locale: Locale = document.documentElement.lang === 'en' ? 'en' : 'es';
+  /* astro:i18n's getRelativeLocaleUrl isn't available in a plain client
+     script, but prefixDefaultLocale:false means the English prefix is always
+     exactly "en/" appended after BASE_URL — see astro.config.mjs's i18n
+     block. Composing it this way (rather than hardcoding "/en/") keeps this
+     correct if the site's base path ever moves again. */
+  const base = locale === 'en' ? `${import.meta.env.BASE_URL}en/` : import.meta.env.BASE_URL;
   const mBg = document.getElementById(DOM.modalBg)!;
   /* The record's hero is one <img> swapping through a gallery behind its
      tabs, so the DOM cannot describe the set the way the node page's grid
@@ -95,7 +106,7 @@ export function initModal(): ModalApi {
       });
     }
 
-    document.getElementById(DOM.mTitle)!.innerHTML = `${esc(n.name)} ${renderAreaTag(n)}`;
+    document.getElementById(DOM.mTitle)!.innerHTML = `${esc(n.name)} ${renderAreaTag(n, locale)}`;
     document.getElementById(DOM.mAddr)!.textContent = '📍 ' + n.address;
     document.getElementById(DOM.mEnv)!.textContent = n.enclosure;
     const ex = document.getElementById(DOM.mExtra)!;
@@ -105,16 +116,16 @@ export function initModal(): ModalApi {
     } else ex.style.display = 'none';
 
     const pb = document.getElementById(DOM.mPobl)!;
-    const townsHtml = renderTownsBlock(n);
+    const townsHtml = renderTownsBlock(n, locale);
     pb.style.display = townsHtml ? 'block' : 'none';
     pb.innerHTML = townsHtml;
 
     const t = document.getElementById(DOM.mOlt)!;
-    const oltHtml = renderOltTable(n);
+    const oltHtml = renderOltTable(n, locale);
     t.style.display = oltHtml ? 'table' : 'none';
     t.innerHTML = oltHtml;
 
-    document.getElementById(DOM.mMig)!.innerHTML = renderMigStrip(n);
+    document.getElementById(DOM.mMig)!.innerHTML = renderMigStrip(n, locale);
 
     const wbtn = document.getElementById(DOM.mWalk)!;
     wbtn.style.display = n.gallery.length > 1 ? 'block' : 'none';

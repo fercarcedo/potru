@@ -12,6 +12,7 @@
  */
 import { TOUR_STOPS, byId } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
+import { ui } from '../i18n/ui';
 import { initPannableZoom, readViewBox, type ViewBox } from './map/viewport';
 import { svgEl } from './svg';
 
@@ -22,6 +23,9 @@ export interface TourDeps {
 }
 
 export function initTour({ svg, TR, openNode }: TourDeps) {
+  /* Only this function's own labels below need the locale — the stops'
+     title/text are TOUR_STOPS (content.json) and still Spanish-only. */
+  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').map;
   const panel = document.getElementById(DOM.tourPanel)!;
   const btnStart = document.getElementById(DOM.tourStart)!;
   const tpStep = document.getElementById(DOM.tpStep)!,
@@ -37,7 +41,7 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
   tpDetBtn.onclick = () => {
     const open = tpDet.style.display !== 'none';
     tpDet.style.display = open ? 'none' : 'block';
-    tpDetBtn.textContent = open ? '■■ Ver los cables por dentro' : '■■ Ocultar los cables';
+    tpDetBtn.textContent = open ? `■■ ${T.cableOpen}` : `■■ ${T.cableClose}`;
   };
 
   /* Each of the 9 cable-detail panels gets its own pan + zoom(factor), so a
@@ -126,7 +130,7 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     idx = i;
     const s = TOUR_STOPS[i]!;
     panel.classList.add('open');
-    tpStep.textContent = `Paseo por la red · parada ${i + 1} de ${TOUR_STOPS.length}`;
+    tpStep.textContent = T.tourStepOf(i + 1, TOUR_STOPS.length);
     tpTitle.textContent = s.title;
     tpText.textContent = s.text;
     /* the 9 panels are already in the DOM from the build: reveal this stop's */
@@ -136,13 +140,13 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     });
     tpDet.style.display = 'none';
     tpDetBtn.style.display = det ? 'inline-block' : 'none';
-    tpDetBtn.textContent = '■■ Ver los cables por dentro';
+    tpDetBtn.textContent = `■■ ${T.cableOpen}`;
     currentDetZoom = detZoom.get(s.id) ?? null;
     (tpPrev as HTMLButtonElement).disabled = i === 0;
-    tpNext.textContent = i === TOUR_STOPS.length - 1 ? 'Terminar ✓' : 'Siguiente ▶';
+    tpNext.textContent = i === TOUR_STOPS.length - 1 ? T.tourFinish : `${T.tourNext} ▶`;
     tpEnter.style.display = s.node && byId[s.node]!.gallery.length > 1 ? 'inline-block' : 'none';
     if (s.node) tpEnter.onclick = () => openNode(s.node!, 1);
-    tpEnter.textContent = '⌂ Entrar en el nodo';
+    tpEnter.textContent = `⌂ ${T.tourEnter}`;
     setVB(s.viewBox);
     highlight(s.trunks);
     panel.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
@@ -161,7 +165,7 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
         el.setAttribute('opacity', '1');
       }
     });
-    btnStart.textContent = '▶ Reanudar el paseo';
+    btnStart.textContent = `▶ ${T.tourResume}`;
   }
   btnStart.onclick = () => show(idx >= 0 && idx < TOUR_STOPS.length ? idx : 0);
   tpPrev.onclick = () => show(Math.max(0, idx - 1));

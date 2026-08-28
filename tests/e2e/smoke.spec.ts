@@ -440,4 +440,33 @@ test.describe('language', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     await ctx.close();
   });
+
+  test('the guided tour and its toggle-state labels stay in English on /en/', async ({ page }) => {
+    /* map.ts/tour.ts overwrite this same text on every stop and every click,
+       so a translated static label that snapped back to Spanish here would
+       be worse than not translating it at all */
+    await page.goto('./en/');
+    await page.locator('#tourStart').click();
+    await expect(page.locator('#tpStep')).toContainText('Network tour · stop 1 of 9');
+    // stop 1 (PAO) carries a cable-detail panel, so the toggle is visible
+    await expect(page.locator('#tpDetBtn')).toContainText('See inside the cables');
+    await page.locator('#tpDetBtn').click();
+    await expect(page.locator('#tpDetBtn')).toContainText('Hide the cables');
+
+    for (let stop = 2; stop <= 9; stop++) {
+      await page.locator('#tpNext').click();
+      await expect(page.locator('#tpStep')).toContainText(`Network tour · stop ${stop} of 9`);
+    }
+    await expect(page.locator('#tpNext')).toContainText('Finish');
+    await page.locator('#tpNext').click();
+    await expect(page.locator('#tourPanel')).not.toHaveClass(/open/);
+  });
+
+  test('the towns-served toggle stays in English on /en/', async ({ page }) => {
+    await page.goto('./en/');
+    const btn = page.locator('#townsToggle');
+    await expect(btn).toContainText('Towns served: visible');
+    await btn.click();
+    await expect(btn).toContainText('Towns served: hidden');
+  });
 });

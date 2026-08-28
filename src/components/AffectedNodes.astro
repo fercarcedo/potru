@@ -1,5 +1,7 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { NODES, byId } from '../lib/data';
+import { ui } from '../i18n/ui';
 
 interface Props {
   /** 'all' = the 20 primary nodes; otherwise a comma-separated list of ids */
@@ -8,16 +10,17 @@ interface Props {
 
 const { aff } = Astro.props;
 const ids = aff === 'all' ? NODES.map((n) => n.id) : aff.split(',');
-const base = import.meta.env.BASE_URL;
+const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
+const t = ui(locale).affectedNodes;
 ---
 
 <div class="affected" data-aff={aff}>
-  <span style="color:var(--dim)">Nodos afectados:</span>{' '}
+  <span style="color:var(--dim)">{t.label}</span>{' '}
   {
     ids.map((id, i) => (
       <>
         {i > 0 && ' · '}
-        <a href={`${base}nodos/${id}`} data-node={id}>
+        <a href={getRelativeLocaleUrl(locale, `nodos/${id}`)} data-node={id}>
           {byId[id]!.name}
         </a>
       </>
