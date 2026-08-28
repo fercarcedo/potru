@@ -10,7 +10,7 @@
  * initMap() and initModal() must run first, but that is now main.ts's call
  * order to get right, not an import-order comment.
  */
-import { TOUR_STOPS, byId } from '../lib/data';
+import { byId, tourStops } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { ui } from '../i18n/ui';
 import { initPannableZoom, readViewBox, type ViewBox } from './map/viewport';
@@ -23,9 +23,12 @@ export interface TourDeps {
 }
 
 export function initTour({ svg, TR, openNode }: TourDeps) {
-  /* Only this function's own labels below need the locale — the stops'
-     title/text are TOUR_STOPS (content.json) and still Spanish-only. */
-  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').map;
+  const locale = document.documentElement.lang === 'en' ? 'en' : 'es';
+  const T = ui(locale).map;
+  /* The stops' framing/trunks/node are locale-invariant; only title/text
+     (content.json) actually change with locale — but resolving the whole
+     stop once here is simpler than resolving title/text separately below. */
+  const stops = tourStops(locale);
   const panel = document.getElementById(DOM.tourPanel)!;
   const btnStart = document.getElementById(DOM.tourStart)!;
   const tpStep = document.getElementById(DOM.tpStep)!,
@@ -128,9 +131,9 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
   }
   function show(i: number) {
     idx = i;
-    const s = TOUR_STOPS[i]!;
+    const s = stops[i]!;
     panel.classList.add('open');
-    tpStep.textContent = T.tourStepOf(i + 1, TOUR_STOPS.length);
+    tpStep.textContent = T.tourStepOf(i + 1, stops.length);
     tpTitle.textContent = s.title;
     tpText.textContent = s.text;
     /* the 9 panels are already in the DOM from the build: reveal this stop's */
@@ -143,7 +146,7 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     tpDetBtn.textContent = `■■ ${T.cableOpen}`;
     currentDetZoom = detZoom.get(s.id) ?? null;
     (tpPrev as HTMLButtonElement).disabled = i === 0;
-    tpNext.textContent = i === TOUR_STOPS.length - 1 ? T.tourFinish : `${T.tourNext} ▶`;
+    tpNext.textContent = i === stops.length - 1 ? T.tourFinish : `${T.tourNext} ▶`;
     tpEnter.style.display = s.node && byId[s.node]!.gallery.length > 1 ? 'inline-block' : 'none';
     if (s.node) tpEnter.onclick = () => openNode(s.node!, 1);
     tpEnter.textContent = `⌂ ${T.tourEnter}`;
@@ -167,10 +170,10 @@ export function initTour({ svg, TR, openNode }: TourDeps) {
     });
     btnStart.textContent = `▶ ${T.tourResume}`;
   }
-  btnStart.onclick = () => show(idx >= 0 && idx < TOUR_STOPS.length ? idx : 0);
+  btnStart.onclick = () => show(idx >= 0 && idx < stops.length ? idx : 0);
   tpPrev.onclick = () => show(Math.max(0, idx - 1));
   tpNext.onclick = () => {
-    if (idx === TOUR_STOPS.length - 1) exitTour();
+    if (idx === stops.length - 1) exitTour();
     else show(idx + 1);
   };
   tpExit.onclick = exitTour;

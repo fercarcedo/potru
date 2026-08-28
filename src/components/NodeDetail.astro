@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { asset, type NetworkNode } from '../lib/data';
+import { asset, galleryLabel, type NetworkNode } from '../lib/data';
 import { ui } from '../i18n/ui';
 import {
   renderActionLinks,
@@ -38,13 +38,13 @@ const homeHref = getRelativeLocaleUrl(locale, '');
         <a class="plan-link" data-plan href={asset(hero.src)} target="_blank" rel="noopener">
           <img
             src={asset(hero.src)}
-            alt={`${hero.label} · ${n.name}`}
+            alt={`${galleryLabel(hero.label, locale)} · ${n.name}`}
             width={hero.w}
             height={hero.h}
             decoding="async"
           />
         </a>
-        <span class="hero-tag">{hero.label.toUpperCase()}</span>
+        <span class="hero-tag">{galleryLabel(hero.label, locale).toUpperCase()}</span>
       </div>
     )
   }
@@ -83,7 +83,7 @@ const homeHref = getRelativeLocaleUrl(locale, '');
     }
 
     <div class="act-label">{t.shared.actionsAffecting}</div>
-    <div class="act-links" set:html={renderActionLinks(n, homeHref)} />
+    <div class="act-links" set:html={renderActionLinks(n, homeHref, false, locale)} />
 
     {
       plans.length > 0 && (
@@ -95,14 +95,14 @@ const homeHref = getRelativeLocaleUrl(locale, '');
                 <a class="plan-link" data-plan href={asset(g.src)} target="_blank" rel="noopener">
                   <img
                     src={asset(g.src)}
-                    alt={`${g.label} · ${n.name}`}
+                    alt={`${galleryLabel(g.label, locale)} · ${n.name}`}
                     width={g.w}
                     height={g.h}
                     loading="lazy"
                     decoding="async"
                   />
                 </a>
-                <figcaption>{g.label.toUpperCase()}</figcaption>
+                <figcaption>{galleryLabel(g.label, locale).toUpperCase()}</figcaption>
               </figure>
             ))}
           </div>

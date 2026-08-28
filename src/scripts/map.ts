@@ -9,7 +9,8 @@
  * in place of the legacy's window.__map and the "import map.ts before
  * tour.ts" ordering this used to rely on silently.
  */
-import { HOST_ONLY, NODES, byId, ontCount } from '../lib/data';
+import { HOST_ONLY, NODES, byId, ontCount, t as resolveBi, type Bi } from '../lib/data';
+import type { Locale } from '../i18n/types';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { ui } from '../i18n/ui';
@@ -43,17 +44,38 @@ export const POS: Record<string, [number, number]> = {
   llanes: [965, 125],
   colombres: [1045, 120],
 };
+const biFromMuros: Bi = { es: 'fibra desde Muros de Nalón', en: 'fibre from Muros de Nalón' };
+const biFromInfiesto: Bi = { es: 'fibra desde Infiesto', en: 'fibre from Infiesto' };
+const biFromBlimea: Bi = { es: 'fibra desde Blimea', en: 'fibre from Blimea' };
+
 /** [name, x, y, colour, id of the primary it hangs off, how it connects] */
-export const SECONDARY: [string, number, number, string, string, string][] = [
-  ['Vegadeo', 95, 160, 'var(--xgs)', 'castropol', 'cable de 96 ff.oo. Castropol–Vegadeo'],
-  ['La Caridad', 205, 140, 'var(--xgs)', 'tapia', 'tubos 4–8 del cable Castropol–Cudillero'],
-  ['Soto del Barco', 420, 145, 'var(--xgs)', 'muros', 'fibra desde Muros de Nalón'],
-  ['Sta. Eulalia de Cabranes', 757, 148, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
-  ['Villamayor', 843, 205, '#9df08a', 'infiesto', 'fibra desde Infiesto'],
-  ['El Entrego', 674, 264, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
-  ['Sotrondio', 712, 278, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
-  ['Barredos', 744, 294, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
-  ['Pola de Laviana', 772, 310, '#c9a0ff', 'blimea', 'fibra desde Blimea'],
+export const SECONDARY: [string, number, number, string, string, Bi][] = [
+  [
+    'Vegadeo',
+    95,
+    160,
+    'var(--xgs)',
+    'castropol',
+    { es: 'cable de 96 ff.oo. Castropol–Vegadeo', en: 'the 96-fibre Castropol–Vegadeo cable' },
+  ],
+  [
+    'La Caridad',
+    205,
+    140,
+    'var(--xgs)',
+    'tapia',
+    {
+      es: 'tubos 4–8 del cable Castropol–Cudillero',
+      en: 'tubes 4–8 of the Castropol–Cudillero cable',
+    },
+  ],
+  ['Soto del Barco', 420, 145, 'var(--xgs)', 'muros', biFromMuros],
+  ['Sta. Eulalia de Cabranes', 757, 148, '#9df08a', 'infiesto', biFromInfiesto],
+  ['Villamayor', 843, 205, '#9df08a', 'infiesto', biFromInfiesto],
+  ['El Entrego', 674, 264, '#c9a0ff', 'blimea', biFromBlimea],
+  ['Sotrondio', 712, 278, '#c9a0ff', 'blimea', biFromBlimea],
+  ['Barredos', 744, 294, '#c9a0ff', 'blimea', biFromBlimea],
+  ['Pola de Laviana', 772, 310, '#c9a0ff', 'blimea', biFromBlimea],
 ];
 export const PAO = { x: 590, y: 95 };
 /**
@@ -113,16 +135,98 @@ const anchor = (el: SVGElement, x: number, y: number, r: number) => {
   el.dataset.ar = `${r}`;
 };
 
+/** The map's own fixed labels and tooltip prose — this module's captions,
+ *  not pliego data, so they live here rather than in ui.ts (chrome) or
+ *  content.json (pliego prose). Per-item strings that vary by trunk/node
+ *  (SECONDARY's `how`, each trunk's own caption) are `Bi` literals resolved
+ *  inline instead, since a lookup table keyed by locale can't hold data
+ *  that's also keyed by which trunk or node it belongs to. */
+const MAP_LABELS: Record<
+  Locale,
+  {
+    seaLabel: string;
+    ownTrunk: string;
+    leasedCwdm: [string, string];
+    adifVault: string;
+    leasedFoCwdm: string;
+    redundantRoute: string;
+    secondaryNode: (name: string) => string;
+    secondaryDesc: (primary: string, how: string) => string;
+    hostOnlyNote: string;
+    servesTowns: (towns: string) => string;
+    nodeTooltip: (olts: number, ont: number, weekFrom: number, weekTo: number) => string;
+    area: (a: string) => string;
+    clickForRecord: string;
+    paoTooltip: string;
+    legend: string;
+    sharedPonTree: string;
+    sharedPonTreeTitle: string;
+    sharedPonTooltip: string;
+  }
+> = {
+  es: {
+    seaLabel: 'MAR CANTÁBRICO',
+    ownTrunk: 'PROPIA 64F · CUDILLERO–VEGADEO (vía ADIF)',
+    leasedCwdm: ['ALQUILADA+CWDM', 'GIJÓN–CUDILLERO'],
+    adifVault: '(arqueta ADIF)',
+    leasedFoCwdm: 'F.O. ALQUILADA + CWDM',
+    redundantRoute: 'RUTA REDUNDANTE ORIENTE↔GIJÓN (desde Llanes)',
+    secondaryNode: (name) => `${name} · nodo secundario`,
+    secondaryDesc: (primary, how) =>
+      `Sin electrónica activa: solo repartidores ópticos pasivos. Se conecta al primario de ${primary} por ${how}. La renovación no actúa aquí: al no haber OLT, no hay equipo que sustituir.`,
+    hostOnlyNote:
+      '* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.',
+    servesTowns: (towns) => `Sirve a: ${towns}`,
+    nodeTooltip: (olts, ont, weekFrom, weekTo) =>
+      `${olts} OLT · ${ont} ONT · migración sem. ${weekFrom}–${weekTo}`,
+    area: (a) => `Área ${a}`,
+    clickForRecord: 'pulsa para la ficha',
+    paoTooltip: 'Punto de acceso de operadores. Aquí y en Mieres van los enrutadores nuevos.',
+    legend:
+      '● primario (OLT) · ○ secundario (pasivo) · • población servida · ▢ PAO · * nodo sin cobertura en su casco urbano',
+    sharedPonTree: 'ÁRBOL PON COMPARTIDO',
+    sharedPonTreeTitle: 'Árbol PON compartido',
+    sharedPonTooltip:
+      'Detalle técnico del pliego: las redes FTTH de Barro, Celorio, Porrúa y Posada de Llanes están compartidas entre sí — varias poblaciones cuelgan de los mismos árboles ópticos pasivos del nodo de Llanes, en lugar de tener cada una su PON independiente.',
+  },
+  en: {
+    seaLabel: 'CANTABRIAN SEA',
+    ownTrunk: 'OWN 64F · CUDILLERO–VEGADEO (via ADIF)',
+    leasedCwdm: ['LEASED+CWDM', 'GIJÓN–CUDILLERO'],
+    adifVault: '(ADIF vault)',
+    leasedFoCwdm: 'LEASED F.O. + CWDM',
+    redundantRoute: 'REDUNDANT ROUTE EAST↔GIJÓN (from Llanes)',
+    secondaryNode: (name) => `${name} · secondary node`,
+    secondaryDesc: (primary, how) =>
+      `No active electronics: only passive optical splitters. Connects to the ${primary} primary via ${how}. The renewal does not act here: with no OLT, there is no equipment to replace.`,
+    hostOnlyNote:
+      "* Houses the node/OLT but its own town is NOT among the towns served: the Red Asturcón's coverage here is its outlying settlements.",
+    servesTowns: (towns) => `Serves: ${towns}`,
+    nodeTooltip: (olts, ont, weekFrom, weekTo) =>
+      `${olts} OLT · ${ont} ONT · migration wk. ${weekFrom}–${weekTo}`,
+    area: (a) => `Area ${a}`,
+    clickForRecord: 'click for the record',
+    paoTooltip: 'Operator access point. The new routers go here and in Mieres.',
+    legend:
+      '● primary (OLT) · ○ secondary (passive) · • town served · ▢ PAO · * node with no coverage in its own town',
+    sharedPonTree: 'SHARED PON TREE',
+    sharedPonTreeTitle: 'Shared PON tree',
+    sharedPonTooltip:
+      'Technical detail from the pliego: the FTTH networks of Barro, Celorio, Porrúa and Posada (Llanes) are shared with each other — several towns hang off the same passive optical trees of the Llanes node, instead of each having its own independent PON.',
+  },
+};
+
 export function initMap(openNode: (id: string) => void): {
   svg: SVGSVGElement;
   TR: Record<string, SVGElement>;
 } {
-  /* Only this function's own toggle-state label needs the locale — the
-     map's tooltips and legends are still Spanish-only (see CLAUDE.md) — so
-     it's read here, not at module scope: tests/data/map-layout.test.ts
-     imports this module's exported constants under Node, with no
-     `document`, and initMap() itself is never called there. */
-  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').map;
+  /* Read here, not at module scope: tests/data/map-layout.test.ts imports
+     this module's exported constants under Node, with no `document`, and
+     initMap() itself is never called there. */
+  const locale: Locale = document.documentElement.lang === 'en' ? 'en' : 'es';
+  const T = ui(locale).map;
+  const bi = (b: Bi) => resolveBi(b, locale);
+  const L = MAP_LABELS[locale];
   const svg = document.getElementById(DOM.astMap) as unknown as SVGSVGElement;
   const tip = document.getElementById(DOM.mapTip)!;
   const shell = svg.parentElement!;
@@ -163,7 +267,7 @@ export function initMap(openNode: (id: string) => void): {
     'font-size': 10,
     'text-anchor': 'end',
     'letter-spacing': '.2em',
-  }).textContent = 'MAR CANTÁBRICO';
+  }).textContent = L.seaLabel;
 
   /* ---- TRUNKS (own ones solid, leased ones dashed) ---- */
   const TR: Record<string, SVGElement> = {};
@@ -231,7 +335,7 @@ export function initMap(openNode: (id: string) => void): {
     'occ',
     'M352,127 L300,115 L235,105 L205,140 L175,95 L120,120 L95,160',
     true,
-    'PROPIA 64F · CUDILLERO–VEGADEO (vía ADIF)',
+    L.ownTrunk,
     118,
     66,
   );
@@ -239,7 +343,7 @@ export function initMap(openNode: (id: string) => void): {
     'occrent',
     'M590,95 C540,108 470,142 420,145 L385,120 L352,127',
     false,
-    ['ALQUILADA+CWDM', 'GIJÓN–CUDILLERO'],
+    L.leasedCwdm,
     452,
     150,
   );
@@ -275,7 +379,7 @@ export function initMap(openNode: (id: string) => void): {
     fill: 'var(--dim)',
     'font-size': 7.5,
     'text-anchor': 'middle',
-  }).textContent = '(arqueta ADIF)';
+  }).textContent = L.adifVault;
   trunk('minera', 'M590,95 C588,145 572,200 560,245', true, 'AUTOVÍA MINERA', 588, 150);
   trunk('lena', 'M560,245 L545,362', true);
   trunk('nalon', 'M578,165 C615,182 645,190 645,203 L700,240', true);
@@ -288,14 +392,7 @@ export function initMap(openNode: (id: string) => void): {
     712,
     360,
   );
-  trunk(
-    'surocc',
-    'M420,145 C390,180 340,200 300,220 L255,295',
-    false,
-    'F.O. ALQUILADA + CWDM',
-    282,
-    258,
-  );
+  trunk('surocc', 'M420,145 C390,180 340,200 300,220 L255,295', false, L.leasedFoCwdm, 282, 258);
   trunk(
     'suror',
     'M590,95 C650,130 700,160 735,175 L805,190 L880,175 C915,160 940,140 965,125',
@@ -322,7 +419,7 @@ export function initMap(openNode: (id: string) => void): {
     'font-size': 8.5,
     'letter-spacing': '.08em',
   });
-  rdl.textContent = 'RUTA REDUNDANTE ORIENTE↔GIJÓN (desde Llanes)';
+  rdl.textContent = L.redundantRoute;
   TR['redund_lbl'] = rdl;
 
   for (const [name, x, y, col, par, how] of SECONDARY) {
@@ -370,7 +467,7 @@ export function initMap(openNode: (id: string) => void): {
     g.addEventListener('mousemove', (ev) =>
       showTip(
         ev,
-        `<b>${esc(name)} · nodo secundario</b><br>Sin electrónica activa: solo repartidores ópticos pasivos. Se conecta al primario de ${esc(byId[par]!.name)} por ${esc(how)}. La renovación no actúa aquí: al no haber OLT, no hay equipo que sustituir.`,
+        `<b>${esc(L.secondaryNode(name))}</b><br>${esc(L.secondaryDesc(byId[par]!.name, bi(how)))}`,
       ),
     );
     g.addEventListener('mouseleave', hideTip);
@@ -429,15 +526,15 @@ export function initMap(openNode: (id: string) => void): {
     g.addEventListener('mousemove', (ev) => {
       const ont = ontCount(n);
       const ho = hostOnly
-        ? `<br><span style="color:var(--gpon)">* Alberga el nodo/OLT pero su casco urbano NO figura entre las poblaciones servidas: la cobertura de la Red Asturcón aquí son sus núcleos periféricos.</span>`
+        ? `<br><span style="color:var(--gpon)">${esc(L.hostOnlyNote)}</span>`
         : '';
       const pl =
         n.towns && n.towns.length > 1
-          ? `<br><span style="color:var(--muted)">Sirve a: ${esc(n.towns.slice(0, 3).join(', '))}${n.towns.length > 3 ? '…' : ''}</span>`
+          ? `<br><span style="color:var(--muted)">${esc(L.servesTowns(n.towns.slice(0, 3).join(', ')))}${n.towns.length > 3 ? '…' : ''}</span>`
           : '';
       showTip(
         ev,
-        `<b>${esc(n.name)}</b><br>${n.olts.length} OLT · ${ont} ONT · migración sem. ${n.weekFrom}–${n.weekTo}${pl}${ho}<br><span style="color:${n.color}">Área ${esc(n.area)}</span> · <u>pulsa para la ficha</u>`,
+        `<b>${esc(n.name)}</b><br>${esc(L.nodeTooltip(n.olts.length, ont, n.weekFrom, n.weekTo))}${pl}${ho}<br><span style="color:${n.color}">${esc(L.area(n.area))}</span> · <u>${esc(L.clickForRecord)}</u>`,
       );
     });
     g.addEventListener('mouseleave', hideTip);
@@ -475,10 +572,7 @@ export function initMap(openNode: (id: string) => void): {
   pl.textContent = 'GIJÓN · PAO';
   gp.addEventListener('click', () => openNode('pao'));
   gp.addEventListener('mousemove', (ev) =>
-    showTip(
-      ev,
-      `<b>PAO · Gijón</b><br>Punto de acceso de operadores. Aquí y en Mieres van los enrutadores nuevos.<br><u>pulsa para la ficha</u>`,
-    ),
+    showTip(ev, `<b>PAO · Gijón</b><br>${esc(L.paoTooltip)}<br><u>${esc(L.clickForRecord)}</u>`),
   );
   gp.addEventListener('mouseleave', hideTip);
 
@@ -495,8 +589,7 @@ export function initMap(openNode: (id: string) => void): {
   const s2 = document.createElement('span');
   s2.style.marginLeft = 'auto';
   s2.className = 'mono';
-  s2.textContent =
-    '● primario (OLT) · ○ secundario (pasivo) · • población servida · ▢ PAO · * nodo sin cobertura en su casco urbano';
+  s2.textContent = L.legend;
   leg.appendChild(s2);
 
   /* ---- layer of served towns ---- */
@@ -555,14 +648,11 @@ export function initMap(openNode: (id: string) => void): {
     },
     townsLayer,
   );
-  sht.textContent = 'ÁRBOL PON COMPARTIDO';
+  sht.textContent = L.sharedPonTree;
   shp.style.pointerEvents = 'all';
   shp.style.cursor = 'help';
   shp.addEventListener('mousemove', (ev) =>
-    showTip(
-      ev,
-      `<b>Árbol PON compartido</b><br>Detalle técnico del pliego: las redes FTTH de Barro, Celorio, Porrúa y Posada de Llanes están compartidas entre sí — varias poblaciones cuelgan de los mismos árboles ópticos pasivos del nodo de Llanes, en lugar de tener cada una su PON independiente.`,
-    ),
+    showTip(ev, `<b>${esc(L.sharedPonTreeTitle)}</b><br>${esc(L.sharedPonTooltip)}`),
   );
   shp.addEventListener('mouseleave', hideTip);
   const townsBtn = document.getElementById(DOM.townsToggle)!;

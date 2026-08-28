@@ -7,15 +7,23 @@
 import { describe, expect, it } from 'vitest';
 import {
   ACTION_DESC,
-  ARCHITECTURE_STEPS,
-  CONTRACT_ACTIONS,
-  DIAGRAM_INFO,
-  HERO_STATS,
-  ONT_INSTALL_BASE,
-  PAO_TRANSPORT,
-  TOUR_STOPS,
+  architectureSteps,
   byId,
+  contractActions,
+  diagramInfo,
+  heroStats,
+  ontInstallBase,
+  paoTransport,
+  tourStops,
 } from '../../src/lib/data';
+
+const HERO_STATS = heroStats();
+const ONT_INSTALL_BASE = ontInstallBase();
+const ARCHITECTURE_STEPS = architectureSteps();
+const DIAGRAM_INFO = diagramInfo();
+const CONTRACT_ACTIONS = contractActions();
+const TOUR_STOPS = tourStops();
+const PAO_TRANSPORT = paoTransport();
 
 describe('heroStats', () => {
   it('has at least one entry and no blank value/label', () => {
@@ -154,5 +162,69 @@ describe('paoTransport', () => {
     expect(PAO_TRANSPORT.directLabel.trim()).not.toBe('');
     expect(PAO_TRANSPORT.directNote.trim()).not.toBe('');
     expect(PAO_TRANSPORT.warning).toContain('7750SR-7');
+  });
+});
+
+describe('locale: prose translates, pliego figures and proper nouns do not', () => {
+  it('heroStats: labels translate, values (the actual figures) never move', () => {
+    const en = heroStats('en');
+    expect(en.map((s) => s.value)).toEqual(HERO_STATS.map((s) => s.value));
+    expect(en.map((s) => s.label)).not.toEqual(HERO_STATS.map((s) => s.label));
+    for (const s of en) expect(s.label.trim()).not.toBe('');
+  });
+
+  it('ontInstallBase: model names (proper nouns) stay put, notes translate', () => {
+    const en = ontInstallBase('en');
+    expect(en.map((o) => o.model)).toEqual(ONT_INSTALL_BASE.map((o) => o.model));
+    expect(en.map((o) => o.pct)).toEqual(ONT_INSTALL_BASE.map((o) => o.pct));
+    const withNote = ONT_INSTALL_BASE.findIndex((o) => o.note.trim() !== '');
+    expect(en[withNote]!.note).not.toBe(ONT_INSTALL_BASE[withNote]!.note);
+  });
+
+  it('architectureSteps: text translates; a step named after a protocol reads the same in both', () => {
+    const en = architectureSteps('en');
+    expect(en).toHaveLength(ARCHITECTURE_STEPS.length);
+    expect(en.map((s) => s.text)).not.toEqual(ARCHITECTURE_STEPS.map((s) => s.text));
+    /* the first step's heading is the protocol name "ONT" — correct, not a
+       missed translation, in both locales */
+    expect(en[0]!.heading).toBe('ONT');
+    expect(ARCHITECTURE_STEPS[0]!.heading).toBe('ONT');
+  });
+
+  it('diagramInfo: every element translates on both branches', () => {
+    const en = diagramInfo('en');
+    for (const key of Object.keys(DIAGRAM_INFO)) {
+      expect(en[key]!.gpon, key).not.toBe(DIAGRAM_INFO[key]!.gpon);
+      expect(en[key]!.xgs, key).not.toBe(DIAGRAM_INFO[key]!.xgs);
+    }
+  });
+
+  it('contractActions: heading/bullets/text translate; codes and ids do not', () => {
+    const en = contractActions('en');
+    expect(en.map((a) => a.id)).toEqual(CONTRACT_ACTIONS.map((a) => a.id));
+    expect(en.map((a) => a.code)).toEqual(CONTRACT_ACTIONS.map((a) => a.code));
+    expect(en.map((a) => a.heading)).not.toEqual(CONTRACT_ACTIONS.map((a) => a.heading));
+    for (let i = 0; i < en.length; i++) {
+      if (en[i]!.bullets) expect(en[i]!.bullets).not.toEqual(CONTRACT_ACTIONS[i]!.bullets);
+      if (en[i]!.text) expect(en[i]!.text).not.toBe(CONTRACT_ACTIONS[i]!.text);
+    }
+  });
+
+  it('tourStops: title/text translate; framing (viewBox/trunks/node) does not', () => {
+    const en = tourStops('en');
+    expect(en.map((s) => s.id)).toEqual(TOUR_STOPS.map((s) => s.id));
+    expect(en.map((s) => s.viewBox)).toEqual(TOUR_STOPS.map((s) => s.viewBox));
+    expect(en.map((s) => s.node)).toEqual(TOUR_STOPS.map((s) => s.node));
+    expect(en.map((s) => s.title)).not.toEqual(TOUR_STOPS.map((s) => s.title));
+    expect(en.map((s) => s.text)).not.toEqual(TOUR_STOPS.map((s) => s.text));
+  });
+
+  it('paoTransport: rows (technical/area labels) stay as-is; prose translates', () => {
+    const en = paoTransport('en');
+    expect(en.rows).toEqual(PAO_TRANSPORT.rows);
+    expect(en.directLabel).toBe(PAO_TRANSPORT.directLabel);
+    expect(en.directNote).not.toBe(PAO_TRANSPORT.directNote);
+    expect(en.warning).not.toBe(PAO_TRANSPORT.warning);
+    expect(en.warning).toContain('7750SR-7');
   });
 });

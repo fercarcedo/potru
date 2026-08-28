@@ -20,6 +20,10 @@ const SAMPLE_ARGS: Record<string, unknown[]> = {
     { name: 'Blimea', area: 'Nalón', olts: 1, onts: 100, weekFrom: 1, weekTo: 5 },
   ],
   'map.tourStepOf': [1, 9],
+  'viewer3d.legendRoom': ['3.20', '4.10', '2.40'],
+  'viewer3d.legendCabinets': [6],
+  'viewer3d.legendOltCards': [2, 5],
+  'viewer3d.legendOltLine': [8, 22, 32],
 };
 
 /** Flattens an object into {dottedPath: leafValue}, resolving any function

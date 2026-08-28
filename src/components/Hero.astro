@@ -1,10 +1,11 @@
 ---
-import { HERO_STATS } from '../lib/data';
+import { heroStats } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { ui } from '../i18n/ui';
 
 const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
 const t = ui(locale).hero;
+const stats = heroStats(locale);
 ---
 
 <header class="hero">
@@ -26,7 +27,7 @@ const t = ui(locale).hero;
     </p>
     <div class="stats">
       {
-        HERO_STATS.map((s) => (
+        stats.map((s) => (
           <div class={s.highlight ? 'stat hl' : 'stat'}>
             <div class="n">{s.value}</div>
             <div class="l">{s.label}</div>

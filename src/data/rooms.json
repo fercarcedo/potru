@@ -1902,7 +1902,10 @@
   "tineo": {
     "source": "planos/tineo-planta.jpg",
     "h": 3.0,
-    "note": "Bajo comercial en L. Sólo se modela la zona de equipos; el plano incluye además el resto del local. El aire acondicionado del ala derecha va suspendido del techo, como rotula el plano.",
+    "note": {
+      "es": "Bajo comercial en L. Sólo se modela la zona de equipos; el plano incluye además el resto del local. El aire acondicionado del ala derecha va suspendido del techo, como rotula el plano.",
+      "en": "L-shaped commercial unit. Only the equipment area is modelled; the plan also includes the rest of the premises. The air conditioning on the right wing hangs from the ceiling, as the plan labels it."
+    },
     "outline": [
       [0, 0],
       [9.3, 0],
@@ -2102,7 +2105,10 @@
   "cangas": {
     "source": "planos/cangas-planta.jpg",
     "h": 2.5,
-    "note": "Caseta con chaflán en la esquina y viga vista. La escalera de bajada al sótano se modela como hueco con barandilla: el plano la dibuja dentro del recinto, pero no se puede pisar. El aire acondicionado va en el techo, como rotula el plano.",
+    "note": {
+      "es": "Caseta con chaflán en la esquina y viga vista. La escalera de bajada al sótano se modela como hueco con barandilla: el plano la dibuja dentro del recinto, pero no se puede pisar. El aire acondicionado va en el techo, como rotula el plano.",
+      "en": "Hut with a chamfered corner and an exposed beam. The stairway down to the basement is modelled as an opening with a railing: the plan draws it inside the room, but it cannot be walked on. The air conditioning is on the ceiling, as the plan labels it."
+    },
     "outline": [
       [0, 0],
       [3.4, 0],
@@ -2246,7 +2252,10 @@
   "polalena": {
     "source": "planos/polalena-planta.jpg",
     "h": 2.85,
-    "note": "Planta de edificio de viviendas. Entrada por puerta doble de 1,4 m en el muro izquierdo. Se modela el recinto de equipos; el retranqueo del plano en la esquina superior derecha es local colindante y queda como muro ciego.",
+    "note": {
+      "es": "Planta de edificio de viviendas. Entrada por puerta doble de 1,4 m en el muro izquierdo. Se modela el recinto de equipos; el retranqueo del plano en la esquina superior derecha es local colindante y queda como muro ciego.",
+      "en": "Ground floor of a residential building. Entry through a 1.4 m double door in the left-hand wall. The equipment room is modelled; the setback in the plan's upper-right corner is adjoining premises and is left as a blind wall."
+    },
     "outline": [
       [0, 0],
       [4.84, 0],
@@ -2372,7 +2381,10 @@
   "mieres": {
     "source": "planos/mieres-planta.jpg",
     "h": 2.85,
-    "note": "Bajo comercial. El plano rotula dos bastidores OLT: el primero aloja MIE/2A y MIE/2B, el segundo MIE/7A y MIE/7B. Se modela la sala de equipos; el plano abarca además zonas contiguas del local. Los rótulos «BASTIDOR n FRONTAL» del plano son marcas de vista de alzado, no bastidores.",
+    "note": {
+      "es": "Bajo comercial. El plano rotula dos bastidores OLT: el primero aloja MIE/2A y MIE/2B, el segundo MIE/7A y MIE/7B. Se modela la sala de equipos; el plano abarca además zonas contiguas del local. Los rótulos «BASTIDOR n FRONTAL» del plano son marcas de vista de alzado, no bastidores.",
+      "en": "Commercial ground floor. The plan labels two OLT racks: the first houses MIE/2A and MIE/2B, the second MIE/7A and MIE/7B. The equipment room is modelled; the plan also covers adjoining areas of the premises. The plan's «BASTIDOR n FRONTAL» labels mark elevation-view references, not racks."
+    },
     "outline": [
       [0, 0],
       [5.24, 0],
@@ -2538,7 +2550,10 @@
     "source": "planos/blimea-planta.jpg",
     "h": 2.4,
     "raisedFloor": true,
-    "note": "Bajo con falso suelo practicable. Rejilla de bastidores leída del plano a 400 ppp: OLT 1–8 en dos columnas, con VoLT y el repartidor DWDM. El centro de transformación de Hidrocantábrico y la sala SCC-BO quedan tras muro ciego.",
+    "note": {
+      "es": "Bajo con falso suelo practicable. Rejilla de bastidores leída del plano a 400 ppp: OLT 1–8 en dos columnas, con VoLT y el repartidor DWDM. El centro de transformación de Hidrocantábrico y la sala SCC-BO quedan tras muro ciego.",
+      "en": "Ground floor with an accessible raised floor. Rack grid read from the plan at 400 dpi: OLT 1–8 in two columns, with the VoLT and the DWDM distributor. The Hidrocantábrico transformer room and the SCC-BO room sit behind a blind wall."
+    },
     "outline": [
       [0, 0],
       [8.4, 0],
@@ -2718,7 +2733,10 @@
   "pao": {
     "source": "planos/pao-planta.jpg",
     "h": 2.5,
-    "note": "Sala de equipos del PAO con falso suelo de PVC estratificado. Las jaulas y su contenido son los rotulados en el plano; el color de cada jaula es sólo una ayuda de lectura, el pliego no trae marcas de los operadores.",
+    "note": {
+      "es": "Sala de equipos del PAO con falso suelo de PVC estratificado. Las jaulas y su contenido son los rotulados en el plano; el color de cada jaula es sólo una ayuda de lectura, el pliego no trae marcas de los operadores.",
+      "en": "PAO equipment room with a laminated PVC raised floor. The cages and their contents are those labelled on the plan; each cage's colour is only a reading aid — the pliego carries no operator branding."
+    },
     "outline": [
       [0, 0],
       [7.37, 0],

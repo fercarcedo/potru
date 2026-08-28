@@ -17,4 +17,12 @@ export const viewer3d: Viewer3dStrings = {
   loading: 'LOADING ROOM…',
   svTitlePrefix: 'Simulated interior · ',
   loadError: "Couldn't load the 3D engine (no connection?)",
+  legendReconstructed: 'Reconstructed from the floor plan',
+  legendFloorPlan: 'Floor plan',
+  legendRoom: (w, d, h) => `Room ${w} × ${d} m · ${h} m clear`,
+  legendCabinets: (n) => `${n} cabinets labelled on the plan`,
+  legendOltCards: (olts, cards) => `${olts} OLT · ${cards} cards`,
+  legendOltLine: (portsPerCard, active, total) =>
+    ` — ${portsPerCard} GPON ports <b>per card</b>, ${active} of ${total} active`,
+  legendNoOlt: 'No OLT: interconnection point with the operators',
 };

@@ -17,4 +17,12 @@ export const viewer3d: Viewer3dStrings = {
   loading: 'CARGANDO SALA…',
   svTitlePrefix: 'Interior simulado · ',
   loadError: 'No se pudo cargar el motor 3D (¿sin conexión?)',
+  legendReconstructed: 'Reconstruido del plano',
+  legendFloorPlan: 'Planta',
+  legendRoom: (w, d, h) => `Recinto ${w} × ${d} m · ${h} m libres`,
+  legendCabinets: (n) => `${n} armarios rotulados en el plano`,
+  legendOltCards: (olts, cards) => `${olts} OLT · ${cards} tarjetas`,
+  legendOltLine: (portsPerCard, active, total) =>
+    ` — ${portsPerCard} puertos GPON <b>por tarjeta</b>, ${active} de ${total} activos`,
+  legendNoOlt: 'Sin OLT: punto de interconexión con los operadores',
 };

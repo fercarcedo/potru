@@ -16,6 +16,56 @@ import {
   type WdmBand,
 } from './data';
 import { escapeHtml as esc } from './escape-html';
+import type { Locale } from '../i18n/types';
+
+/** The handful of fixed words these generators draw themselves (not handed
+ *  in by the caller): occupancy states, and the two cable-construction terms
+ *  in mkSection's own core/sheath drawing. Everything else a generator
+ *  renders (titles, labels, footnotes) is the caller's own text, already
+ *  resolved to the visitor's locale before it reaches here. */
+const GLABELS: Record<
+  Locale,
+  {
+    free: string;
+    core: string;
+    sheath: string;
+    used: string;
+    freeCount: (n: number) => string;
+    freeCountLower: (n: number) => string;
+    noVacancies: string;
+    freeCountUpper: (n: number) => string;
+    paoTitle: string;
+    singleModeFibre: string;
+    rentedPair: string;
+  }
+> = {
+  es: {
+    free: 'VACANTE',
+    core: 'alma',
+    sheath: 'cubierta',
+    used: 'ocupadas',
+    freeCount: (n) => `${n} vacantes`,
+    freeCountLower: (n) => `${n} libres`,
+    noVacancies: 'sin vacantes',
+    freeCountUpper: (n) => `${n} LIBRES`,
+    paoTitle: 'Sistemas de transporte en el PAO · ocupación canal a canal',
+    singleModeFibre: 'UNA SOLA FIBRA MONOMODO',
+    rentedPair: '2 ff.oo. alquiladas (par) → Gijón',
+  },
+  en: {
+    free: 'FREE',
+    core: 'core',
+    sheath: 'sheath',
+    used: 'used',
+    freeCount: (n) => `${n} free`,
+    freeCountLower: (n) => `${n} free`,
+    noVacancies: 'no vacancies',
+    freeCountUpper: (n) => `${n} FREE`,
+    paoTitle: 'Transport systems at the PAO · channel-by-channel occupancy',
+    singleModeFibre: 'ONE SINGLE-MODE FIBRE',
+    rentedPair: '2 leased fibres (pair) → Gijón',
+  },
+};
 
 /** Colours normalised per CWDM wavelength: [colour, name]. */
 export const LCOL: Record<number, [string, string]> = {
@@ -93,7 +143,8 @@ export interface Chan {
 }
 
 /** CWDM spectrum: the mux plus a fan of lambdas in their normalised colour. */
-export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
+export function mkCWDM(title: string, chans: Chan[], foot?: string, locale: Locale = 'es'): string {
+  const gl = GLABELS[locale];
   const ordered = [...chans].sort((a, b) => a.l - b.l);
   const H = 64 + ordered.length * 34;
   let g = `<svg viewBox="0 0 700 ${H}" style="width:100%;max-width:900px;display:block;font-family:'IBM Plex Mono',monospace">`;
@@ -112,7 +163,7 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
      highest point is y=44 (channel 0's own endpoint) regardless of channel
      count, so a fixed row here is clear no matter how many channels there
      are, instead of only for however few happened to leave it room. */
-  g += `<text x="8" y="36" fill="var(--muted)" font-size="9.5">2 ff.oo. alquiladas (par) → Gijón</text>`;
+  g += `<text x="8" y="36" fill="var(--muted)" font-size="9.5">${esc(gl.rentedPair)}</text>`;
   g += `<text x="${muxX - 10}" y="${muxY + 4}" fill="var(--xgs-tx)" font-size="9" text-anchor="middle" transform="rotate(-90 ${muxX - 10} ${muxY})">CWDM MUX</text>`;
   ordered.forEach((ch, i) => {
     const y = 44 + i * 34;
@@ -124,7 +175,7 @@ export function mkCWDM(title: string, chans: Chan[], foot?: string): string {
       g += `<line x1="196" y1="${y}" x2="360" y2="${y}" stroke="${col}" stroke-width="9" opacity=".22"/>`;
     g += `<circle cx="372" cy="${y}" r="7" fill="${ch.free ? 'none' : col}" stroke="${col}" stroke-width="2"/>`;
     g += `<text x="204" y="${y - 6}" fill="${col}" font-size="10.5" font-weight="600">${ch.l} nm · ${esc(cname)}</text>`;
-    g += `<text x="388" y="${y + 4}" fill="${ch.free ? 'var(--xgs-tx)' : 'var(--txt)'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? 'VACANTE' : esc(ch.to ?? '')}</text>`;
+    g += `<text x="388" y="${y + 4}" fill="${ch.free ? 'var(--xgs-tx)' : 'var(--txt)'}" font-size="11.5" ${ch.free ? 'font-weight="600"' : ''}>${ch.free ? gl.free : esc(ch.to ?? '')}</text>`;
   });
   g += '</svg>';
   return (
@@ -186,7 +237,9 @@ export function mkSection(
   marks: SectionMarks = {},
   zooms: SectionZoom[] = [],
   foot = '',
+  locale: Locale = 'es',
 ): string {
+  const gl = GLABELS[locale];
   const labels = marks.labels || [];
   const H = Math.max(430, 90 + zooms.length * 170);
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
@@ -199,8 +252,8 @@ export function mkSection(
   g += `<circle cx="${CX}" cy="${CY}" r="${Rsh}" fill="#14181f" stroke="var(--line)" stroke-width="8"/>`;
   g += `<circle cx="${CX}" cy="${CY}" r="${Rsh - 12}" fill="none" stroke="var(--line)" stroke-width="3"/>`;
   g += `<circle cx="${CX}" cy="${CY}" r="15" fill="#5a6270"/>`;
-  g += `<text x="${CX}" y="${CY + 4}" fill="#20242a" font-size="9" text-anchor="middle">alma</text>`;
-  g += `<text x="${CX - Rsh + 4}" y="${CY - Rsh + 2}" fill="var(--dim)" font-size="11">cubierta</text>`;
+  g += `<text x="${CX}" y="${CY + 4}" fill="#20242a" font-size="9" text-anchor="middle">${esc(gl.core)}</text>`;
+  g += `<text x="${CX - Rsh + 4}" y="${CY - Rsh + 2}" fill="var(--dim)" font-size="11">${esc(gl.sheath)}</text>`;
   const ring1 = Math.min(nT, 12),
     ring2 = nT - ring1;
   const tubePos: Record<number, [number, number]> = {};
@@ -282,9 +335,9 @@ export function mkSection(
     });
     if (z.oc != null && !z.nf) {
       g += `<circle cx="${ZX + ZR + 28}" cy="${zy + 4}" r="6.5" fill="${tcol}"/>`;
-      g += `<text x="${ZX + ZR + 42}" y="${zy + 9}" fill="var(--muted)" font-size="13">${z.oc} ocupadas</text>`;
+      g += `<text x="${ZX + ZR + 42}" y="${zy + 9}" fill="var(--muted)" font-size="13">${z.oc} ${esc(gl.used)}</text>`;
       g += `<circle cx="${ZX + ZR + 178}" cy="${zy + 4}" r="6.5" fill="none" stroke="var(--xgs)" stroke-width="1.8" stroke-dasharray="3 3"/>`;
-      g += `<text x="${ZX + ZR + 192}" y="${zy + 9}" fill="var(--xgs-tx)" font-size="13">${8 - z.oc} vacantes</text>`;
+      g += `<text x="${ZX + ZR + 192}" y="${zy + 9}" fill="var(--xgs-tx)" font-size="13">${esc(gl.freeCount(8 - z.oc))}</text>`;
     }
     if (z.sub)
       z.sub.split('|').forEach((sl, si) => {
@@ -354,7 +407,14 @@ export function mkSection(
 }
 
 /** Occupancy row: one square per channel, filled when the channel is in use. */
-export function occRow(name: string, total: number, used: number, cols?: string[]): string {
+export function occRow(
+  name: string,
+  total: number,
+  used: number,
+  cols?: string[],
+  locale: Locale = 'es',
+): string {
+  const gl = GLABELS[locale];
   let g = `<svg viewBox="0 0 1000 52" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
   g += `<text x="6" y="32" fill="var(--txt)" font-size="14.5">${esc(name)}</text>`;
@@ -369,7 +429,9 @@ export function occRow(name: string, total: number, used: number, cols?: string[
     }
   }
   const st =
-    used < total ? `${used}/${total} · ${total - used} libres` : `${used}/${total} · sin vacantes`;
+    used < total
+      ? `${used}/${total} · ${gl.freeCountLower(total - used)}`
+      : `${used}/${total} · ${gl.noVacancies}`;
   g += `<text x="${x0 + total * 32 + 16}" y="32" fill="${used < total ? 'var(--xgs-tx)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
   g += '</svg>';
   return g;
@@ -379,7 +441,8 @@ export function occRow(name: string, total: number, used: number, cols?: string[
  *  The figures are pliego data and live in content.json (PAO_TRANSPORT), not
  *  here — this only draws whatever it is handed, like every other generator
  *  in this file. */
-export function mkPAO(t: PaoTransport): string {
+export function mkPAO(t: PaoTransport, locale: Locale = 'es'): string {
+  const gl = GLABELS[locale];
   const { rows } = t;
   const yd = 70 + rows.length * 62; /* y where the rows end and the direct-fibre line starts */
   /* yd, then the direct-fibre line (yd+8..yd+18) and the warning banner
@@ -387,7 +450,7 @@ export function mkPAO(t: PaoTransport): string {
   const H = yd + 64 + 12;
   let g = `<svg viewBox="0 0 1180 ${H}" style="width:100%;display:block;font-family:'IBM Plex Mono',monospace">`;
   g += HALO;
-  g += `<text x="10" y="26" fill="var(--txt)" font-size="17" font-weight="600">Sistemas de transporte en el PAO · ocupación canal a canal</text>`;
+  g += `<text x="10" y="26" fill="var(--txt)" font-size="17" font-weight="600">${esc(gl.paoTitle)}</text>`;
   rows.forEach((r, ri) => {
     const y = 70 + ri * 62;
     /* miniature mux, matching the CWDM breakdown */
@@ -408,8 +471,8 @@ export function mkPAO(t: PaoTransport): string {
     }
     const st =
       r.used < r.channels
-        ? `${r.used}/${r.channels} · ${r.channels - r.used} LIBRES`
-        : `${r.used}/${r.channels} · sin vacantes`;
+        ? `${r.used}/${r.channels} · ${gl.freeCountUpper(r.channels - r.used)}`
+        : `${r.used}/${r.channels} · ${gl.noVacancies}`;
     g += `<text x="${124 + r.channels * 40 + 18}" y="${y + 15}" fill="${r.used < r.channels ? 'var(--xgs-tx)' : 'var(--muted)'}" font-size="13.5">${st}</text>`;
   });
   g += `<text x="112" y="${yd - 8}" fill="var(--txt)" font-size="14.5">${esc(t.directLabel)}</text>`;
@@ -502,7 +565,13 @@ export function gantt(nodes: NetworkNode[]): string {
  * because the narrowest band here is under 3% of the axis and no label
  * fits inside one.
  */
-export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): string {
+export function mkSpectrum(
+  bands: WdmBand[],
+  axisFrom: number,
+  axisTo: number,
+  locale: Locale = 'es',
+): string {
+  const gl = GLABELS[locale];
   const W = 1000,
     BAR_Y = 74,
     BAR_H = 34,
@@ -561,6 +630,6 @@ export function mkSpectrum(bands: WdmBand[], axisFrom: number, axisTo: number): 
   /* letter-spacing="1" at font-size 9 is over a tenth of the glyph width —
      it read as "FIB RA" rather than tracked caps. 0.4 keeps the tracked-caps
      look without the gap. */
-  g += `<text x="0" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="start" letter-spacing="0.4">UNA SOLA FIBRA MONOMODO</text>`;
+  g += `<text x="0" y="${AXIS_Y + 34}" fill="var(--dim)" font-size="9" text-anchor="start" letter-spacing="0.4">${esc(gl.singleModeFibre)}</text>`;
   return g;
 }

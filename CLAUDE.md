@@ -56,19 +56,30 @@ Everything deterministic is generated **at build time**; only five things are cl
 **Build time (no JS shipped):** static sections, node cards, action links, the phase-2 gantt, the 9
 cable panels of the guided tour, and the 21 node record pages.
 
-- `src/lib/data.ts` — the typed façade over both JSON data files. From `nodes.json`: `NODES` (20
-  primary), `PAO_NODE`, `ALL_NODES`, `byId`, `AREAS`, `ACTION_DESC`, `HOST_ONLY`, and the helpers
-  `ontCount`, `cardCount`, `cardLabel`, `asset`. From `content.json`: `HERO_STATS`,
-  `ONT_INSTALL_BASE`, `ARCHITECTURE_STEPS`, `DIAGRAM_INFO`, `CONTRACT_ACTIONS`, `TOUR_STOPS`,
-  `PAO_TRANSPORT`. Read data through here, not from the JSON directly.
+- `src/lib/data.ts` — the typed façade over both JSON data files, and the home of the `Bi`
+  (`{es, en}`) type and its `t(b, locale)` resolver that every other locale-aware module reuses.
+  From `nodes.json`: `NODES` (20 primary), `PAO_NODE`, `ALL_NODES`, `byId` (all Spanish-resolved,
+  for the many call sites that don't need a locale), `nodeById(id, locale)` (the one locale-aware
+  lookup, for the node page and the modal, where `enclosure`/`extra`/`townsNote`/`ponGroups.note`/an
+  OLT's `note` actually change), `AREAS`, `HOST_ONLY`, and the helpers `ontCount`, `cardCount`,
+  `cardLabel`, `asset`, `galleryLabel(label, locale)` (the 5 plan-type captions), and
+  `actionDesc(locale)` (`ACTION_DESC` is its Spanish-only twin, kept for call sites that only need
+  the codes/hrefs). From `content.json`: `heroStats()`, `ontInstallBase()`, `architectureSteps()`,
+  `diagramInfo()`, `contractActions()`, `tourStops()`, `paoTransport()`, `xgsExplainer()`, all
+  `(locale = 'es')`. Read data through here, not from the JSON directly.
 - `src/lib/graphics.ts` — pure SVG generators returning markup strings (`mkCWDM`, `mkSection`,
-  `occRow`, `mkPAO`, `gantt`), plus the TIA-598 and CWDM colour tables. Every one of them takes its
-  figures as arguments — none of them carries pliego data of its own.
-- `src/lib/details.ts` — the tour panels, composed from those generators and embedded hidden in the
-  page; the tour island only reveals the current one. It is a `Record` **keyed by tour-stop id**
-  (`TOUR_STOPS[i].id`), not an array: the panel and the stop's prose used to be two arrays lined up
-  by index, so reordering a stop silently mismatched them. `tests/lib/details.test.ts` guards the
-  key contract.
+  `occRow`, `mkPAO`, `mkSpectrum`, `gantt`), plus the TIA-598 and CWDM colour tables. Every one of
+  them takes its figures as arguments — none of them carries pliego data of its own — plus a
+  trailing `locale = 'es'` for the handful of fixed words the generators draw themselves (VACANTE/
+  FREE, ocupadas/used, alma/core, cubierta/sheath, the PAO panel's own title): titles, labels and
+  footnotes are the caller's text, already resolved before it reaches here.
+- `src/lib/details.ts` — `details(locale = 'es')`, the tour panels composed from those generators
+  and embedded hidden in the page; the tour island only reveals the current one. Its return value is
+  a `Record` **keyed by tour-stop id** (`TOUR_STOPS[i].id`), not an array: the panel and the stop's
+  prose used to be two arrays lined up by index, so reordering a stop silently mismatched them.
+  `tests/lib/details.test.ts` guards the key contract. Every title/label/footnote is a `Bi` literal
+  resolved with `t()` before being handed to `graphics.ts`, so the 9 cable-detail panels render in
+  either locale.
 - `src/i18n/` — the site-chrome dictionary, split first by locale and then by domain:
   `types.ts` holds `Locale` and one interface per domain (`NavStrings`, `HeroStrings`, …) composed
   into `UiStrings`; `es/<domain>.ts` and `en/<domain>.ts` (`nav.ts`, `hero.ts`, `nodeDetail.ts`, …)
@@ -80,7 +91,7 @@ cable panels of the guided tour, and the 21 node record pages.
   by leaf and fails if any string is still identical between locales, which is the one thing the
   per-file interface typing can't catch on its own (a copied string type-checks fine). Covers
   structural chrome (nav, footer, buttons, aria-labels) and node-record labels; pliego-derived prose
-  still lives in `content.json`, untranslated so far — see "Language" under Conventions.
+  lives in `content.json` instead, nested `{es, en}` — see "Language" under Conventions.
 - `src/lib/node-render.ts` — the HTML fragments a node record is made of (OLT table, migration
   strip, served towns, the "ÁREA" tag), shared between `NodeDetail.astro` (build time) and
   `src/scripts/modal.ts` (runtime, for the home-page modal) so an escaping fix or a markup change
@@ -124,11 +135,14 @@ cards and gantt bars to the modal):
 text on interaction (a toggle's label, the tour's step counter, the 3D mode switch) — a translated
 static label that snapped back to Spanish on the first click would be worse than not translating it
 at all, so those specific strings read `document.documentElement.lang` and pull from `ui.ts` too.
-This is narrower than full i18n support for these islands: their tooltips, the tour stops' own
-prose and the 3D equipment legend are still Spanish-only. `node-render.ts`'s functions run at build
-time as well as here, so they take `locale` as an explicit argument instead (`modal.ts` resolves it
-once, from the same `document.documentElement.lang`, and passes it through) — reading the DOM
-directly would break at build time, when there is no DOM to read.
+`node-render.ts`'s functions run at build time as well as here, so they take `locale` as an explicit
+argument instead (`modal.ts` resolves it once, from the same `document.documentElement.lang`, and
+passes it through) — reading the DOM directly would break at build time, when there is no DOM to
+read. `map.ts`'s own tooltip prose and captions (the trunk labels, the secondary-node and shared-PON
+descriptions) and `viewer3d.ts`'s equipment-legend template live as local `Bi`/lookup-table literals
+in those two files rather than in `ui.ts`, the same way `details.ts` keeps its own: they're this
+module's captions, not structural chrome, so a lookup table keyed only by locale can't hold the ones
+that also vary by trunk or node — those are resolved inline with `t()` instead.
 
 Everything type-checks, including `src/scripts/map.ts` — once a literal, `// @ts-nocheck`'d port of
 the legacy JavaScript. The shared `svgEl()` in `src/scripts/svg.ts` takes a typed `SvgAttrs =
@@ -145,11 +159,16 @@ thing the runtime always did.
   headline figures, the ONT install base, the architecture-layer summaries, the diagram's
   explanations, the contract-action cards, the 9 guided-tour stops and the PAO's transport
   occupancy. It exists so this copy is in one checkable place instead of inlined in the components
-  and islands that display it, and so `tests/data/content.test.ts` can guard it.
+  and islands that display it, and so `tests/data/content.test.ts` can guard it. Every
+  translatable string is nested `{ "es": "…", "en": "…" }` in place — see "Language" under
+  Conventions — so `src/lib/data.ts`'s getters take a locale, not the raw JSON shape.
 - `src/data/rooms.json` — one entry per node id (21), transcribed in metres from that node's
   `*-planta.jpg`: `outline` polygon, `doors`, and `bays` (`kind` drives the mesh/colour; an `olt`
   bay renders that OLT's real cards and lit ports). Only the Red Asturcón room is modelled;
-  adjoining third-party space is a blind wall.
+  adjoining third-party space is a blind wall. A room's own `note` (a modelling caveat, where one
+  exists) is nested `{es, en}` like every other free-text field; a bay's `label` is not — it is a
+  literal transcription of what the plan itself rotula on the cabinet, so it stays as printed in
+  both locales, the same way an OLT code or model name does.
 - `public/planos/` — 105 original-resolution JPEGs extracted from the pliego PDF.
 
 These are edited **by hand against the pliego**. The one-shot extractor that created them is gone
@@ -176,22 +195,29 @@ versioned.
   the 3D viewer's `sv-warn` notice) gets an English equivalent that concedes exactly as much — see
   the golden rule above.
 
-  **What is translated so far**: every string hardcoded directly in a component's own template
-  (headings, leads, buttons, aria-labels — via `src/i18n/ui.ts`), the node record's own labels
-  (`node-render.ts`: OLT table headers, migration-strip text, served-towns headings), and the
-  runtime toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts` that would otherwise
-  overwrite that same chrome with Spanish on the first click. **Not translated yet**: pliego-derived
-  prose in `content.json` (the architecture-layer summaries, the diagram's click-to-learn text, the
-  contract-action cards, the 9 guided-tour stops' own words, the PAO's transport occupancy) and
-  `nodes.json`'s per-action descriptions (`ACTION_DESC`) — both need `{ "es": "…", "en": "…" }`
-  nested per string rather than forked into a parallel file, so a pliego correction can't land in
-  one language and not the other; the free-text per-node fields in `nodes.json` (`address`,
-  `enclosure`, `extra`, `townsNote`, `ponGroups.note`) and the plan gallery's own labels (`planta`,
-  `alzado`, …); and the markup `graphics.ts`/`details.ts` generate via `set:html` (map labels, the
-  gantt, the CWDM/spectrum diagrams, the tour's cable-detail panels) plus what the client islands
-  build from it at runtime (map tooltips, the 3D viewer's equipment legend, the diagram's
-  click-an-element info panel) — all of it needs a `locale` argument threaded through the
-  generators that don't have one yet.
+  **What is translated**: everything the site itself says, end to end — every string hardcoded
+  directly in a component's own template (headings, leads, buttons, aria-labels — via
+  `src/i18n/ui.ts`), the node record's own labels (`node-render.ts`: OLT table headers,
+  migration-strip text, served-towns headings, action-link descriptions via `actionDesc()`), the
+  runtime toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts`, `content.json`'s
+  pliego-derived prose (the architecture-layer summaries, the diagram's click-to-learn text, the
+  contract-action cards, the 9 guided-tour stops' own title/text, the ONT install-base notes, the
+  PAO transport warning, the GPON/XGS-PON explainer), `nodes.json`'s per-node free text
+  (`enclosure`, `extra`, `townsNote`, `ponGroups.note`, an OLT's own `note`, resolved through
+  `nodeById(id, locale)` rather than the Spanish-only `byId`), the plan gallery's 5 drawing-type
+  labels (`galleryLabel()`), `rooms.json`'s own modelling-caveat `note`, and the markup
+  `graphics.ts`/`details.ts` generate via `set:html` (the CWDM/spectrum diagrams, the tour's 9
+  cable-detail panels) plus what `map.ts` and `viewer3d.ts` build from it at runtime (the map's
+  trunk captions and tooltips, the 3D viewer's equipment legend). Every translatable string is
+  nested `{ "es": "…", "en": "…" }` right where the Spanish already was — in `content.json` and
+  `nodes.json` as on-disk JSON, in `graphics.ts`/`details.ts`/`map.ts`/`viewer3d.ts` as a `Bi`
+  literal (`src/lib/data.ts`'s `{es, en}` type and its `t(b, locale)` resolver) — never forked into
+  a parallel file, so a pliego correction can't land in one language and not the other; every
+  `src/lib/data.ts` getter resolves that down to a locale's plain strings (default Spanish), so a
+  consumer written before English existed sees the same flat shape and needs no change beyond
+  passing a locale. **What stays untranslated on purpose**: proper nouns, town and place names, OLT
+  codes and vendor/model names, `pliego CON 06/2025` itself, and a `rooms.json` bay's own `label` —
+  all pliego-literal data rather than the site's own prose, per the golden rule above.
 
   The visitor's language follows their browser on first visit to `/` only: an inline pre-paint
   script in `Layout.astro` (mirroring the theme script below it, and gated to fire only there)
@@ -205,6 +231,8 @@ versioned.
   default locale matches `/^en/i` (this varies) would otherwise make the redirect above fire on a
   plain `page.goto('./')`, which almost none of `tests/e2e/smoke.spec.ts` is testing for. The
   `language` describe block opts individual tests into `'en-US'` where that is the point.
+  `Layout.astro` also emits a `hreflang` alternate pair (`es`/`en`) plus `x-default` pointing at
+  the Spanish URL, on every page, so a crawler discovers `/en/` without needing the redirect.
 
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.

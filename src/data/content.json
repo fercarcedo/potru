@@ -1,75 +1,157 @@
 {
   "heroStats": [
-    { "value": "52", "label": "poblaciones con cobertura" },
-    { "value": "60.051", "label": "puntos serviciables" },
-    { "value": "+8.400", "label": "usuarios activos" },
-    { "value": "20", "label": "nodos primarios a renovar" },
-    { "value": "806", "label": "redes PON en producción" },
-    { "value": "10 Gbps", "label": "enlace mínimo por nueva OLT", "highlight": true }
+    { "value": "52", "label": { "es": "poblaciones con cobertura", "en": "towns with coverage" } },
+    {
+      "value": "60.051",
+      "label": { "es": "puntos serviciables", "en": "serviceable points" }
+    },
+    { "value": "+8.400", "label": { "es": "usuarios activos", "en": "active users" } },
+    {
+      "value": "20",
+      "label": { "es": "nodos primarios a renovar", "en": "primary nodes to renew" }
+    },
+    {
+      "value": "806",
+      "label": { "es": "redes PON en producción", "en": "PON networks in service" }
+    },
+    {
+      "value": "10 Gbps",
+      "label": { "es": "enlace mínimo por nueva OLT", "en": "minimum link per new OLT" },
+      "highlight": true
+    }
   ],
   "ontInstallBase": [
-    { "model": "Alcatel I-221E-A", "note": "no admite >100 Mbps", "pct": 43.03, "warn": true },
-    { "model": "Ericsson T063G / T067G", "note": "", "pct": 29.48, "warn": false },
-    { "model": "Nokia G-241W-A", "note": "", "pct": 17.23, "warn": false },
-    { "model": "PTI ONT7-4GE-2FXS", "note": "con / sin puerto RF", "pct": 9.63, "warn": false },
-    { "model": "Nokia G-240G-E", "note": "", "pct": 0.63, "warn": false }
+    {
+      "model": "Alcatel I-221E-A",
+      "note": { "es": "no admite >100 Mbps", "en": "doesn't support >100 Mbps" },
+      "pct": 43.03,
+      "warn": true
+    },
+    {
+      "model": "Ericsson T063G / T067G",
+      "note": { "es": "", "en": "" },
+      "pct": 29.48,
+      "warn": false
+    },
+    { "model": "Nokia G-241W-A", "note": { "es": "", "en": "" }, "pct": 17.23, "warn": false },
+    {
+      "model": "PTI ONT7-4GE-2FXS",
+      "note": { "es": "con / sin puerto RF", "en": "with / without RF port" },
+      "pct": 9.63,
+      "warn": false
+    },
+    { "model": "Nokia G-240G-E", "note": { "es": "", "en": "" }, "pct": 0.63, "warn": false }
   ],
   "architectureSteps": [
     {
-      "kicker": "Usuario",
-      "heading": "ONT",
-      "text": "Terminal activo en el domicilio. Conecta los servicios del operador a la fibra de acometida."
+      "kicker": { "es": "Usuario", "en": "User" },
+      "heading": { "es": "ONT", "en": "ONT" },
+      "text": {
+        "es": "Terminal activo en el domicilio. Conecta los servicios del operador a la fibra de acometida.",
+        "en": "Active terminal in the home. Connects the operator's services to the drop fibre."
+      }
     },
     {
-      "kicker": "Red de acceso",
-      "heading": "Splitters 1:16 → 1:4",
-      "text": "Red pasiva primaria y secundaria. División óptica final 1×4×16 = 64 usuarios/fibra (Cangas del Narcea: 1:32). 806 redes PON."
+      "kicker": { "es": "Red de acceso", "en": "Access network" },
+      "heading": { "es": "Splitters 1:16 → 1:4", "en": "Splitters 1:16 → 1:4" },
+      "text": {
+        "es": "Red pasiva primaria y secundaria. División óptica final 1×4×16 = 64 usuarios/fibra (Cangas del Narcea: 1:32). 806 redes PON.",
+        "en": "Primary and secondary passive network. Final optical split 1×4×16 = 64 users/fibre (Cangas del Narcea: 1:32). 806 PON networks."
+      }
     },
     {
-      "kicker": "Activo",
-      "heading": "Nodo primario · OLT",
-      "text": "20 nodos con OLT Alcatel 7342 (R4.8.13) o Ericsson BLM 1500 (R8.4.0), inyección CATV, energía CC, baterías y transmisión."
+      "kicker": { "es": "Activo", "en": "Active" },
+      "heading": { "es": "Nodo primario · OLT", "en": "Primary node · OLT" },
+      "text": {
+        "es": "20 nodos con OLT Alcatel 7342 (R4.8.13) o Ericsson BLM 1500 (R8.4.0), inyección CATV, energía CC, baterías y transmisión.",
+        "en": "20 nodes with an Alcatel 7342 (R4.8.13) or Ericsson BLM 1500 (R8.4.0) OLT, CATV injection, DC power, batteries and transmission."
+      }
     },
     {
-      "kicker": "Pasivo",
-      "heading": "Nodo secundario",
-      "text": "Sin electrónica: repartidores ópticos colgados de un primario por fibra. El pliego general cita 5, pero las fichas por área detallan 9: Vegadeo, La Caridad y Soto del Barco (O.), Cabranes y Villamayor (SE.) y El Entrego, Sotrondio, Barredos y Pola de Laviana (Nalón)."
+      "kicker": { "es": "Pasivo", "en": "Passive" },
+      "heading": { "es": "Nodo secundario", "en": "Secondary node" },
+      "text": {
+        "es": "Sin electrónica: repartidores ópticos colgados de un primario por fibra. El pliego general cita 5, pero las fichas por área detallan 9: Vegadeo, La Caridad y Soto del Barco (O.), Cabranes y Villamayor (SE.) y El Entrego, Sotrondio, Barredos y Pola de Laviana (Nalón).",
+        "en": "No electronics: optical splitters hung off a primary node by fibre. The general pliego cites 5, but the area-by-area records detail 9: Vegadeo, La Caridad and Soto del Barco (W.), Cabranes and Villamayor (SE.), and El Entrego, Sotrondio, Barredos and Pola de Laviana (Nalón)."
+      }
     },
     {
-      "kicker": "Transporte",
-      "heading": "Redes troncales",
-      "text": "Fibra propia de gran capacidad o fibra alquilada con CWDM Transmode (5800 / 8133 / 8140) hacia el PAO."
+      "kicker": { "es": "Transporte", "en": "Transport" },
+      "heading": { "es": "Redes troncales", "en": "Trunk networks" },
+      "text": {
+        "es": "Fibra propia de gran capacidad o fibra alquilada con CWDM Transmode (5800 / 8133 / 8140) hacia el PAO.",
+        "en": "High-capacity own fibre or leased fibre with CWDM Transmode (5800 / 8133 / 8140) to the PAO."
+      }
     },
     {
-      "kicker": "Interconexión",
-      "heading": "PAO Gijón",
-      "text": "Enrutador Alcatel 7750SR-7 al 100% de ocupación. Jaulas de operadores, pasarelas POTS V5.2 y equipos auxiliares."
+      "kicker": { "es": "Interconexión", "en": "Interconnection" },
+      "heading": { "es": "PAO Gijón", "en": "PAO Gijón" },
+      "text": {
+        "es": "Enrutador Alcatel 7750SR-7 al 100% de ocupación. Jaulas de operadores, pasarelas POTS V5.2 y equipos auxiliares.",
+        "en": "Alcatel 7750SR-7 router at 100% occupancy. Operator cages, POTS V5.2 gateways and auxiliary equipment."
+      }
     }
   ],
   "diagramInfo": {
     "ont": {
-      "gpon": "<b>ONT (terminal de usuario).</b> Parque heterogéneo: Alcatel I-221E-A (43%, limitada a 100 Mbps), Nokia G-241W-A / G-240G-E, Ericsson T063G/T067G y PTI ONT7-4GE-2FXS con/sin puerto RF. Sirve HSI, TVoIP, VoD, VoIP, CATV y POTS.",
-      "xgs": "<b>ONT tras la renovación.</b> Se mantienen las compatibles; hasta 7.000 ONT GPON nuevas sustituyen las obsoletas o incompatibles (PV-1 y PV-2) y hasta 100 ONT XGS-PON (PV-3) estrenan los 10 Gbps simétricos."
+      "gpon": {
+        "es": "<b>ONT (terminal de usuario).</b> Parque heterogéneo: Alcatel I-221E-A (43%, limitada a 100 Mbps), Nokia G-241W-A / G-240G-E, Ericsson T063G/T067G y PTI ONT7-4GE-2FXS con/sin puerto RF. Sirve HSI, TVoIP, VoD, VoIP, CATV y POTS.",
+        "en": "<b>ONT (user terminal).</b> A mixed fleet: Alcatel I-221E-A (43%, limited to 100 Mbps), Nokia G-241W-A / G-240G-E, Ericsson T063G/T067G and PTI ONT7-4GE-2FXS with/without RF port. Serves HSI, TVoIP, VoD, VoIP, CATV and POTS."
+      },
+      "xgs": {
+        "es": "<b>ONT tras la renovación.</b> Se mantienen las compatibles; hasta 7.000 ONT GPON nuevas sustituyen las obsoletas o incompatibles (PV-1 y PV-2) y hasta 100 ONT XGS-PON (PV-3) estrenan los 10 Gbps simétricos.",
+        "en": "<b>ONT after the renewal.</b> Compatible ones are kept; up to 7,000 new GPON ONTs replace the obsolete or incompatible ones (PV-1 and PV-2), and up to 100 XGS-PON ONTs (PV-3) debut the symmetric 10 Gbps."
+      }
     },
     "split": {
-      "gpon": "<b>Red de acceso pasiva.</b> Splitters en cascada: 1:16 en red secundaria y 1:4 en primaria → 64 usuarios por fibra (Cangas del Narcea, 1:32). 806 redes PON con acometidas, RFU, postes y arquetas.",
-      "xgs": "<b>La red pasiva no se toca.</b> GPON y XGS-PON comparten la misma fibra y los mismos splitters usando longitudes de onda distintas: toda la obra civil y óptica pasiva se reutiliza."
+      "gpon": {
+        "es": "<b>Red de acceso pasiva.</b> Splitters en cascada: 1:16 en red secundaria y 1:4 en primaria → 64 usuarios por fibra (Cangas del Narcea, 1:32). 806 redes PON con acometidas, RFU, postes y arquetas.",
+        "en": "<b>Passive access network.</b> Cascaded splitters: 1:16 in the secondary network and 1:4 in the primary → 64 users per fibre (Cangas del Narcea, 1:32). 806 PON networks with drops, RFUs, poles and chambers."
+      },
+      "xgs": {
+        "es": "<b>La red pasiva no se toca.</b> GPON y XGS-PON comparten la misma fibra y los mismos splitters usando longitudes de onda distintas: toda la obra civil y óptica pasiva se reutiliza.",
+        "en": "<b>The passive network isn't touched.</b> GPON and XGS-PON share the same fibre and the same splitters using different wavelengths: all the civil works and passive optics are reused."
+      }
     },
     "olt": {
-      "gpon": "<b>Nodo primario · OLT actual.</b> 20 nodos con Alcatel 7342 (SW R4.8.13) o Ericsson BLM 1500 (SW R8.4.0), inyección CATV, energía CC, baterías, transmisión y climatización. Enlaces de subida de 1 Gbps.",
-      "xgs": "<b>Nodo primario renovado (PF-1).</b> Nueva OLT dual GPON/XGS-PON por nodo, autónoma de la red antigua durante la migración. Puertos dimensionados según las PON existentes. Enlace mínimo de 10 Gbps extremo a extremo."
+      "gpon": {
+        "es": "<b>Nodo primario · OLT actual.</b> 20 nodos con Alcatel 7342 (SW R4.8.13) o Ericsson BLM 1500 (SW R8.4.0), inyección CATV, energía CC, baterías, transmisión y climatización. Enlaces de subida de 1 Gbps.",
+        "en": "<b>Primary node · current OLT.</b> 20 nodes with an Alcatel 7342 (SW R4.8.13) or Ericsson BLM 1500 (SW R8.4.0), CATV injection, DC power, batteries, transmission and climate control. 1 Gbps uplinks."
+      },
+      "xgs": {
+        "es": "<b>Nodo primario renovado (PF-1).</b> Nueva OLT dual GPON/XGS-PON por nodo, autónoma de la red antigua durante la migración. Puertos dimensionados según las PON existentes. Enlace mínimo de 10 Gbps extremo a extremo.",
+        "en": "<b>Renewed primary node (PF-1).</b> A new dual GPON/XGS-PON OLT per node, independent of the old network during migration. Ports sized to the existing PONs. Minimum 10 Gbps link end to end."
+      }
     },
     "troncal": {
-      "gpon": "<b>Redes troncales.</b> Fibra propia de gran capacidad (p. ej. troncal Occidental de 64 fibras sobre la vía ADIF Ferrol–Gijón) o fibra alquilada con CWDM Transmode 5800/8133/8140, varios sin canales vacantes.",
-      "xgs": "<b>Transporte renovado.</b> Se priorizan portadores ópticos directos vacantes; donde no existan, CWDM o nuevos equipos de transporte del adjudicatario. Los nodos cabecera pueden encadenar al resto de su área."
+      "gpon": {
+        "es": "<b>Redes troncales.</b> Fibra propia de gran capacidad (p. ej. troncal Occidental de 64 fibras sobre la vía ADIF Ferrol–Gijón) o fibra alquilada con CWDM Transmode 5800/8133/8140, varios sin canales vacantes.",
+        "en": "<b>Trunk networks.</b> High-capacity own fibre (e.g. the 64-fibre Western trunk along the ADIF Ferrol–Gijón line) or leased fibre with CWDM Transmode 5800/8133/8140, several with no vacant channels."
+      },
+      "xgs": {
+        "es": "<b>Transporte renovado.</b> Se priorizan portadores ópticos directos vacantes; donde no existan, CWDM o nuevos equipos de transporte del adjudicatario. Los nodos cabecera pueden encadenar al resto de su área.",
+        "en": "<b>Renewed transport.</b> Vacant direct optical carriers are prioritised; where none exist, CWDM or new transport equipment from the contractor. Lead nodes can chain to the rest of their area."
+      }
     },
     "pao": {
-      "gpon": "<b>PAO Gijón.</b> Enrutador Alcatel 7750SR-7 al 100% de ocupación (sin capacidad para más tarjetas), pasarelas POTS V5.2 y jaulas de operadores. Único punto de interconexión.",
-      "xgs": "<b>Interconexión renovada (PF-2).</b> Dos enrutadores nuevos: uno en el PAO de Gijón junto al 7750 actual y otro en Mieres, aprovechando la fibra existente entre ambos. Reciben los enlaces 10 Gbps de las nuevas OLT."
+      "gpon": {
+        "es": "<b>PAO Gijón.</b> Enrutador Alcatel 7750SR-7 al 100% de ocupación (sin capacidad para más tarjetas), pasarelas POTS V5.2 y jaulas de operadores. Único punto de interconexión.",
+        "en": "<b>PAO Gijón.</b> Alcatel 7750SR-7 router at 100% occupancy (no room for more cards), POTS V5.2 gateways and operator cages. The sole interconnection point."
+      },
+      "xgs": {
+        "es": "<b>Interconexión renovada (PF-2).</b> Dos enrutadores nuevos: uno en el PAO de Gijón junto al 7750 actual y otro en Mieres, aprovechando la fibra existente entre ambos. Reciben los enlaces 10 Gbps de las nuevas OLT.",
+        "en": "<b>Renewed interconnection (PF-2).</b> Two new routers: one at the Gijón PAO alongside the current 7750, and another in Mieres, using the existing fibre between the two. They receive the 10 Gbps links from the new OLTs."
+      }
     },
     "oss": {
-      "gpon": "<b>OSS actuales.</b> Gestores por fabricante: Nokia AMS, Entriview, 5620 SAM, Transmode TNM, GENView, Cimplicity; consola de alarmas IBM Tivoli NetCool y ticketing Remedy.",
-      "xgs": "<b>Gestión unificada.</b> Nuevos gestores de elementos (OLT, energía, baterías y transporte) integrados con los OSS de GIT, adaptados en Fase 1. Un solo sistema integral sustituye el mosaico heredado."
+      "gpon": {
+        "es": "<b>OSS actuales.</b> Gestores por fabricante: Nokia AMS, Entriview, 5620 SAM, Transmode TNM, GENView, Cimplicity; consola de alarmas IBM Tivoli NetCool y ticketing Remedy.",
+        "en": "<b>Current OSS.</b> Per-vendor managers: Nokia AMS, Entriview, 5620 SAM, Transmode TNM, GENView, Cimplicity; an IBM Tivoli NetCool alarm console and Remedy ticketing."
+      },
+      "xgs": {
+        "es": "<b>Gestión unificada.</b> Nuevos gestores de elementos (OLT, energía, baterías y transporte) integrados con los OSS de GIT, adaptados en Fase 1. Un solo sistema integral sustituye el mosaico heredado.",
+        "en": "<b>Unified management.</b> New element managers (OLT, power, batteries and transport) integrated with GIT's OSS, adapted in Phase 1. One comprehensive system replaces the inherited patchwork."
+      }
     }
   },
   "contractActions": [
@@ -78,11 +160,20 @@
       "code": "PF-1",
       "pill": "fix",
       "part": "fija",
-      "heading": "Renovación de los 20 nodos",
+      "heading": { "es": "Renovación de los 20 nodos", "en": "Renewal of the 20 nodes" },
       "bullets": [
-        "20 nuevos equipos OLT con tecnología dual GPON / XGS-PON, autónomos de la red actual",
-        "Arquitectura y diseño operacional a propuesta del licitador",
-        "Sistema integral de gestión de elementos + asesoramiento técnico"
+        {
+          "es": "20 nuevos equipos OLT con tecnología dual GPON / XGS-PON, autónomos de la red actual",
+          "en": "20 new OLT units with dual GPON / XGS-PON technology, independent of the current network"
+        },
+        {
+          "es": "Arquitectura y diseño operacional a propuesta del licitador",
+          "en": "Architecture and operational design proposed by the bidder"
+        },
+        {
+          "es": "Sistema integral de gestión de elementos + asesoramiento técnico",
+          "en": "Comprehensive element-management system + technical consultation"
+        }
       ],
       "aff": "all"
     },
@@ -91,10 +182,16 @@
       "code": "PF-2",
       "pill": "fix",
       "part": "fija",
-      "heading": "Elementos auxiliares",
+      "heading": { "es": "Elementos auxiliares", "en": "Auxiliary elements" },
       "bullets": [
-        "Nodo de pruebas completo (maqueta) en oficinas GIT de Oviedo para tests y formación",
-        "2 enrutadores nuevos: uno en el PAO de Gijón y otro en el nodo de Mieres, interconectados con el 7750 actual"
+        {
+          "es": "Nodo de pruebas completo (maqueta) en oficinas GIT de Oviedo para tests y formación",
+          "en": "A complete test node (mock-up) at GIT's Oviedo offices for testing and training"
+        },
+        {
+          "es": "2 enrutadores nuevos: uno en el PAO de Gijón y otro en el nodo de Mieres, interconectados con el 7750 actual",
+          "en": "2 new routers: one at the Gijón PAO and another at the Mieres node, interconnected with the current 7750"
+        }
       ],
       "aff": "pao,mieres"
     },
@@ -103,9 +200,12 @@
       "code": "PF-3",
       "pill": "fix",
       "part": "fija",
-      "heading": "Repuestos",
+      "heading": { "es": "Repuestos", "en": "Spares" },
       "bullets": [
-        "Suministro de material de repuesto para mantener el equipamiento durante toda la vida del contrato"
+        {
+          "es": "Suministro de material de repuesto para mantener el equipamiento durante toda la vida del contrato",
+          "en": "Supply of spare parts to maintain the equipment throughout the life of the contract"
+        }
       ],
       "aff": "all"
     },
@@ -114,8 +214,11 @@
       "code": "PV-1",
       "pill": "var",
       "part": "variable",
-      "heading": "Hasta 3.000 ONT GPON",
-      "text": "Para migrar usuarios cuyas ONT no tienen capacidad suficiente (p. ej. Alcatel I-221E-A, limitada a 100 Mbps). Se entregan nodo a nodo, en el momento de su migración.",
+      "heading": { "es": "Hasta 3.000 ONT GPON", "en": "Up to 3,000 GPON ONTs" },
+      "text": {
+        "es": "Para migrar usuarios cuyas ONT no tienen capacidad suficiente (p. ej. Alcatel I-221E-A, limitada a 100 Mbps). Se entregan nodo a nodo, en el momento de su migración.",
+        "en": "To migrate users whose ONT lacks sufficient capacity (e.g. the Alcatel I-221E-A, limited to 100 Mbps). Delivered node by node, at the time of its migration."
+      },
       "aff": "all"
     },
     {
@@ -123,8 +226,11 @@
       "code": "PV-2",
       "pill": "var",
       "part": "variable",
-      "heading": "Hasta 4.000 ONT GPON",
-      "text": "Para sustituir ONT incompatibles con el nuevo equipamiento, según el calendario de migración de cada nodo.",
+      "heading": { "es": "Hasta 4.000 ONT GPON", "en": "Up to 4,000 GPON ONTs" },
+      "text": {
+        "es": "Para sustituir ONT incompatibles con el nuevo equipamiento, según el calendario de migración de cada nodo.",
+        "en": "To replace ONTs incompatible with the new equipment, per each node's migration schedule."
+      },
       "aff": "all"
     },
     {
@@ -132,24 +238,33 @@
       "code": "PV-3",
       "pill": "var",
       "part": "variable",
-      "heading": "Hasta 100 ONT XGS-PON",
-      "text": "Primeros terminales de 10 Gbps simétricos compatibles con la nueva plataforma."
+      "heading": { "es": "Hasta 100 ONT XGS-PON", "en": "Up to 100 XGS-PON ONTs" },
+      "text": {
+        "es": "Primeros terminales de 10 Gbps simétricos compatibles con la nueva plataforma.",
+        "en": "The first symmetric 10 Gbps terminals compatible with the new platform."
+      }
     },
     {
       "id": "act-pv4",
       "code": "PV-4",
       "pill": "var",
       "part": "variable",
-      "heading": "Hasta 5 nodos nuevos",
-      "text": "Expansión de la red a nuevas zonas de cobertura: número, dimensionado y ubicación según necesidades."
+      "heading": { "es": "Hasta 5 nodos nuevos", "en": "Up to 5 new nodes" },
+      "text": {
+        "es": "Expansión de la red a nuevas zonas de cobertura: número, dimensionado y ubicación según necesidades.",
+        "en": "Network expansion into new coverage areas: number, sizing and location as needed."
+      }
     },
     {
       "id": "act-pv5",
       "code": "PV-5",
       "pill": "var",
       "part": "variable",
-      "heading": "Ampliación de capacidad",
-      "text": "Crecimiento del equipamiento instalado en la parte fija para absorber ampliaciones de la red renovada.",
+      "heading": { "es": "Ampliación de capacidad", "en": "Capacity expansion" },
+      "text": {
+        "es": "Crecimiento del equipamiento instalado en la parte fija para absorber ampliaciones de la red renovada.",
+        "en": "Growth of the equipment installed under the fixed part to absorb expansions of the renewed network."
+      },
       "aff": "all"
     },
     {
@@ -157,8 +272,11 @@
       "code": "PV-6 · PV-7",
       "pill": "var",
       "part": "variable",
-      "heading": "Licencias y reparaciones",
-      "text": "Licencias de uso si la solución las requiere, y servicio de reparación/sustitución de elementos averiados."
+      "heading": { "es": "Licencias y reparaciones", "en": "Licences and repairs" },
+      "text": {
+        "es": "Licencias de uso si la solución las requiere, y servicio de reparación/sustitución de elementos averiados.",
+        "en": "Usage licences if the solution requires them, and a repair/replacement service for faulty elements."
+      }
     }
   ],
   "tourStops": [
@@ -167,64 +285,112 @@
       "viewBox": [440, 20, 420, 240],
       "trunks": [],
       "node": "pao",
-      "title": "Gijón / PAO — la puerta de la red",
-      "text": "Todo el tráfico de la Red Asturcón entra y sale por este punto: el enrutador Alcatel 7750SR-7, hoy al 100% de ocupación, conecta los 20 nodos con las jaulas de los operadores. La renovación instala aquí un enrutador nuevo (PF-2) junto al actual. Puedes entrar y ver el plano de planta y los alzados reales de la sala."
+      "title": {
+        "es": "Gijón / PAO — la puerta de la red",
+        "en": "Gijón / PAO — the network's front door"
+      },
+      "text": {
+        "es": "Todo el tráfico de la Red Asturcón entra y sale por este punto: el enrutador Alcatel 7750SR-7, hoy al 100% de ocupación, conecta los 20 nodos con las jaulas de los operadores. La renovación instala aquí un enrutador nuevo (PF-2) junto al actual. Puedes entrar y ver el plano de planta y los alzados reales de la sala.",
+        "en": "All of the Red Asturcón's traffic enters and leaves through this point: the Alcatel 7750SR-7 router, today at 100% occupancy, connects the 20 nodes to the operators' cages. The renewal installs a new router here (PF-2) alongside the current one. You can go inside and see the room's real floor plan and elevations."
+      }
     },
     {
       "id": "autovia-minera",
       "viewBox": [430, 60, 320, 230],
       "trunks": ["minera"],
       "node": "mieres",
-      "title": "Troncal de la Autovía Minera · fibra propia",
-      "text": "De Gijón a Mieres, la troncal propia de la red transita por las canalizaciones de la Autovía AS-I \"Mieres–Gijón\", con segregación de fibras hacia la Cuenca del Nalón. En Mieres — cabecera de las tres cuencas — se instala el segundo enrutador nuevo del contrato. Entra para ver sus 4 OLT Alcatel en los alzados."
+      "title": {
+        "es": "Troncal de la Autovía Minera · fibra propia",
+        "en": "Autovía Minera Trunk · own fibre"
+      },
+      "text": {
+        "es": "De Gijón a Mieres, la troncal propia de la red transita por las canalizaciones de la Autovía AS-I \"Mieres–Gijón\", con segregación de fibras hacia la Cuenca del Nalón. En Mieres — cabecera de las tres cuencas — se instala el segundo enrutador nuevo del contrato. Entra para ver sus 4 OLT Alcatel en los alzados.",
+        "en": "From Gijón to Mieres, the network's own trunk runs through the ducting of the AS-I \"Mieres–Gijón\" motorway, with fibres segregating off towards the Cuenca del Nalón. In Mieres — head-end of the three coalfield valleys — the contract's second new router is installed. Go in to see its 4 Alcatel OLTs in the elevations."
+      }
     },
     {
       "id": "cuencas",
       "viewBox": [450, 150, 360, 290],
       "trunks": ["lena", "morcin", "aller", "nalon"],
       "node": "blimea",
-      "title": "Las cuencas: propia hacia Lena, alquilada hacia Morcín y Aller",
-      "text": "Desde Mieres, la fibra propia se prolonga al sur hacia Pola de Lena; hacia Morcín y hacia la Cuenca del Aller se usan fibras alquiladas — en Aller, sobre el tendido ferroviario de ADIF entre Santa Cruz de Mieres y Collanzo. En la Cuenca del Nalón te espera Blimea, el nodo más denso de la red: 8 OLT en producción. Entra a verlo."
+      "title": {
+        "es": "Las cuencas: propia hacia Lena, alquilada hacia Morcín y Aller",
+        "en": "The coalfield valleys: own fibre towards Lena, leased towards Morcín and Aller"
+      },
+      "text": {
+        "es": "Desde Mieres, la fibra propia se prolonga al sur hacia Pola de Lena; hacia Morcín y hacia la Cuenca del Aller se usan fibras alquiladas — en Aller, sobre el tendido ferroviario de ADIF entre Santa Cruz de Mieres y Collanzo. En la Cuenca del Nalón te espera Blimea, el nodo más denso de la red: 8 OLT en producción. Entra a verlo.",
+        "en": "From Mieres, the own fibre continues south towards Pola de Lena; leased fibres are used towards Morcín and the Cuenca del Aller — in Aller, along ADIF's rail line between Santa Cruz de Mieres and Collanzo. In the Cuenca del Nalón, Blimea awaits: the network's densest node, with 8 OLTs in service. Go in to see it."
+      }
     },
     {
       "id": "troncal-occidental",
       "viewBox": [40, 40, 560, 230],
       "trunks": ["occ", "occrent"],
       "node": null,
-      "title": "Troncal Occidental: propia hasta Cudillero, alquilada hasta Gijón",
-      "text": "Ojo al matiz: la fibra PROPIA de la red (64 fibras sobre la vía ADIF Ferrol–Gijón) llega desde Vegadeo hasta la arqueta de la estación de Cudillero — el círculo del mapa, al oeste de Muros. El tramo Gijón–Cudillero (pasando por Soto del Barco y Muros de Nalón) se cursa por SOLO 2 fibras ópticas alquiladas a terceros — cable FO Gijón–Avilés–Muros–Cudillero, unos 60 km — exprimidas con equipos CWDM (línea discontinua ámbar). Sobre la troncal propia cuelgan, de este a oeste, Soto del Barco, Muros, Luarca, Navia, La Caridad, Tapia, Castropol y Vegadeo, con segregaciones del cable Castropol–Cudillero en Puerto de Vega, Figueras y La Caridad."
+      "title": {
+        "es": "Troncal Occidental: propia hasta Cudillero, alquilada hasta Gijón",
+        "en": "Western Trunk: own fibre to Cudillero, leased to Gijón"
+      },
+      "text": {
+        "es": "Ojo al matiz: la fibra PROPIA de la red (64 fibras sobre la vía ADIF Ferrol–Gijón) llega desde Vegadeo hasta la arqueta de la estación de Cudillero — el círculo del mapa, al oeste de Muros. El tramo Gijón–Cudillero (pasando por Soto del Barco y Muros de Nalón) se cursa por SOLO 2 fibras ópticas alquiladas a terceros — cable FO Gijón–Avilés–Muros–Cudillero, unos 60 km — exprimidas con equipos CWDM (línea discontinua ámbar). Sobre la troncal propia cuelgan, de este a oeste, Soto del Barco, Muros, Luarca, Navia, La Caridad, Tapia, Castropol y Vegadeo, con segregaciones del cable Castropol–Cudillero en Puerto de Vega, Figueras y La Caridad.",
+        "en": "Mind the nuance: the network's OWN fibre (64 fibres along the ADIF Ferrol–Gijón line) runs from Vegadeo to the chamber at Cudillero station — the circle on the map, west of Muros. The Gijón–Cudillero stretch (via Soto del Barco and Muros de Nalón) runs over just 2 optical fibres leased from a third party — the Gijón–Avilés–Muros–Cudillero cable, some 60 km — squeezed with CWDM equipment (the dashed amber line). Hanging off the own trunk, from east to west, are Soto del Barco, Muros, Luarca, Navia, La Caridad, Tapia, Castropol and Vegadeo, with the Castropol–Cudillero cable segregating off at Puerto de Vega, Figueras and La Caridad."
+      }
     },
     {
       "id": "muros",
       "viewBox": [280, 40, 340, 220],
       "trunks": ["occ", "occrent"],
       "node": "muros",
-      "title": "Muros de Nalón — cabecera CWDM y nodo piloto",
-      "text": "Aquí concentra el área Occidental sus longitudes de onda: dos CWDM Transmode 8133 de 8 canales (todos ocupados: las OLT de Luarca, Navia, Tapia, Castropol y el Hospital de Jarrio) que viajan por el tramo ALQUILADO Cudillero–Gijón, con 21 dB de pérdidas medidas. Desde el nodo, la fibra propia sirve a Muros, Soto del Barco y San Esteban de Pravia. Será el primer nodo en migrar (semanas 13–17): su éxito valida el procedimiento para los otros 19."
+      "title": {
+        "es": "Muros de Nalón — cabecera CWDM y nodo piloto",
+        "en": "Muros de Nalón — CWDM head-end and pilot node"
+      },
+      "text": {
+        "es": "Aquí concentra el área Occidental sus longitudes de onda: dos CWDM Transmode 8133 de 8 canales (todos ocupados: las OLT de Luarca, Navia, Tapia, Castropol y el Hospital de Jarrio) que viajan por el tramo ALQUILADO Cudillero–Gijón, con 21 dB de pérdidas medidas. Desde el nodo, la fibra propia sirve a Muros, Soto del Barco y San Esteban de Pravia. Será el primer nodo en migrar (semanas 13–17): su éxito valida el procedimiento para los otros 19.",
+        "en": "This is where the Western area concentrates its wavelengths: two 8-channel CWDM Transmode 8133 units (all occupied: the OLTs of Luarca, Navia, Tapia, Castropol and the Hospital de Jarrio) that travel over the LEASED Cudillero–Gijón stretch, with 21 dB of measured loss. From the node, the own fibre serves Muros, Soto del Barco and San Esteban de Pravia. It will be the first node to migrate (weeks 13–17): its success validates the procedure for the other 19."
+      }
     },
     {
       "id": "suroccidente",
       "viewBox": [180, 150, 360, 220],
       "trunks": ["surocc"],
       "node": "cangas",
-      "title": "Suroccidente · fibra alquilada y el único 1:32",
-      "text": "Tineo y Cangas del Narcea se conectan sobre portadores de fibra alquilada con equipos CWDM (el 8140 del PAO conserva 2 canales libres). Cangas es el único nodo de la red con espliteado 1:32 en vez de 1:64, un matiz que condiciona el dimensionado de puertos de su nueva OLT. Entra a ver sus dos OLT Alcatel."
+      "title": {
+        "es": "Suroccidente · fibra alquilada y el único 1:32",
+        "en": "South-west · leased fibre and the only 1:32"
+      },
+      "text": {
+        "es": "Tineo y Cangas del Narcea se conectan sobre portadores de fibra alquilada con equipos CWDM (el 8140 del PAO conserva 2 canales libres). Cangas es el único nodo de la red con espliteado 1:32 en vez de 1:64, un matiz que condiciona el dimensionado de puertos de su nueva OLT. Entra a ver sus dos OLT Alcatel.",
+        "en": "Tineo and Cangas del Narcea connect over leased-fibre carriers with CWDM equipment (the PAO's 8140 keeps 2 channels free). Cangas is the network's only node with a 1:32 split instead of 1:64, a detail that shapes how its new OLT's ports are sized. Go in to see its two Alcatel OLTs."
+      }
     },
     {
       "id": "suroriente",
       "viewBox": [560, 40, 520, 240],
       "trunks": ["suror", "redund"],
       "node": null,
-      "title": "Troncal Suroriental · Gijón–Nava–Infiesto–Arriondas–Llanes",
-      "text": "Todo el suroriente se articula sobre una troncal de fibra alquilada que enhebra Nava, Infiesto y Arriondas, con extremos en el PAO y en el nodo de Llanes. Sus tramas viajan en CWDM 8133 con los 8 canales ocupados — sin facilidades vacantes, uno de los motivos por los que el adjudicatario podrá aportar equipos de transporte nuevos."
+      "title": {
+        "es": "Troncal Suroriental · Gijón–Nava–Infiesto–Arriondas–Llanes",
+        "en": "South-eastern Trunk · Gijón–Nava–Infiesto–Arriondas–Llanes"
+      },
+      "text": {
+        "es": "Todo el suroriente se articula sobre una troncal de fibra alquilada que enhebra Nava, Infiesto y Arriondas, con extremos en el PAO y en el nodo de Llanes. Sus tramas viajan en CWDM 8133 con los 8 canales ocupados — sin facilidades vacantes, uno de los motivos por los que el adjudicatario podrá aportar equipos de transporte nuevos.",
+        "en": "The whole south-east is organised over a leased-fibre trunk that threads through Nava, Infiesto and Arriondas, with its ends at the PAO and at the Llanes node. Its frames travel over a CWDM 8133 with all 8 channels occupied — no vacant capacity, one of the reasons the contractor will be able to bring in new transport equipment."
+      }
     },
     {
       "id": "oriente",
       "viewBox": [700, 20, 440, 240],
       "trunks": ["orient", "redund"],
       "node": "llanes",
-      "title": "Oriente · Llanes y Colombres, con redundancia",
-      "text": "El extremo oriental llega por fibra alquilada Gijón–Llanes y Llanes–Colombres. Fíjate en la línea punteada azulada: desde Llanes, las tramas de las OLT del oriente (y también las del suroriente) vuelven al PAO por una segunda ruta de fibra redundada — si la principal cae, el tráfico sobrevive. Llanes suma 1.046 ONT en dos OLT — entra a ver la sala."
+      "title": {
+        "es": "Oriente · Llanes y Colombres, con redundancia",
+        "en": "East · Llanes and Colombres, with redundancy"
+      },
+      "text": {
+        "es": "El extremo oriental llega por fibra alquilada Gijón–Llanes y Llanes–Colombres. Fíjate en la línea punteada azulada: desde Llanes, las tramas de las OLT del oriente (y también las del suroriente) vuelven al PAO por una segunda ruta de fibra redundada — si la principal cae, el tráfico sobrevive. Llanes suma 1.046 ONT en dos OLT — entra a ver la sala.",
+        "en": "The eastern end is reached by leased fibre Gijón–Llanes and Llanes–Colombres. Notice the dashed blue line: from Llanes, the eastern OLTs' frames (and the south-eastern ones too) return to the PAO over a second, redundant fibre route — if the main one fails, traffic survives. Llanes totals 1,046 ONTs across two OLTs — go in to see the room."
+      }
     },
     {
       "id": "red-completa",
@@ -243,8 +409,14 @@
         "redund"
       ],
       "node": null,
-      "title": "La red completa, lista para los 10 Gbps",
-      "text": "Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gbps extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha."
+      "title": {
+        "es": "La red completa, lista para los 10 Gbps",
+        "en": "The complete network, ready for 10 Gbps"
+      },
+      "text": {
+        "es": "Este es el lienzo sobre el que actúa el contrato: toda la fibra — propia y alquilada — y los splitters se reutilizan; cambian las 20 OLT, los enrutadores y la gestión. Cada nueva OLT se conectará con enlaces de mínimo 10 Gbps extremo a extremo, y la migración avanzará de oeste a este entre las semanas 13 y 58. Pulsa cualquier nodo para su ficha.",
+        "en": "This is the canvas the contract acts on: all the fibre — own and leased — and the splitters are reused; what changes are the 20 OLTs, the routers and the management. Every new OLT will connect with a minimum 10 Gbps end-to-end link, and the migration will move west to east between weeks 13 and 58. Click any node for its record."
+      }
     }
   ],
   "paoTransport": {
@@ -254,30 +426,69 @@
       { "name": "CWDM 8133 · Suroriental / Oriental (compartido)", "channels": 8, "used": 8 }
     ],
     "directLabel": "Caudal / Aller / Nalón",
-    "directNote": "fibras DIRECTAS al 7750 de Mieres · sin CWDM",
-    "warning": "⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gbps libre en toda la máquina"
+    "directNote": {
+      "es": "fibras DIRECTAS al 7750 de Mieres · sin CWDM",
+      "en": "DIRECT fibres to the Mieres 7750 · no CWDM"
+    },
+    "warning": {
+      "es": "⚠ Enrutador 7750SR-7: 1 único puerto de 10 Gbps libre en toda la máquina",
+      "en": "⚠ 7750SR-7 router: only 1 free 10 Gbps port on the whole chassis"
+    }
   },
   "xgsExplainer": {
     "gpon": {
-      "label": "GPON · lo que hay",
-      "rate": "2,5 Gbps bajada · 1,2 Gbps subida · compartidos",
-      "text": "Una fibra sale de la OLT y un divisor pasivo la reparte entre hasta 64 viviendas. El caudal es del grupo, no de cada casa."
+      "label": { "es": "GPON · lo que hay", "en": "GPON · what's there" },
+      "rate": {
+        "es": "2,5 Gbps bajada · 1,2 Gbps subida · compartidos",
+        "en": "2.5 Gbps downstream · 1.2 Gbps upstream · shared"
+      },
+      "text": {
+        "es": "Una fibra sale de la OLT y un divisor pasivo la reparte entre hasta 64 viviendas. El caudal es del grupo, no de cada casa.",
+        "en": "One fibre leaves the OLT and a passive splitter divides it among up to 64 homes. The bandwidth belongs to the group, not to each house."
+      }
     },
     "xgs": {
-      "label": "XGS-PON · lo que llega",
-      "rate": "10 Gbps bajada · 10 Gbps subida · compartidos",
-      "text": "Misma fibra, mismos divisores, misma canalización. Cambia la electrónica de los dos extremos: la OLT del nodo y la ONT del salón."
+      "label": { "es": "XGS-PON · lo que llega", "en": "XGS-PON · what's coming" },
+      "rate": {
+        "es": "10 Gbps bajada · 10 Gbps subida · compartidos",
+        "en": "10 Gbps downstream · 10 Gbps upstream · shared"
+      },
+      "text": {
+        "es": "Misma fibra, mismos divisores, misma canalización. Cambia la electrónica de los dos extremos: la OLT del nodo y la ONT del salón.",
+        "en": "Same fibre, same splitters, same ducting. What changes is the electronics at both ends: the node's OLT and the living room's ONT."
+      }
     },
-    "prose": "Las dos generaciones conviven en la misma fibra porque trabajan en longitudes de onda distintas. Por eso la migración puede hacerse nodo a nodo y usuario a usuario, sin apagar la red: mientras a un vecino ya se le ha cambiado la ONT, el de al lado sigue en GPON sobre el mismo cable.",
+    "prose": {
+      "es": "Las dos generaciones conviven en la misma fibra porque trabajan en longitudes de onda distintas. Por eso la migración puede hacerse nodo a nodo y usuario a usuario, sin apagar la red: mientras a un vecino ya se le ha cambiado la ONT, el de al lado sigue en GPON sobre el mismo cable.",
+      "en": "The two generations coexist on the same fibre because they work on different wavelengths. That's why the migration can happen node by node and user by user, without ever switching the network off: while one neighbour's ONT has already been swapped, the one next door keeps running GPON on the very same cable."
+    },
     "bands": [
-      { "lo": 1260, "hi": 1280, "label": "XGS-PON ↑", "kind": "xgs" },
-      { "lo": 1290, "hi": 1330, "label": "GPON ↑", "kind": "gpon" },
-      { "lo": 1480, "hi": 1500, "label": "GPON ↓", "kind": "gpon" },
-      { "lo": 1550, "hi": 1560, "label": "Vídeo RF", "kind": "video" },
-      { "lo": 1575, "hi": 1580, "label": "XGS-PON ↓", "kind": "xgs" }
+      {
+        "lo": 1260,
+        "hi": 1280,
+        "label": { "es": "XGS-PON ↑", "en": "XGS-PON ↑" },
+        "kind": "xgs"
+      },
+      { "lo": 1290, "hi": 1330, "label": { "es": "GPON ↑", "en": "GPON ↑" }, "kind": "gpon" },
+      { "lo": 1480, "hi": 1500, "label": { "es": "GPON ↓", "en": "GPON ↓" }, "kind": "gpon" },
+      {
+        "lo": 1550,
+        "hi": 1560,
+        "label": { "es": "Vídeo RF", "en": "RF Video" },
+        "kind": "video"
+      },
+      {
+        "lo": 1575,
+        "hi": 1580,
+        "label": { "es": "XGS-PON ↓", "en": "XGS-PON ↓" },
+        "kind": "xgs"
+      }
     ],
     "axisFrom": 1250,
     "axisTo": 1630,
-    "source": "Esta figura no sale del pliego. Las bandas son las que fijan las normas ITU-T G.984.2 (GPON) y G.9807.1 (XGS-PON); el vídeo RF, la G.984.5. El pliego CON 06/2025 nombra las tecnologías, no necesariamente sus longitudes de onda. Se rotula como norma y no como dato del expediente."
+    "source": {
+      "es": "Esta figura no sale del pliego. Las bandas son las que fijan las normas ITU-T G.984.2 (GPON) y G.9807.1 (XGS-PON); el vídeo RF, la G.984.5. El pliego CON 06/2025 nombra las tecnologías, no necesariamente sus longitudes de onda. Se rotula como norma y no como dato del expediente.",
+      "en": "This figure doesn't come from the pliego. The bands are the ones set by the ITU-T G.984.2 (GPON) and G.9807.1 (XGS-PON) standards; RF video, by G.984.5. Pliego CON 06/2025 names the technologies, not necessarily their wavelengths. It's labelled as a standard, not as data from the file."
+    }
   }
 }

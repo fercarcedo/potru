@@ -5,7 +5,7 @@
  * NodeDetail.astro renders at build time for the static node page — one
  * source for both, so an escaping fix or a markup change can't drift.
  */
-import { asset, byId } from '../lib/data';
+import { asset, byId, galleryLabel, nodeById } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import type { Locale } from '../i18n/ui';
@@ -53,7 +53,7 @@ export function initModal(): ModalApi {
     return {
       plans: (n?.gallery ?? []).map((g) => ({
         src: asset(g.src),
-        caption: `${g.label} · ${n!.name}`,
+        caption: `${galleryLabel(g.label, locale)} · ${n!.name}`,
       })),
       index: shownView,
       onChange: (i: number) => {
@@ -75,7 +75,10 @@ export function initModal(): ModalApi {
   }
 
   function render(id: string, view = 0) {
-    const n = byId[id];
+    /* locale-resolved: enclosure/extra/townsNote/ponGroups.note/OLT notes are
+       nested {es,en} on disk, so the modal needs this node's own translation
+       rather than the Spanish-default byId lookup other call sites use. */
+    const n = nodeById(id, locale);
     if (!n) return;
     const gallery = n.gallery;
     view = Math.min(view, gallery.length - 1);
@@ -87,7 +90,7 @@ export function initModal(): ModalApi {
     img.height = shot.h;
     /* the alt doubles as the full-size view's caption, so it names the plan
        and its node rather than staying the generic placeholder */
-    img.alt = `${shot.label} · ${n.name}`;
+    img.alt = `${galleryLabel(shot.label, locale)} · ${n.name}`;
     (document.getElementById(DOM.mImgLink) as HTMLAnchorElement).href = asset(shot.src);
     document.getElementById(DOM.mBadge)!.style.display = view > 0 ? 'block' : 'none';
 
@@ -96,7 +99,7 @@ export function initModal(): ModalApi {
     if (gallery.length > 1) {
       gallery.forEach((g, i) => {
         const b = document.createElement('button');
-        b.textContent = g.label;
+        b.textContent = galleryLabel(g.label, locale);
         if (i === view) b.classList.add('on');
         b.onclick = (e) => {
           e.stopPropagation();
@@ -136,7 +139,7 @@ export function initModal(): ModalApi {
       void openWalk(n.id);
     };
 
-    document.getElementById(DOM.mActs)!.innerHTML = renderActionLinks(n, '', true);
+    document.getElementById(DOM.mActs)!.innerHTML = renderActionLinks(n, '', true, locale);
 
     /* permalink to the full record, in case someone wants to share it */
     const perma = document.getElementById(DOM.mPerma) as HTMLAnchorElement;
