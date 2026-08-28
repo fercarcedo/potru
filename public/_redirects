@@ -1,0 +1,4 @@
+# Spanish is the default locale and lives unprefixed at the domain root (see
+# astro.config.mjs's i18n block) — there is no /es/ tree. Visitors who guess
+# it anyway, or hand-edit it out of an /en/ link, land on the real page.
+/es/*  /:splat  301

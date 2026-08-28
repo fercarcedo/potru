@@ -1,4 +1,5 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n';
 import { DOM } from '../lib/dom-ids';
 import '../styles/global.css';
 /* The headline face, preloaded below — see fonts.css for why it's
@@ -31,12 +32,30 @@ const nav = [
   ['#actuaciones', 'Actuaciones'],
   ['#fases', 'Fases'],
 ];
-/** On node pages the anchors have to point back at the home page. */
-const anchorPrefix = Astro.url.pathname === base ? '' : base;
+
+/* Astro.currentLocale resolves from the URL alone, so it is available here
+   even though Layout is a child component, not the page — see astro.config
+   .mjs's i18n block. Spanish is the default and stays unprefixed. */
+const locale = (Astro.currentLocale ?? 'es') as 'es' | 'en';
+const otherLocale = locale === 'es' ? 'en' : 'es';
+const homePath = getRelativeLocaleUrl(locale, '');
+
+/** On node pages the anchors have to point back at this locale's home page. */
+const anchorPrefix = Astro.url.pathname === homePath ? '' : homePath;
+
+/* The manual toggle's target: the *same* page, rendered in the other locale
+   — not just that locale's home page. Strip this locale's own prefix off the
+   current path (a no-op for Spanish, since it carries none) and rebuild the
+   path under the other locale. */
+const pathWithoutLocalePrefix =
+  locale === 'en' ? Astro.url.pathname.replace(/^\/en\/?/, '/') : Astro.url.pathname;
+const otherHref = getRelativeLocaleUrl(otherLocale, pathWithoutLocalePrefix);
+const langLabel: Record<'es' | 'en', string> = { es: 'ES', en: 'EN' };
+const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'View in English' };
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,6 +64,43 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <link rel="preload" as="font" type="font/woff2" href={bricolageWdthUrl} crossorigin />
+    {
+      /*
+      Sends a first-time English-browser visitor straight to /en/, before the
+      Spanish home page paints — an inline script, same reasoning as the
+      theme stamp below: a deferred module script would be too late. The
+      `homePath`/`locale` guards below mean it only ever acts at the
+      unprefixed home path, never on a deep link, so a shared /nodos/<id> URL
+      always opens in the language it was shared as (they have to live in the
+      script body, not as an Astro-level {condition && <script>} around it —
+      the Astro compiler mis-parses a multi-statement <script> nested inside a
+      JS expression like that). An explicit choice (the toggle, or a previous
+      run of this same script) always wins: this only ever fires once per
+      browser, because it is the first thing to write potru:lang when it
+      decides to redirect. Must agree with KEY in src/scripts/lang.ts.
+    */
+    }
+    <script is:inline define:vars={{ homePath, locale, enHref: getRelativeLocaleUrl('en', '') }}>
+      try {
+        if (
+          locale === 'es' &&
+          location.pathname === homePath &&
+          !localStorage.getItem('potru:lang')
+        ) {
+          var langs = navigator.languages || [navigator.language];
+          if (
+            langs.some(function (l) {
+              return /^en/i.test(l);
+            })
+          ) {
+            localStorage.setItem('potru:lang', 'en');
+            location.replace(enHref);
+          }
+        }
+      } catch (e) {
+        /* storage/navigator unavailable: stay on the Spanish default */
+      }
+    </script>
     {
       /*
       Stamps the visitor's stored theme before the first paint. This cannot be
@@ -104,6 +160,25 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
               /* matchMedia unavailable: same first-frame flash as before, not worse */
             }
           </script>
+          {
+            /* A real link to the equivalent page in the other locale, not a
+              button — switching language is a navigation to a different
+              generated page (see astro.config.mjs's i18n block), not a DOM
+              mutation like the theme toggle below. That is also why it needs
+              no `hidden`-until-JS treatment: it already works with no JS at
+              all, same as the node cards. lang.ts only remembers the choice
+              before the browser follows the link. */
+          }
+          <a
+            id={DOM.langToggle}
+            href={otherHref}
+            class="lang-toggle"
+            data-lang={otherLocale}
+            aria-label={langTitle[otherLocale]}
+            title={langTitle[otherLocale]}
+          >
+            {langLabel[otherLocale]}
+          </a>
           {
             /* Two icons, always both in the markup, one shown at a time by CSS
               keyed off data-theme — see the .theme-toggle rules below. Each
@@ -178,9 +253,11 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
 
 <script>
   import { initTheme } from '../scripts/theme';
+  import { initLang } from '../scripts/lang';
   import { initNavMenu } from '../scripts/navmenu';
 
   initTheme();
+  initLang();
   initNavMenu();
 </script>
 
@@ -334,7 +411,7 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
        navigation keeps working. */
     nav .wrap {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto auto auto;
       align-items: center;
       column-gap: 10px;
       row-gap: 10px;
@@ -349,14 +426,18 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     .nav-right {
       display: contents;
     }
-    .theme-toggle {
+    .lang-toggle {
       grid-column: 2;
+      grid-row: 1;
+    }
+    .theme-toggle {
+      grid-column: 3;
       grid-row: 1;
     }
     .nav-toggle {
       display: grid;
       place-items: center;
-      grid-column: 3;
+      grid-column: 4;
       grid-row: 1;
       width: 34px;
       height: 34px;
@@ -398,6 +479,34 @@ const anchorPrefix = Astro.url.pathname === base ? '' : base;
     footer .wrap {
       flex-direction: column;
     }
+  }
+  /* Same pill shape as .theme-toggle below, but always visible — see the
+     markup comment above on why it needs no hidden-until-JS treatment. */
+  .lang-toggle {
+    display: grid;
+    place-items: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    flex: none;
+  }
+  .lang-toggle:hover,
+  .lang-toggle:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .lang-toggle:focus-visible {
+    outline: 2px solid var(--xgs);
+    outline-offset: 3px;
   }
   /* Sits at the end of the nav, quiet until wanted. Hidden in the markup and
      revealed by theme.ts, so it never shows for a visitor whose JS did not

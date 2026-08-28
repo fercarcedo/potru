@@ -11,9 +11,11 @@
  * CLAUDE.md's architecture notes for the fuller picture.
  */
 export const DOM = {
-  // Layout.astro — the nav's colour-theme toggle (scripts/theme.ts) and its
-  // mobile hamburger menu (scripts/navmenu.ts)
+  // Layout.astro — the nav's colour-theme toggle (scripts/theme.ts), its
+  // language toggle (scripts/lang.ts) and its mobile hamburger menu
+  // (scripts/navmenu.ts)
   themeToggle: 'themeToggle',
+  langToggle: 'langToggle',
   navToggle: 'navToggle',
   navMenu: 'navMenu',
 
