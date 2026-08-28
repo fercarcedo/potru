@@ -12,8 +12,9 @@
  * it is in, and the sentence on the page.
  */
 import { describe, expect, it } from 'vitest';
-import { byId, ontCount } from '../../src/lib/data';
+import { actionDesc, byId, ontCount } from '../../src/lib/data';
 import {
+  renderActionLinks,
   renderAreaTag,
   renderMigStrip,
   renderOltTable,
@@ -125,5 +126,20 @@ describe('locale: every export defaults to Spanish and translates on demand', ()
     const es = renderAreaTag(blimea);
     expect(en).toContain(`AREA ${blimea.area.toUpperCase()}`);
     expect(es).toContain(`ÁREA ${blimea.area.toUpperCase()}`);
+  });
+
+  it('renderActionLinks: descriptions translate, codes and hrefs do not', () => {
+    expect(blimea.actions.length).toBeGreaterThan(0);
+    const es = renderActionLinks(blimea, '', false, 'es');
+    const en = renderActionLinks(blimea, '', false, 'en');
+    const esDesc = actionDesc('es');
+    const enDesc = actionDesc('en');
+    for (const code of blimea.actions) {
+      expect(en, code).toContain(`>${code} ·`);
+      expect(en, code).toContain(esDesc[code]![2]); // the href never translates
+      expect(en, code).toContain(enDesc[code]![1]); // but the description does
+      expect(en, code).not.toContain(esDesc[code]![1]);
+    }
+    expect(en).not.toBe(es);
   });
 });

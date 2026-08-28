@@ -11,7 +11,7 @@
  * this module needs them; the figures they wrap (weeks, ONT counts, area
  * names) are pliego data and stay as-is regardless of locale.
  */
-import { ACTION_DESC, cardLabel, ontCount, type NetworkNode } from './data';
+import { actionDesc, cardLabel, ontCount, type NetworkNode } from './data';
 import { escapeHtml as esc } from './escape-html';
 import type { Locale } from '../i18n/ui';
 
@@ -193,12 +193,18 @@ export function renderTownsBlock(n: NetworkNode, locale: Locale = 'es'): string 
  *  #act-* anchors from elsewhere (the node page); empty on the home page
  *  itself, where the modal already renders next to those anchors, and where
  *  `closeModal` marks each link to close the modal before the in-page jump. */
-export function renderActionLinks(n: NetworkNode, base = '', closeModal = false): string {
+export function renderActionLinks(
+  n: NetworkNode,
+  base = '',
+  closeModal = false,
+  locale: Locale = 'es',
+): string {
   const closeAttr = closeModal ? ' data-close' : '';
+  const desc = actionDesc(locale);
   return n.actions
     .map((a) => {
-      const [cls, desc, href] = ACTION_DESC[a]!;
-      return `<a class="${cls}" href="${base}${href}"${closeAttr} title="${esc(desc)}">${esc(a)} · ${esc(desc)}</a>`;
+      const [cls, d, href] = desc[a]!;
+      return `<a class="${cls}" href="${base}${href}"${closeAttr} title="${esc(d)}">${esc(a)} · ${esc(d)}</a>`;
     })
     .join('');
 }

@@ -2,6 +2,20 @@ import raw from '../data/nodes.json';
 import contentRaw from '../data/content.json';
 import type { Locale } from '../i18n/types';
 
+/**
+ * On disk, every translatable string in content.json and nodes.json is
+ * nested `{ es, en }` right next to itself — not forked into a parallel
+ * file — so a pliego correction can't land in one language and not the
+ * other. `t()` resolves one such pair down to a plain string for the
+ * requested locale.
+ */
+export interface Bi {
+  es: string;
+  en: string;
+}
+
+export const t = (b: Bi, locale: Locale): string => b[locale];
+
 export interface Olt {
   /** identifier used in the pliego, e.g. MUR/1D */
   code: string;
@@ -60,13 +74,49 @@ export interface NetworkNode {
   gallery: GalleryItem[];
 }
 
-const data = raw as unknown as { nodes: NetworkNode[]; pao: NetworkNode };
+/** On disk, a node's free-text fields (enclosure, extra, townsNote, an OLT's
+ *  note, ponGroups.note) are nested `{es, en}` the same way as content.json's
+ *  prose; everything else on a node (names, towns, figures) is pliego data
+ *  and stays a plain value in both locales. */
+interface RawOlt extends Omit<Olt, 'note'> {
+  note?: Bi;
+}
+
+interface RawPonGroups extends Omit<PonGroups, 'note'> {
+  note: Bi;
+}
+
+interface RawNetworkNode extends Omit<
+  NetworkNode,
+  'enclosure' | 'extra' | 'townsNote' | 'ponGroups' | 'olts'
+> {
+  enclosure: Bi;
+  extra: Bi;
+  townsNote?: Bi;
+  ponGroups?: RawPonGroups;
+  olts: RawOlt[];
+}
+
+function resolveNode(n: RawNetworkNode, locale: Locale): NetworkNode {
+  return {
+    ...n,
+    enclosure: t(n.enclosure, locale),
+    extra: t(n.extra, locale),
+    townsNote: n.townsNote ? t(n.townsNote, locale) : undefined,
+    ponGroups: n.ponGroups
+      ? { groups: n.ponGroups.groups, note: t(n.ponGroups.note, locale) }
+      : undefined,
+    olts: n.olts.map((o) => ({ ...o, note: o.note ? t(o.note, locale) : undefined })),
+  };
+}
+
+const data = raw as unknown as { nodes: RawNetworkNode[]; pao: RawNetworkNode };
 
 /** The 20 primary nodes, in phase 2 migration order. */
-export const NODES: NetworkNode[] = data.nodes;
+export const NODES: NetworkNode[] = data.nodes.map((n) => resolveNode(n, 'es'));
 
 /** The PAO in Gijón: not a primary node, but it has a record of its own. */
-export const PAO_NODE: NetworkNode = data.pao;
+export const PAO_NODE: NetworkNode = resolveNode(data.pao, 'es');
 
 export const ALL_NODES: NetworkNode[] = [...NODES, PAO_NODE];
 
@@ -74,16 +124,83 @@ export const byId: Record<string, NetworkNode> = Object.fromEntries(
   ALL_NODES.map((n) => [n.id, n]),
 );
 
+/** Locale-resolved lookup for the handful of call sites that render a single
+ *  node's own free text (the node page, the modal): everything else about a
+ *  node is locale-independent, so this stays a targeted resolver rather than
+ *  a locale-aware twin of `NODES`/`byId`. */
+export function nodeById(id: string, locale: Locale = 'es'): NetworkNode | undefined {
+  if (locale === 'es') return byId[id];
+  const raw = data.nodes.find((n) => n.id === id) ?? (data.pao.id === id ? data.pao : undefined);
+  return raw ? resolveNode(raw, locale) : undefined;
+}
+
 /** [pill class, description, anchor of the matching card] */
 export type ActionDesc = ['fix' | 'var', string, string];
 
-export const ACTION_DESC: Record<string, ActionDesc> = {
-  'PF-1': ['fix', 'Sustitución de su OLT por equipo dual GPON/XGS-PON', '#act-pf1'],
-  'PF-2': ['fix', 'Instalación de enrutador nuevo (Fase 1)', '#act-pf2'],
-  'PF-3': ['fix', 'Repuestos de mantenimiento', '#act-pf3'],
-  'PV-1': ['var', 'ONT nuevas para usuarios con ONT sin capacidad', '#act-pv1'],
-  'PV-2': ['var', 'ONT nuevas para usuarios con ONT incompatibles', '#act-pv2'],
+interface RawActionDesc {
+  pill: 'fix' | 'var';
+  desc: Bi;
+  href: string;
+}
+
+const RAW_ACTION_DESC: Record<string, RawActionDesc> = {
+  'PF-1': {
+    pill: 'fix',
+    desc: {
+      es: 'Sustitución de su OLT por equipo dual GPON/XGS-PON',
+      en: 'Replacement of its OLT with a dual GPON/XGS-PON unit',
+    },
+    href: '#act-pf1',
+  },
+  'PF-2': {
+    pill: 'fix',
+    desc: {
+      es: 'Instalación de enrutador nuevo (Fase 1)',
+      en: 'Installation of a new router (Phase 1)',
+    },
+    href: '#act-pf2',
+  },
+  'PF-3': {
+    pill: 'fix',
+    desc: { es: 'Repuestos de mantenimiento', en: 'Maintenance spares' },
+    href: '#act-pf3',
+  },
+  'PV-1': {
+    pill: 'var',
+    desc: {
+      es: 'ONT nuevas para usuarios con ONT sin capacidad',
+      en: 'New ONTs for users whose ONT lacks capacity',
+    },
+    href: '#act-pv1',
+  },
+  'PV-2': {
+    pill: 'var',
+    desc: {
+      es: 'ONT nuevas para usuarios con ONT incompatibles',
+      en: 'New ONTs for users with incompatible ONTs',
+    },
+    href: '#act-pv2',
+  },
 };
+
+function resolveActionDesc(locale: Locale): Record<string, ActionDesc> {
+  return Object.fromEntries(
+    Object.entries(RAW_ACTION_DESC).map(([code, a]) => [
+      code,
+      [a.pill, t(a.desc, locale), a.href] as ActionDesc,
+    ]),
+  );
+}
+
+/** Spanish, for the many call sites that only need the codes/hrefs (an
+ *  anchor, an existence check) and were written before English existed.
+ *  Anything that displays the description text should call actionDesc()
+ *  with the visitor's locale instead. */
+export const ACTION_DESC: Record<string, ActionDesc> = resolveActionDesc('es');
+
+export function actionDesc(locale: Locale = 'es'): Record<string, ActionDesc> {
+  return resolveActionDesc(locale);
+}
 
 /**
  * Nodes that house the equipment but whose own town is NOT among the covered
@@ -117,6 +234,27 @@ export const cardLabel = (o: Olt): string =>
 
 /** Prepends the site base (astro.config's `base`) to a relative path from the JSON. */
 export const asset = (path: string): string => import.meta.env.BASE_URL + path;
+
+/**
+ * Every `GalleryItem.label` in nodes.json, verbatim, exactly as the pliego's
+ * own drawing captions read ("Alzado izquierdo", …) — a small closed
+ * vocabulary reused across all 21 nodes' galleries, not per-node free text,
+ * so it's a lookup here rather than {es,en} duplicated into every gallery
+ * entry. Falls back to the Spanish label itself if a new one ever shows up
+ * in the pliego untranslated, rather than showing nothing.
+ */
+const GALLERY_LABELS: Record<string, Bi> = {
+  Ubicación: { es: 'Ubicación', en: 'Location' },
+  'Plano de planta': { es: 'Plano de planta', en: 'Floor plan' },
+  'Alzado izquierdo': { es: 'Alzado izquierdo', en: 'Left elevation' },
+  'Alzado derecho': { es: 'Alzado derecho', en: 'Right elevation' },
+  'Alzado fondo': { es: 'Alzado fondo', en: 'Rear elevation' },
+};
+
+export function galleryLabel(label: string, locale: Locale = 'es'): string {
+  const bi = GALLERY_LABELS[label];
+  return bi ? t(bi, locale) : label;
+}
 
 /**
  * Site copy transcribed from the pliego that isn't per-node data: the hero's
@@ -224,22 +362,6 @@ export interface ContractAction {
   /** nodes this action affects, for <AffectedNodes>; absent = none listed */
   aff?: string;
 }
-
-/**
- * On disk, every translatable string in content.json is nested `{ es, en }`
- * right next to itself — not forked into a parallel file — so a pliego
- * correction can't land in one language and not the other. These `Raw*`
- * types describe that on-disk shape; the functions below resolve each `Bi`
- * down to a plain string for the requested locale, so every consumer still
- * sees the same flat `HeroStat`/`ArchitectureStep`/… shapes as before and
- * doesn't need to know the data is bilingual at all.
- */
-interface Bi {
-  es: string;
-  en: string;
-}
-
-const t = (b: Bi, locale: Locale): string => b[locale];
 
 interface RawHeroStat {
   value: string;

@@ -8,9 +8,10 @@
 import { Window } from 'happy-dom';
 import { describe, expect, it } from 'vitest';
 import { tourStops } from '../../src/lib/data';
-import { DETAILS } from '../../src/lib/details';
+import { details } from '../../src/lib/details';
 
 const TOUR_STOPS = tourStops();
+const DETAILS = details();
 
 describe('DETAILS (guided tour panels)', () => {
   it('keys every panel by a real tour-stop id', () => {

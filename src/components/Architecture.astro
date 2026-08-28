@@ -62,7 +62,7 @@ const xgs = xgsExplainer(locale);
           viewBox="0 0 1000 160"
           role="img"
           aria-label={t.spectrumAria}
-          set:html={mkSpectrum(xgs.bands, xgs.axisFrom, xgs.axisTo)}
+          set:html={mkSpectrum(xgs.bands, xgs.axisFrom, xgs.axisTo, locale)}
         />
         <div class="zoom-pad fs-row" role="group" aria-label={t.fsGroupLabel}>
           <button

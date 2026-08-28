@@ -20,7 +20,7 @@
  */
 import * as THREE from 'three';
 import roomData from '../data/rooms.json';
-import { cardCount, cardLabel, type NetworkNode } from '../lib/data';
+import { cardCount, cardLabel, t, type Bi, type NetworkNode } from '../lib/data';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { ui } from '../i18n/ui';
@@ -104,7 +104,8 @@ interface Room {
   bays: Bay[];
   trays?: Tray[];
   hatches?: Hatch[];
-  note?: string;
+  /** modelling caveats, nested {es,en} like every other free-text field. */
+  note?: Bi;
 }
 
 const ROOMS = roomData as unknown as Record<string, Room>;
@@ -264,9 +265,8 @@ export function buildRoom(n: NetworkNode) {
   stopRoom();
   const room = ROOMS[n.id];
   if (!room) return;
-  /* Only the mode-toggle label below needs this — the equipment legend body
-     a few lines up is still Spanish-only (see CLAUDE.md). */
-  const T = ui(document.documentElement.lang === 'en' ? 'en' : 'es').viewer3d;
+  const locale = document.documentElement.lang === 'en' ? 'en' : 'es';
+  const T = ui(locale).viewer3d;
 
   const canvas = document.getElementById(DOM.svCanvas) as HTMLCanvasElement;
   const holder = canvas.parentElement!;
@@ -757,22 +757,21 @@ export function buildRoom(n: NetworkNode) {
   /* ---- legend ---- */
   const olts = n.olts;
   document.getElementById(DOM.svLegend)!.innerHTML =
-    `<b style="color:#41e3d2">Reconstruido del plano</b><br>` +
-    `· Planta: <span class="mono">${esc(room.source.split('/').pop() ?? '')}</span><br>` +
-    `· Recinto ${W.toFixed(2)} × ${D.toFixed(2)} m · ${H.toFixed(2)} m libres<br>` +
-    `· ${room.bays.length} armarios rotulados en el plano<br>` +
+    `<b style="color:#41e3d2">${esc(T.legendReconstructed)}</b><br>` +
+    `· ${esc(T.legendFloorPlan)}: <span class="mono">${esc(room.source.split('/').pop() ?? '')}</span><br>` +
+    `· ${esc(T.legendRoom(W.toFixed(2), D.toFixed(2), H.toFixed(2)))}<br>` +
+    `· ${esc(T.legendCabinets(room.bays.length))}<br>` +
     (olts.length
-      ? `· ${olts.length} OLT · ${cardCount(n)} tarjetas<br>` +
+      ? `· ${esc(T.legendOltCards(olts.length, cardCount(n)))}<br>` +
         olts
           .map(
             (o) =>
               `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))}` +
-              ` — ${o.portsPerCard} puertos GPON <b>por tarjeta</b>,` +
-              ` ${o.portsActive} de ${o.portsTotal} activos`,
+              T.legendOltLine(o.portsPerCard, o.portsActive, o.portsTotal),
           )
           .join('<br>')
-      : '· Sin OLT: punto de interconexión con los operadores') +
-    (room.note ? `<br><span style="color:#5a6f8d">${esc(room.note)}</span>` : '');
+      : `· ${esc(T.legendNoOlt)}`) +
+    (room.note ? `<br><span style="color:#5a6f8d">${esc(t(room.note, locale))}</span>` : '');
 
   const modeBtn = document.getElementById(DOM.svMode)!;
   let renewed = false;

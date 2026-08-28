@@ -196,6 +196,13 @@ export interface Viewer3dStrings {
   loading: string;
   svTitlePrefix: string;
   loadError: string;
+  legendReconstructed: string;
+  legendFloorPlan: string;
+  legendRoom: (w: string, d: string, h: string) => string;
+  legendCabinets: (n: number) => string;
+  legendOltCards: (olts: number, cards: number) => string;
+  legendOltLine: (portsPerCard: number, active: number, total: number) => string;
+  legendNoOlt: string;
 }
 
 export interface FullscreenViewerStrings {
