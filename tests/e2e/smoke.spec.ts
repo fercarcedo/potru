@@ -385,3 +385,59 @@ test.describe('colour theme', () => {
     await ctx.close();
   });
 });
+
+test.describe('language', () => {
+  test('the toggle is a real link to the equivalent page in the other locale, without JS', async ({
+    browser,
+  }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false });
+    const page = await ctx.newPage();
+    await page.goto('./nodos/blimea/');
+    await page.locator('#langToggle').click();
+    await expect(page).toHaveURL(/\/en\/nodos\/blimea\/?$/);
+    await ctx.close();
+  });
+
+  test('an English-locale browser with no stored choice is redirected off the Spanish home page', async ({
+    browser,
+  }) => {
+    const ctx = await browser.newContext({ locale: 'en-US' });
+    const page = await ctx.newPage();
+    await page.goto('./');
+    await expect(page).toHaveURL(/\/en\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await ctx.close();
+  });
+
+  test('a Spanish-locale browser stays on the Spanish home page', async ({ browser }) => {
+    const ctx = await browser.newContext({ locale: 'es-ES' });
+    const page = await ctx.newPage();
+    await page.goto('./');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await ctx.close();
+  });
+
+  test('the redirect never fires on a deep link, even from an English-locale browser', async ({
+    browser,
+  }) => {
+    const ctx = await browser.newContext({ locale: 'en-US' });
+    const page = await ctx.newPage();
+    await page.goto('./nodos/blimea/');
+    await expect(page).toHaveURL(/\/nodos\/blimea\/?$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await ctx.close();
+  });
+
+  test('an explicit choice beats the browser', async ({ browser }) => {
+    /* the toggle writes potru:lang before the pre-paint script in Layout.astro
+       ever gets a chance to look at navigator.languages */
+    const ctx = await browser.newContext({ locale: 'en-US' });
+    const page = await ctx.newPage();
+    await page.addInitScript(() => localStorage.setItem('potru:lang', 'es'));
+    await page.goto('./');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await ctx.close();
+  });
+});

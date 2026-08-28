@@ -4,10 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**Potru** — an independent, Spanish-language explanatory site about the GPON → XGS-PON renewal of
-the **Red Asturcón**, the public FTTH network of Asturias, as described by the public tender
-**pliego CON 06/2025** (GIT, Principado de Asturias). Static Astro site, no server code, deployed as
-static assets on Cloudflare Workers at `https://potru.app/`.
+**Potru** — an independent explanatory site about the GPON → XGS-PON renewal of the
+**Red Asturcón**, the public FTTH network of Asturias, as described by the public tender
+**pliego CON 06/2025** (GIT, Principado de Asturias). The pliego itself only exists in Spanish, which
+is the site's own default and unprefixed language; every route also renders under `/en/` — see
+"Language" under Conventions for what that rendering does and does not cover yet. Static Astro site,
+no server code, deployed as static assets on Cloudflare Workers at `https://potru.app/`.
 
 ## The golden rule
 
@@ -67,7 +69,18 @@ cable panels of the guided tour, and the 21 node record pages.
   (`TOUR_STOPS[i].id`), not an array: the panel and the stop's prose used to be two arrays lined up
   by index, so reordering a stop silently mismatched them. `tests/lib/details.test.ts` guards the
   key contract.
-- `src/pages/nodos/[id].astro` — one static page per node via `getStaticPaths()`.
+- `src/pages/[...locale]/nodos/[id].astro` — one static page per node via `getStaticPaths()`,
+  crossed with locale (see below): 42 pages, not 21.
+
+**i18n routing**: `astro.config.mjs`'s `i18n` block declares `es` (default) and `en`, with
+`prefixDefaultLocale: false`. Both pages live under `src/pages/[...locale]/` — a rest param that
+matches **zero** path segments when `getStaticPaths()` gives it `undefined`, which is what leaves
+Spanish unprefixed at `/nodos/<id>` while English renders at `/en/nodos/<id>` from the same file.
+`Astro.currentLocale` resolves purely from the URL, so any component in the tree can read it — no
+prop-drilling needed — and `getRelativeLocaleUrl()` (from `astro:i18n`) builds the other locale's
+equivalent of the current path, which is how `Layout.astro` computes the manual toggle's target.
+Only the routing and the toggle exist so far: `/en/` mirrors every Spanish page byte-for-byte in
+copy, pending the translation work described in "Language" under Conventions.
 
 **Client islands** (`src/scripts/`, started from `main.ts`, which also wires build-rendered node
 cards and gantt bars to the modal):
@@ -120,19 +133,46 @@ versioned.
   it used to be `/potru/`, back when it lived on GitHub Pages as a project site. Every internal
   link or asset still goes through `import.meta.env.BASE_URL` (or `asset()` from
   `src/lib/data.ts`) rather than a hardcoded `/`, so the convention holds if the base ever moves
-  again.
+  again. This is orthogonal to the `/en/` locale prefix from the `i18n` block: base is where the
+  site as a whole is mounted, the locale prefix is which rendering of a page you're on, and an
+  asset path built from `BASE_URL` is deliberately the same on both.
 - **Language**: code, comments and identifiers in English; all user-facing copy, URLs (`/nodos/…`)
-  and data in Spanish.
+  and data in Spanish, with every page also rendering under `/en/`. Spanish is the pliego's own
+  language and the site's default; `defaultLocale: 'es'` with `prefixDefaultLocale: false`
+  (`astro.config.mjs`) keeps it unprefixed, so no existing URL moved when the `/en/` tree was
+  added. **The `/en/` rendering is routing and chrome only so far — its copy is still the Spanish
+  original.** Translating it means: site chrome (nav, footer, buttons) into a small dictionary
+  components read by locale; pliego-derived prose in `content.json` nested per string alongside
+  the Spanish (`{ "es": "…", "en": "…" }`) rather than forked into a parallel file, so a pliego
+  correction can't land in one language and not the other; and the `set:html` markup `graphics.ts`
+  and `details.ts` generate, which will need a locale argument threaded through since it embeds
+  text directly. A translation is of _this site's_ Spanish summary, not of the pliego, which
+  exists only in Spanish: proper nouns, enclosure codes, OLT models and «pliego CON 06/2025» stay
+  untranslated, and the disclaimer vocabulary («ilustrativo», «sin desglose en el pliego»,
+  «recreación interpretada», the 3D viewer's `sv-warn` notice) needs an English equivalent that
+  concedes exactly as much — see the golden rule above.
+
+  The visitor's language follows their browser on first visit to `/` only: an inline pre-paint
+  script in `Layout.astro` (mirroring the theme script below it, and gated to fire only there)
+  checks `navigator.languages` and, absent a stored choice, redirects an English browser to `/en/`
+  before first paint. Otherwise the site follows whatever the visitor last chose with the language
+  toggle in the nav (a real `<a href>` to the current page's equivalent in the other locale, wired
+  by `src/scripts/lang.ts`) — an explicit choice always wins, and a deep link to `/nodos/<id>` or
+  `/en/…` is never auto-redirected, so a shared URL always opens in the language it was shared as.
+  `/es/` does not exist as a real route; `public/_redirects` sends it to the unprefixed default.
+
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.
-- **Client-side storage is for one thing only: the colour theme.** `localStorage` holds the key
-  `potru:theme` (`"light"` / `"dark"`), written by `src/scripts/theme.ts` and by the pre-paint
-  inline script in `Layout.astro`, and nothing else. This used to be a blanket ban on
-  `localStorage` and `sessionStorage`; it was lifted deliberately when the site gained a theme
-  toggle, because the alternative — losing the visitor's choice on every navigation to
-  `/nodos/<id>` — is worse, and a preference the visitor asked for is not tracking. The ban stays
-  in force for everything else, and `tests/data/no-storage.test.ts` is what keeps it honest: it
-  allows exactly that one key in those two files and fails on any other use.
+- **Client-side storage is for two things only: the colour theme and the language choice.**
+  `localStorage` holds `potru:theme` (`"light"` / `"dark"`, written by `src/scripts/theme.ts`) and
+  `potru:lang` (`"es"` / `"en"`, written by `src/scripts/lang.ts`), plus the two pre-paint inline
+  scripts in `Layout.astro` that read them before first paint, and nothing else. This used to be a
+  blanket ban on `localStorage` and `sessionStorage`; it was lifted deliberately, first for the
+  theme toggle and then for language, because the alternative — losing the visitor's choice on
+  every navigation to `/nodos/<id>`, or being redirected back to the language they already left —
+  is worse, and a preference the visitor asked for is not tracking. The ban stays in force for
+  everything else, and `tests/data/no-storage.test.ts` is what keeps it honest: it allows exactly
+  those two keys in those three files and fails on any other use.
 - Honour `prefers-reduced-motion` (there is a global CSS rule, and `tour.ts` checks it).
 - Progressive enhancement: node cards and gantt bars are real anchors to `/nodos/<id>`; JS upgrades
   them to the modal.

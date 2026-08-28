@@ -1,12 +1,15 @@
 /**
- * CLAUDE.md: client-side storage is for one thing only, the colour theme.
+ * CLAUDE.md: client-side storage is for two things only, the colour theme
+ * and the language choice.
  *
  * This was a blanket ban on both Storage APIs, and the test was a plain grep.
- * The ban was lifted for exactly one key — `potru:theme`, so the visitor's
- * choice survives a click through to /nodos/<id> — and a grep that allowed
- * `localStorage` anywhere would have stopped guarding anything at all. So it
- * now checks the two things that actually matter: only the files that own the
- * theme may touch storage, and even they may only touch that one key.
+ * The ban was lifted for exactly two keys — `potru:theme`, so the visitor's
+ * choice survives a click through to /nodos/<id>, and `potru:lang`, so an
+ * explicit language choice survives a later visit to / — and a grep that
+ * allowed `localStorage` anywhere would have stopped guarding anything at
+ * all. So it now checks the two things that actually matter: only the files
+ * that own the theme or the language toggle may touch storage, and even they
+ * may only touch those two keys.
  *
  * A grep-level guard, still: cheaper than scanning dist/ and it doesn't
  * depend on a build having run.
@@ -17,13 +20,14 @@ import { collectSourceFiles } from './helpers/source-files';
 
 const SRC = join(__dirname, '../../src');
 
-/** The only key any of this is allowed to read or write. */
-const THEME_KEY = 'potru:theme';
+/** The only keys any of this is allowed to read or write. */
+const ALLOWED_KEYS = ['potru:lang', 'potru:theme'];
 
 /** The only files allowed to name a Storage API, and why. */
 const OWNERS = [
   'scripts/theme.ts', // the toggle, and the one module that persists the choice
-  'layouts/Layout.astro', // the pre-paint inline script, which cannot wait for a module
+  'scripts/lang.ts', // the language toggle, same shape as theme.ts
+  'layouts/Layout.astro', // the two pre-paint inline scripts, which cannot wait for a module
 ];
 
 const FILES = collectSourceFiles(SRC, /\.(ts|astro|js)$/).map(({ path, text }) => ({
@@ -32,8 +36,8 @@ const FILES = collectSourceFiles(SRC, /\.(ts|astro|js)$/).map(({ path, text }) =
 }));
 const STORAGE = /\blocalStorage\b|\bsessionStorage\b/;
 
-describe('client-side storage is only ever the colour theme', () => {
-  it('names a Storage API only in the files that own the theme', () => {
+describe('client-side storage is only ever the colour theme and the language choice', () => {
+  it('names a Storage API only in the files that own the theme or language toggle', () => {
     const offenders = FILES.filter(({ f, text }) => STORAGE.test(text) && !OWNERS.includes(f)).map(
       ({ f }) => f,
     );
@@ -45,7 +49,7 @@ describe('client-side storage is only ever the colour theme', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('reads and writes no key but the theme', () => {
+  it('reads and writes no key but the theme and the language choice', () => {
     /*
      * Resolving the argument matters: theme.ts passes its own `KEY` constant
      * rather than repeating the literal at three call sites, which is the
@@ -69,6 +73,6 @@ describe('client-side storage is only ever the colour theme', () => {
         else found.add(`dynamic: ${arg}`);
       }
     }
-    expect([...found].sort()).toEqual([THEME_KEY]);
+    expect([...found].sort()).toEqual([...ALLOWED_KEYS].sort());
   });
 });
