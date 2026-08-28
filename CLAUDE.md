@@ -69,13 +69,18 @@ cable panels of the guided tour, and the 21 node record pages.
   (`TOUR_STOPS[i].id`), not an array: the panel and the stop's prose used to be two arrays lined up
   by index, so reordering a stop silently mismatched them. `tests/lib/details.test.ts` guards the
   key contract.
-- `src/i18n/ui.ts` — the site-chrome dictionary: two objects, `es` and `en`, both satisfying one
-  `UiStrings` interface, so a missing translation is a compile error rather than a silent fallback.
-  `ui(locale)` resolves the right one (defaulting to Spanish). `tests/lib/ui.test.ts` walks both
-  trees leaf by leaf and fails if any string is still identical between locales — TypeScript catches
-  a missing key, not a copy-pasted one. Covers structural chrome (nav, footer, buttons, aria-labels)
-  and node-record labels; pliego-derived prose still lives in `content.json`, untranslated so far —
-  see "Language" under Conventions.
+- `src/i18n/` — the site-chrome dictionary, split first by locale and then by domain:
+  `types.ts` holds `Locale` and one interface per domain (`NavStrings`, `HeroStrings`, …) composed
+  into `UiStrings`; `es/<domain>.ts` and `en/<domain>.ts` (`nav.ts`, `hero.ts`, `nodeDetail.ts`, …)
+  each export that domain's strings typed against its interface, so a missing or mistranslated key
+  is a compile error at the exact file that got it wrong; `es/index.ts`/`en/index.ts` assemble the
+  17 domains into the two `UiStrings` objects; `ui.ts` is the one importable entry point everything
+  else uses (`ui(locale)`, defaulting to Spanish, plus the `Locale` type) — components and scripts
+  never import an `es/`/`en/` file directly. `tests/lib/ui.test.ts` walks both assembled trees leaf
+  by leaf and fails if any string is still identical between locales, which is the one thing the
+  per-file interface typing can't catch on its own (a copied string type-checks fine). Covers
+  structural chrome (nav, footer, buttons, aria-labels) and node-record labels; pliego-derived prose
+  still lives in `content.json`, untranslated so far — see "Language" under Conventions.
 - `src/lib/node-render.ts` — the HTML fragments a node record is made of (OLT table, migration
   strip, served towns, the "ÁREA" tag), shared between `NodeDetail.astro` (build time) and
   `src/scripts/modal.ts` (runtime, for the home-page modal) so an escaping fix or a markup change
