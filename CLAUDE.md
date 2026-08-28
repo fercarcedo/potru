@@ -145,7 +145,9 @@ thing the runtime always did.
   headline figures, the ONT install base, the architecture-layer summaries, the diagram's
   explanations, the contract-action cards, the 9 guided-tour stops and the PAO's transport
   occupancy. It exists so this copy is in one checkable place instead of inlined in the components
-  and islands that display it, and so `tests/data/content.test.ts` can guard it.
+  and islands that display it, and so `tests/data/content.test.ts` can guard it. Every
+  translatable string is nested `{ "es": "…", "en": "…" }` in place — see "Language" under
+  Conventions — so `src/lib/data.ts`'s getters take a locale, not the raw JSON shape.
 - `src/data/rooms.json` — one entry per node id (21), transcribed in metres from that node's
   `*-planta.jpg`: `outline` polygon, `doors`, and `bays` (`kind` drives the mesh/colour; an `olt`
   bay renders that OLT's real cards and lit ports). Only the Red Asturcón room is modelled;
@@ -178,20 +180,25 @@ versioned.
 
   **What is translated so far**: every string hardcoded directly in a component's own template
   (headings, leads, buttons, aria-labels — via `src/i18n/ui.ts`), the node record's own labels
-  (`node-render.ts`: OLT table headers, migration-strip text, served-towns headings), and the
-  runtime toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts` that would otherwise
-  overwrite that same chrome with Spanish on the first click. **Not translated yet**: pliego-derived
-  prose in `content.json` (the architecture-layer summaries, the diagram's click-to-learn text, the
-  contract-action cards, the 9 guided-tour stops' own words, the PAO's transport occupancy) and
-  `nodes.json`'s per-action descriptions (`ACTION_DESC`) — both need `{ "es": "…", "en": "…" }`
-  nested per string rather than forked into a parallel file, so a pliego correction can't land in
-  one language and not the other; the free-text per-node fields in `nodes.json` (`address`,
-  `enclosure`, `extra`, `townsNote`, `ponGroups.note`) and the plan gallery's own labels (`planta`,
-  `alzado`, …); and the markup `graphics.ts`/`details.ts` generate via `set:html` (map labels, the
-  gantt, the CWDM/spectrum diagrams, the tour's cable-detail panels) plus what the client islands
-  build from it at runtime (map tooltips, the 3D viewer's equipment legend, the diagram's
-  click-an-element info panel) — all of it needs a `locale` argument threaded through the
-  generators that don't have one yet.
+  (`node-render.ts`: OLT table headers, migration-strip text, served-towns headings), the runtime
+  toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts` that would otherwise overwrite
+  that same chrome with Spanish on the first click, and `content.json`'s pliego-derived prose (the
+  architecture-layer summaries, the diagram's click-to-learn text, the contract-action cards, the 9
+  guided-tour stops' own title/text, the ONT install-base notes, the PAO transport warning, the
+  GPON/XGS-PON explainer). Every translatable string in `content.json` is nested
+  `{ "es": "…", "en": "…" }` right where the Spanish already was, not forked into a parallel file,
+  so a pliego correction can't land in one language and not the other; `src/lib/data.ts`'s
+  `heroStats()`/`architectureSteps()`/`diagramInfo()`/`contractActions()`/`tourStops()`/
+  `paoTransport()`/`xgsExplainer()` resolve that down to a locale's plain strings (default Spanish),
+  so every consumer sees the same flat shapes as before and needs no change beyond passing a
+  locale. **Not translated yet**: `nodes.json`'s per-action descriptions (`ACTION_DESC`), the
+  free-text per-node fields (`address`, `enclosure`, `extra`, `townsNote`, `ponGroups.note`) and the
+  plan gallery's own labels (`planta`, `alzado`, …); and the markup `graphics.ts`/`details.ts`
+  generate via `set:html` (map labels, the gantt, the CWDM/spectrum diagrams, the tour's 9
+  cable-detail panels — `DETAILS` in `details.ts` deliberately still asks `paoTransport('es')` even
+  for the one panel it could resolve, since the other 8 stay Spanish regardless) plus what the
+  client islands build from it at runtime (map tooltips, the 3D viewer's equipment legend) — all of
+  it needs a `locale` argument threaded through the generators that don't have one yet.
 
   The visitor's language follows their browser on first visit to `/` only: an inline pre-paint
   script in `Layout.astro` (mirroring the theme script below it, and gated to fire only there)
@@ -205,6 +212,8 @@ versioned.
   default locale matches `/^en/i` (this varies) would otherwise make the redirect above fire on a
   plain `page.goto('./')`, which almost none of `tests/e2e/smoke.spec.ts` is testing for. The
   `language` describe block opts individual tests into `'en-US'` where that is the point.
+  `Layout.astro` also emits a `hreflang` alternate pair (`es`/`en`) plus `x-default` pointing at
+  the Spanish URL, on every page, so a crawler discovers `/en/` without needing the redirect.
 
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
   is referred to as «Red Asturcón» in prose only.

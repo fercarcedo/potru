@@ -13,7 +13,7 @@
  * Every figure comes from the CON 06/2025 pliego. Where a layout is
  * illustrative rather than literal, the caption of the drawing says so.
  */
-import { PAO_TRANSPORT } from './data';
+import { paoTransport } from './data';
 import { CW8, mkCWDM, mkPAO, mkSection, occRow } from './graphics';
 
 /* Two mkSection cuts stacked in the same panel: each SVG's own bottom
@@ -23,8 +23,13 @@ import { CW8, mkCWDM, mkPAO, mkSection, occRow } from './graphics';
 const SECTION_GAP = '<div style="height:28px"></div>';
 
 export const DETAILS: Record<string, string> = {
-  /* PAO: unified panel, in the same visual language as the sections */
-  pao: mkPAO(PAO_TRANSPORT),
+  /* PAO: unified panel, in the same visual language as the sections. All 9
+     of these cable-detail panels are still Spanish-only — mkPAO's own
+     labels and the other 8 panels' prose, hardcoded below, are generated
+     markup that hasn't been localized yet (see CLAUDE.md's "Language"
+     convention) — so this deliberately asks for Spanish rather than
+     threading a locale through a DETAILS that stays Spanish everywhere else. */
+  pao: mkPAO(paoTransport('es')),
 
   'autovia-minera': mkSection(
     'Troncal propia · Autovía AS-I Mieres–Gijón (corte esquemático)',

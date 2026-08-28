@@ -1,5 +1,5 @@
 ---
-import { ARCHITECTURE_STEPS, XGS_EXPLAINER } from '../lib/data';
+import { architectureSteps, xgsExplainer } from '../lib/data';
 import { mkSpectrum } from '../lib/graphics';
 import { DOM } from '../lib/dom-ids';
 import { ui } from '../i18n/ui';
@@ -7,6 +7,8 @@ import { ui } from '../i18n/ui';
 const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
 const t = ui(locale).architecture;
 const shared = ui(locale).shared;
+const steps = architectureSteps(locale);
+const xgs = xgsExplainer(locale);
 ---
 
 <section
@@ -21,7 +23,7 @@ const shared = ui(locale).shared;
     </p>
     <div class="arch-flow">
       {
-        ARCHITECTURE_STEPS.map((s) => (
+        steps.map((s) => (
           <div class="arch-step">
             <span class="k">{s.kicker}</span>
             <h4>{s.heading}</h4>
@@ -43,24 +45,24 @@ const shared = ui(locale).shared;
       <h3>{t.techHeading}</h3>
       <div class="xgs-cols">
         <div class="xgs-col g">
-          <h4>{XGS_EXPLAINER.gpon.label}</h4>
-          <p class="rate">{XGS_EXPLAINER.gpon.rate}</p>
-          <p>{XGS_EXPLAINER.gpon.text}</p>
+          <h4>{xgs.gpon.label}</h4>
+          <p class="rate">{xgs.gpon.rate}</p>
+          <p>{xgs.gpon.text}</p>
         </div>
         <div class="xgs-col x">
-          <h4>{XGS_EXPLAINER.xgs.label}</h4>
-          <p class="rate">{XGS_EXPLAINER.xgs.rate}</p>
-          <p>{XGS_EXPLAINER.xgs.text}</p>
+          <h4>{xgs.xgs.label}</h4>
+          <p class="rate">{xgs.xgs.rate}</p>
+          <p>{xgs.xgs.text}</p>
         </div>
       </div>
-      <p class="xgs-prose">{XGS_EXPLAINER.prose}</p>
+      <p class="xgs-prose">{xgs.prose}</p>
       <div class="ruler-wrap" id={DOM.rulerWrap}>
         <svg
           class="xgs-ruler"
           viewBox="0 0 1000 160"
           role="img"
           aria-label={t.spectrumAria}
-          set:html={mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo)}
+          set:html={mkSpectrum(xgs.bands, xgs.axisFrom, xgs.axisTo)}
         />
         <div class="zoom-pad fs-row" role="group" aria-label={t.fsGroupLabel}>
           <button
@@ -74,9 +76,9 @@ const shared = ui(locale).shared;
       </div>
       <p class="xgs-source">
         <b>
-          ⚠ {XGS_EXPLAINER.source.split('. ')[0]}.
+          ⚠ {xgs.source.split('. ')[0]}.
         </b>{' '}
-        {XGS_EXPLAINER.source.split('. ').slice(1).join('. ')}
+        {xgs.source.split('. ').slice(1).join('. ')}
       </p>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import raw from '../data/nodes.json';
 import contentRaw from '../data/content.json';
+import type { Locale } from '../i18n/types';
 
 export interface Olt {
   /** identifier used in the pliego, e.g. MUR/1D */
@@ -224,27 +225,186 @@ export interface ContractAction {
   aff?: string;
 }
 
+/**
+ * On disk, every translatable string in content.json is nested `{ es, en }`
+ * right next to itself — not forked into a parallel file — so a pliego
+ * correction can't land in one language and not the other. These `Raw*`
+ * types describe that on-disk shape; the functions below resolve each `Bi`
+ * down to a plain string for the requested locale, so every consumer still
+ * sees the same flat `HeroStat`/`ArchitectureStep`/… shapes as before and
+ * doesn't need to know the data is bilingual at all.
+ */
+interface Bi {
+  es: string;
+  en: string;
+}
+
+const t = (b: Bi, locale: Locale): string => b[locale];
+
+interface RawHeroStat {
+  value: string;
+  label: Bi;
+  highlight?: boolean;
+}
+
+interface RawOntInstallEntry {
+  model: string;
+  note: Bi;
+  pct: number;
+  warn: boolean;
+}
+
+interface RawArchitectureStep {
+  kicker: Bi;
+  heading: Bi;
+  text: Bi;
+}
+
+type RawDiagramInfo = Record<string, Record<DiagramMode, Bi>>;
+
+interface RawContractAction {
+  id: string;
+  code: string;
+  pill: 'fix' | 'var';
+  part: 'fija' | 'variable';
+  heading: Bi;
+  bullets?: Bi[];
+  text?: Bi;
+  aff?: string;
+}
+
+interface RawTourStop {
+  id: string;
+  viewBox: [number, number, number, number];
+  trunks: string[];
+  node: string | null;
+  title: Bi;
+  text: Bi;
+}
+
+interface RawPaoTransport {
+  rows: PaoRow[];
+  directLabel: string;
+  directNote: Bi;
+  warning: Bi;
+}
+
+interface RawWdmBand {
+  lo: number;
+  hi: number;
+  label: Bi;
+  kind: 'gpon' | 'xgs' | 'video';
+}
+
+interface RawXgsExplainer {
+  gpon: { label: Bi; rate: Bi; text: Bi };
+  xgs: { label: Bi; rate: Bi; text: Bi };
+  prose: Bi;
+  bands: RawWdmBand[];
+  axisFrom: number;
+  axisTo: number;
+  source: Bi;
+}
+
 interface ContentData {
-  heroStats: HeroStat[];
-  ontInstallBase: OntInstallEntry[];
-  architectureSteps: ArchitectureStep[];
-  diagramInfo: DiagramInfo;
-  contractActions: ContractAction[];
-  tourStops: TourStop[];
-  paoTransport: PaoTransport;
-  xgsExplainer: XgsExplainer;
+  heroStats: RawHeroStat[];
+  ontInstallBase: RawOntInstallEntry[];
+  architectureSteps: RawArchitectureStep[];
+  diagramInfo: RawDiagramInfo;
+  contractActions: RawContractAction[];
+  tourStops: RawTourStop[];
+  paoTransport: RawPaoTransport;
+  xgsExplainer: RawXgsExplainer;
 }
 
 const content = contentRaw as unknown as ContentData;
 
-export const HERO_STATS: HeroStat[] = content.heroStats;
-export const ONT_INSTALL_BASE: OntInstallEntry[] = content.ontInstallBase;
-export const ARCHITECTURE_STEPS: ArchitectureStep[] = content.architectureSteps;
-export const DIAGRAM_INFO: DiagramInfo = content.diagramInfo;
-export const CONTRACT_ACTIONS: ContractAction[] = content.contractActions;
-export const TOUR_STOPS: TourStop[] = content.tourStops;
-export const PAO_TRANSPORT: PaoTransport = content.paoTransport;
-export const XGS_EXPLAINER: XgsExplainer = content.xgsExplainer;
+export function heroStats(locale: Locale = 'es'): HeroStat[] {
+  return content.heroStats.map((s) => ({
+    value: s.value,
+    label: t(s.label, locale),
+    highlight: s.highlight,
+  }));
+}
+
+export function ontInstallBase(locale: Locale = 'es'): OntInstallEntry[] {
+  return content.ontInstallBase.map((o) => ({
+    model: o.model,
+    note: t(o.note, locale),
+    pct: o.pct,
+    warn: o.warn,
+  }));
+}
+
+export function architectureSteps(locale: Locale = 'es'): ArchitectureStep[] {
+  return content.architectureSteps.map((s) => ({
+    kicker: t(s.kicker, locale),
+    heading: t(s.heading, locale),
+    text: t(s.text, locale),
+  }));
+}
+
+export function diagramInfo(locale: Locale = 'es'): DiagramInfo {
+  const out: DiagramInfo = {};
+  for (const [key, modes] of Object.entries(content.diagramInfo)) {
+    out[key] = { gpon: t(modes.gpon, locale), xgs: t(modes.xgs, locale) };
+  }
+  return out;
+}
+
+export function contractActions(locale: Locale = 'es'): ContractAction[] {
+  return content.contractActions.map((a) => ({
+    id: a.id,
+    code: a.code,
+    pill: a.pill,
+    part: a.part,
+    heading: t(a.heading, locale),
+    bullets: a.bullets?.map((b) => t(b, locale)),
+    text: a.text ? t(a.text, locale) : undefined,
+    aff: a.aff,
+  }));
+}
+
+export function tourStops(locale: Locale = 'es'): TourStop[] {
+  return content.tourStops.map((s) => ({
+    id: s.id,
+    viewBox: s.viewBox,
+    trunks: s.trunks,
+    node: s.node,
+    title: t(s.title, locale),
+    text: t(s.text, locale),
+  }));
+}
+
+export function paoTransport(locale: Locale = 'es'): PaoTransport {
+  return {
+    rows: content.paoTransport.rows,
+    directLabel: content.paoTransport.directLabel,
+    directNote: t(content.paoTransport.directNote, locale),
+    warning: t(content.paoTransport.warning, locale),
+  };
+}
+
+export function xgsExplainer(locale: Locale = 'es'): XgsExplainer {
+  const x = content.xgsExplainer;
+  return {
+    gpon: {
+      label: t(x.gpon.label, locale),
+      rate: t(x.gpon.rate, locale),
+      text: t(x.gpon.text, locale),
+    },
+    xgs: {
+      label: t(x.xgs.label, locale),
+      rate: t(x.xgs.rate, locale),
+      text: t(x.xgs.text, locale),
+    },
+    prose: t(x.prose, locale),
+    bands: x.bands.map((b) => ({ lo: b.lo, hi: b.hi, kind: b.kind, label: t(b.label, locale) })),
+    axisFrom: x.axisFrom,
+    axisTo: x.axisTo,
+    source: t(x.source, locale),
+  };
+}
 
 /** The contract runs weeks 1–58; Phase 2 (all node migrations) ends at the
  *  same week 58, which is why this single constant covers both the gantt's

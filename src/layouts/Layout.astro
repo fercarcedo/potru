@@ -54,6 +54,15 @@ const anchorPrefix = Astro.url.pathname === homePath ? '' : homePath;
 const pathWithoutLocalePrefix =
   locale === 'en' ? Astro.url.pathname.replace(/^\/en\/?/, '/') : Astro.url.pathname;
 const otherHref = getRelativeLocaleUrl(otherLocale, pathWithoutLocalePrefix);
+
+/* hreflang wants absolute URLs for both renderings of *this* page (not
+   "the other one" — otherHref above is relative to whichever locale is
+   current, which is the wrong shape here), plus x-default pointing at the
+   unprefixed Spanish one, since that is what a bare link to the site
+   resolves to. */
+const hreflangEsHref = new URL(getRelativeLocaleUrl('es', pathWithoutLocalePrefix), Astro.site);
+const hreflangEnHref = new URL(getRelativeLocaleUrl('en', pathWithoutLocalePrefix), Astro.site);
+
 const langLabel: Record<'es' | 'en', string> = { es: 'ES', en: 'EN' };
 const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'View in English' };
 ---
@@ -67,6 +76,9 @@ const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'Vie
     <meta name="description" content={desc} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="alternate" hreflang="es" href={hreflangEsHref} />
+    <link rel="alternate" hreflang="en" href={hreflangEnHref} />
+    <link rel="alternate" hreflang="x-default" href={hreflangEsHref} />
     <link rel="preload" as="font" type="font/woff2" href={bricolageWdthUrl} crossorigin />
     {
       /*
@@ -128,7 +140,7 @@ const langTitle: Record<'es' | 'en', string> = { es: 'Ver en español', en: 'Vie
       <div class="wrap">
         <div class="brand">
           <b>Potru<span class="dot">.</span></b>
-          <span class="tagline">La siguiente generación de Asturcón</span>
+          <span class="tagline">{t.nav.tagline}</span>
         </div>
         <div class="nav-right">
           <ul id={DOM.navMenu}>

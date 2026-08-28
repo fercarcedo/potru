@@ -1,12 +1,13 @@
 ---
 import ActionCard from './ActionCard.astro';
-import { CONTRACT_ACTIONS } from '../lib/data';
+import { contractActions } from '../lib/data';
 import { ui } from '../i18n/ui';
 
-const fija = CONTRACT_ACTIONS.filter((a) => a.part === 'fija');
-const variable = CONTRACT_ACTIONS.filter((a) => a.part === 'variable');
 const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
 const t = ui(locale).actions;
+const actions = contractActions(locale);
+const fija = actions.filter((a) => a.part === 'fija');
+const variable = actions.filter((a) => a.part === 'variable');
 ---
 
 <section id="actuaciones">

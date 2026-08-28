@@ -18,7 +18,7 @@ import {
   mkSection,
   occRow,
 } from '../../src/lib/graphics';
-import { NODES, PAO_TRANSPORT } from '../../src/lib/data';
+import { NODES, paoTransport } from '../../src/lib/data';
 import type { Chan } from '../../src/lib/graphics';
 
 // happy-dom's DOMParser only works bound to a Window (it needs the window's
@@ -138,7 +138,7 @@ describe('occRow', () => {
 
 describe('mkPAO', () => {
   it('renders without throwing and includes the transport-router warning', () => {
-    const doc = parseSvg(mkPAO(PAO_TRANSPORT));
+    const doc = parseSvg(mkPAO(paoTransport()));
     const warn = [...doc.querySelectorAll('text')].find((t) =>
       (t.textContent || '').includes('7750SR-7'),
     );

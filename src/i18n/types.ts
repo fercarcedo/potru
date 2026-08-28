@@ -24,6 +24,7 @@ export interface MetaStrings {
 }
 
 export interface NavStrings {
+  tagline: string;
   viz: string;
   map: string;
   nodes: string;

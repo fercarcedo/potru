@@ -7,8 +7,10 @@
  */
 import { Window } from 'happy-dom';
 import { describe, expect, it } from 'vitest';
-import { TOUR_STOPS } from '../../src/lib/data';
+import { tourStops } from '../../src/lib/data';
 import { DETAILS } from '../../src/lib/details';
+
+const TOUR_STOPS = tourStops();
 
 describe('DETAILS (guided tour panels)', () => {
   it('keys every panel by a real tour-stop id', () => {

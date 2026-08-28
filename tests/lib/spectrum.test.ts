@@ -8,8 +8,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { mkSpectrum } from '../../src/lib/graphics';
-import { XGS_EXPLAINER } from '../../src/lib/data';
+import { xgsExplainer } from '../../src/lib/data';
 
+const XGS_EXPLAINER = xgsExplainer();
 const SVG = mkSpectrum(XGS_EXPLAINER.bands, XGS_EXPLAINER.axisFrom, XGS_EXPLAINER.axisTo);
 
 describe('mkSpectrum', () => {
@@ -60,5 +61,22 @@ describe('XGS_EXPLAINER content', () => {
   it('names both generations', () => {
     expect(XGS_EXPLAINER.gpon.label).toMatch(/GPON/);
     expect(XGS_EXPLAINER.xgs.label).toMatch(/XGS-PON/);
+  });
+
+  it('translates on locale "en", but the wavelengths and axis never move', () => {
+    const en = xgsExplainer('en');
+    expect(en.source).not.toBe(XGS_EXPLAINER.source);
+    expect(en.source).toMatch(/pliego/i);
+    expect(en.axisFrom).toBe(XGS_EXPLAINER.axisFrom);
+    expect(en.axisTo).toBe(XGS_EXPLAINER.axisTo);
+    expect(en.bands.map((b) => [b.lo, b.hi, b.kind])).toEqual(
+      XGS_EXPLAINER.bands.map((b) => [b.lo, b.hi, b.kind]),
+    );
+    /* "Vídeo RF" is the one band label that actually reads differently in
+       English ("RF Video"); the protocol + arrow ones ("GPON ↑", …) are
+       correctly identical in both locales, not a missed translation */
+    const enSvg = mkSpectrum(en.bands, en.axisFrom, en.axisTo);
+    expect(enSvg).toContain('>RF Video<');
+    expect(enSvg).not.toContain('>Vídeo RF<');
   });
 });

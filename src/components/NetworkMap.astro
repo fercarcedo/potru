@@ -1,5 +1,5 @@
 ---
-import { TOUR_STOPS } from '../lib/data';
+import { tourStops } from '../lib/data';
 import { DETAILS } from '../lib/details';
 import { DOM } from '../lib/dom-ids';
 import { ui } from '../i18n/ui';
@@ -7,9 +7,13 @@ import { ui } from '../i18n/ui';
 // The map is drawn by the src/scripts/map.ts island, which the tour
 // (src/scripts/tour.ts) builds on. The 9 "see inside the cables" panels do
 // arrive rendered from the build: the island only reveals the current one.
+// DETAILS itself is still Spanish-only regardless of locale (see details.ts),
+// so which stops have a panel — the only thing used here — doesn't depend on
+// the locale either; tourStops() is called with its default for that reason.
 const locale = Astro.currentLocale === 'en' ? 'en' : 'es';
 const t = ui(locale).map;
 const shared = ui(locale).shared;
+const stops = tourStops();
 ---
 
 <section id="mapa" style="padding-top:20px">
@@ -73,9 +77,9 @@ const shared = ui(locale).shared;
         style="display:none;position:relative;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.7;color:var(--muted);overflow-x:auto"
       >
         {
-          TOUR_STOPS.filter((s) => DETAILS[s.id]).map((s) => (
-            <div data-det={s.id} hidden set:html={DETAILS[s.id]} />
-          ))
+          stops
+            .filter((s) => DETAILS[s.id])
+            .map((s) => <div data-det={s.id} hidden set:html={DETAILS[s.id]} />)
         }
         {
           /* One shared pad: only one [data-det] panel is ever visible, so

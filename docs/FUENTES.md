@@ -140,6 +140,20 @@ licitación en PLACSP.
   troncal de la Autovía Minera es ilustrativo (la segregación hacia el Nalón sí es literal),
   los tubos 1–15 del TROMIENSCFO128 figuran sin desglose, y en el visor 3D los acabados, los colores y el
   aspecto de los equipos son interpretación: el plano da huellas y rótulos, no fotografías.
+- **La traducción al inglés es de Potru, no del pliego.** El pliego CON 06/2025 solo existe en
+  español; el inglés que se sirve en `/en/` es una traducción de este sitio propio resumen, no
+  una traducción oficial del expediente. Los nombres propios, los códigos de recinto, los
+  modelos de OLT y «pliego CON 06/2025» se dejan sin traducir, y el vocabulario de aviso
+  («ilustrativo», «sin desglose en el pliego», «recreación interpretada», el aviso `sv-warn`
+  del visor 3D) lleva un equivalente en inglés que reconoce exactamente lo mismo. Vive en
+  `src/i18n/` (rótulos de interfaz) y anidado `{ "es": …, "en": … }` junto al español en
+  `src/data/content.json` (prosa derivada del pliego), nunca en un fichero paralelo, para que
+  una corrección del dato no pueda quedar en un idioma sin quedar en el otro. Aún quedan sin
+  traducir: los campos de texto libre por nodo de `nodes.json` (`address`, `enclosure`, `extra`,
+  `townsNote`, `ponGroups.note`), las etiquetas de la galería de planos, y el marcado que
+  generan `graphics.ts`/`details.ts` (mapa, gantt, espectro, los 9 paneles «ver los cables por
+  dentro» del paseo) junto con lo que construyen a partir de él los islands en tiempo de
+  ejecución (los tooltips del mapa, la leyenda de equipamiento del visor 3D).
 
 ## El build legado
 
