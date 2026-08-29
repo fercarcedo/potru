@@ -124,17 +124,19 @@ describe('locale: every export defaults to Spanish and translates on demand', ()
 
   it('renderAreaTag: both the "AREA" word and the descriptive area name translate', () => {
     /* blimea's area is "Cuenca del Nalón" — descriptive Spanish, not a
-       proper noun, so unlike a town name it does translate */
+       proper noun, so unlike a town name it does translate. Spanish keeps
+       noun-adjective order ("ÁREA X"); English flips it ("X AREA") since
+       "AREA WESTERN" reads backwards to an English speaker. */
     const en = renderAreaTag(blimea, 'en');
     const es = renderAreaTag(blimea);
     expect(es).toContain('ÁREA CUENCA DEL NALÓN');
-    expect(en).toContain('AREA NALÓN BASIN');
+    expect(en).toContain('NALÓN BASIN AREA');
   });
 
   it('renderAreaTag: a directional area (Occidental) translates to its English name', () => {
     const en = renderAreaTag(muros, 'en');
     expect(muros.area).toBe('Occidental');
-    expect(en).toContain('AREA WESTERN');
+    expect(en).toContain('WESTERN AREA');
   });
 
   it('renderActionLinks: descriptions translate, codes and hrefs do not', () => {
