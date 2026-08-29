@@ -215,6 +215,31 @@ export const AREAS: { name: string; color: string }[] = (() => {
   return [...seen].map(([name, color]) => ({ name, color }));
 })();
 
+/**
+ * The pliego's own geographic-area classification (Occidental, Suroriental,
+ * "Cuenca del Nalón"…) is descriptive Spanish, not a proper noun like a town
+ * or an OLT code, so — unlike those — it translates. The river/valley name
+ * inside a "Cuenca del X" stays as printed (a river doesn't get an English
+ * name here any more than a town does); only "Cuenca del" itself becomes
+ * "X basin".
+ */
+const AREA_NAMES: Record<string, string> = {
+  Occidental: 'Western',
+  Oriental: 'Eastern',
+  Suroccidental: 'Southwestern',
+  Suroriental: 'Southeastern',
+  'Cuenca del Aller': 'Aller basin',
+  'Cuenca del Nalón': 'Nalón basin',
+  'Cuenca del Caudal': 'Caudal basin',
+};
+
+/** Resolves a node's `area` to English; an unmapped value passes through
+ *  unchanged (there is none today, but a new area added to the pliego data
+ *  without a translation should render rather than crash). */
+export function areaName(area: string, locale: Locale = 'es'): string {
+  return locale === 'en' ? (AREA_NAMES[area] ?? area) : area;
+}
+
 /* Both totals need nothing from a node but its OLTs, and saying so lets a
    caller — a test, a partial record — hand over just that without a cast. */
 
@@ -227,10 +252,14 @@ export const cardCount = (n: Pick<NetworkNode, 'olts'>): number =>
   n.olts.reduce((a, o) => a + o.cards, 0);
 
 /** "16 × GLT2A (2 puertos)" / "4 tarjetas de 8 puertos" — how a card set reads in the UI. */
-export const cardLabel = (o: Olt): string =>
-  o.cardModel
-    ? `${o.cards} × ${o.cardModel} (${o.portsPerCard} puertos)`
-    : `${o.cards} tarjetas de ${o.portsPerCard} puertos`;
+export function cardLabel(o: Olt, locale: Locale = 'es'): string {
+  const ports = locale === 'en' ? 'ports' : 'puertos';
+  return o.cardModel
+    ? `${o.cards} × ${o.cardModel} (${o.portsPerCard} ${ports})`
+    : locale === 'en'
+      ? `${o.cards} cards of ${o.portsPerCard} ports`
+      : `${o.cards} tarjetas de ${o.portsPerCard} puertos`;
+}
 
 /** Prepends the site base (astro.config's `base`) to a relative path from the JSON. */
 export const asset = (path: string): string => import.meta.env.BASE_URL + path;

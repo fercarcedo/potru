@@ -7,7 +7,7 @@ export const diagram: DiagramStrings = {
   modeGroupLabel: 'Network state',
   modeCurrent: 'CURRENT NETWORK · GPON',
   modeRenewed: 'RENEWED NETWORK · GPON/XGS-PON',
-  diagramAria: 'Diagram of the Red Asturcón',
+  diagramAria: 'Diagram of the Asturcón Network',
   zoomGroupLabel: 'Diagram zoom',
   zoomInLabel: 'Zoom into the diagram',
   zoomInTitle: 'Zoom in',
