@@ -85,7 +85,7 @@ const LABELS: Record<
     townsServed: 'Towns served by this node',
     sharedPonTrees: 'Shared PON trees (technical detail)',
     samePon: 'SAME PON',
-    area: (a) => `AREA ${a}`,
+    area: (a) => `${a} AREA`,
   },
 };
 
@@ -212,7 +212,9 @@ export function renderActionLinks(
 /** The "ÁREA X" pill next to a node's name. `n.area` is the pliego's own
  *  geographic classification (Occidental, Suroriental…), descriptive Spanish
  *  rather than a proper noun, so it translates via `areaName()` the same way
- *  the "ÁREA"/"AREA" word around it does. */
+ *  the "ÁREA"/"AREA" word around it does — noun-adjective order in Spanish
+ *  ("ÁREA OCCIDENTAL"), adjective-noun in English ("WESTERN AREA"), since
+ *  "AREA WESTERN" reads backwards to an English speaker. */
 export function renderAreaTag(n: NetworkNode, locale: Locale = 'es'): string {
   return (
     `<span class="mtag" style="background:${n.color}22;color:${n.color};border:1px solid ${n.color}55">` +

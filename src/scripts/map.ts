@@ -200,11 +200,11 @@ const MAP_LABELS: Record<
     secondaryDesc: (primary, how) =>
       `No active electronics: only passive optical splitters. Connects to the ${primary} primary via ${how}. The renewal does not act here: with no OLT, there is no equipment to replace.`,
     hostOnlyNote:
-      "* Houses the node/OLT but its own town is NOT among the towns served: the Red Asturcón's coverage here is its outlying settlements.",
+      "* Houses the node/OLT but its own town is NOT among the towns served: the Asturcón Network's coverage here is its outlying settlements.",
     servesTowns: (towns) => `Serves: ${towns}`,
     nodeTooltip: (olts, ont, weekFrom, weekTo) =>
       `${olts} OLT · ${ont} ONT · migration wk. ${weekFrom}–${weekTo}`,
-    area: (a) => `Area ${a}`,
+    area: (a) => `${a} Area`,
     clickForRecord: 'click for the record',
     paoTooltip: 'Operator access point. The new routers go here and in Mieres.',
     legend:
