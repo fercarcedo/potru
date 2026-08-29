@@ -2,7 +2,7 @@ import type { ArchitectureStrings } from '../types';
 
 export const architecture: ArchitectureStrings = {
   eyebrow: 'Starting point',
-  heading: 'Current architecture of the Red Asturcón',
+  heading: 'Current architecture of the Asturcón Network',
   lead: "A public, neutral, wholesale FTTH network, operated by GIT since 2004 to bring broadband where private operators don't deploy. Retail operators run their services (HSI, TVoIP, VoD, VoIP, RF CATV and POTS telephony) over the same ONT, with transparent connectivity through to the PAO.",
   ontHeading: 'ONT fleet in service',
   ontSub:

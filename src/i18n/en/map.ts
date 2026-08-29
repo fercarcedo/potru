@@ -9,7 +9,7 @@ export const map: MapStrings = {
   townsHidden: 'Towns served: hidden',
   legendOwn: 'Own fibre (e.g. Cudillero–Vegadeo, Autovía Minera)',
   legendRented: 'Leased fibre + CWDM (e.g. Cudillero–Gijón, south-east)',
-  mapAria: "Schematic map of the Red Asturcón's nodes",
+  mapAria: "Schematic map of the Asturcón Network's nodes",
   fsGroupLabel: 'Fullscreen view of the map',
   fsBtnLabel: 'View the map in fullscreen',
   zoomGroupLabel: 'Map zoom',

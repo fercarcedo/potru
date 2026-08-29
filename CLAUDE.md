@@ -245,7 +245,11 @@ en}` type and its `t(b, locale)` resolver) — never forked into a parallel file
   the Spanish URL, on every page, so a crawler discovers `/en/` without needing the redirect.
 
 - **Branding**: the project is _Potru_. Never use "asturcon" as a brand or domain name — the network
-  is referred to as «Red Asturcón» in prose only.
+  is referred to as «Red Asturcón» in prose only. In English, it's **"the Asturcón Network"**, not a
+  literal "Red Asturcón" — confirmed against a real English-language precedent (FEDEA's "Deployment
+  of High-speed Broadband Infrastructures during the Economic Crisis" names it that way), since the
+  European Broadband Awards' own English listing sidestepped the network's name entirely rather than
+  settling it either way.
 - **Client-side storage is for two things only: the colour theme and the language choice.**
   `localStorage` holds `potru:theme` (`"light"` / `"dark"`, written by `src/scripts/theme.ts`) and
   `potru:lang` (`"es"` / `"en"`, written by `src/scripts/lang.ts`), plus the two pre-paint inline
