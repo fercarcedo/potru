@@ -62,10 +62,12 @@ cable panels of the guided tour, and the 21 node record pages.
   for the many call sites that don't need a locale), `nodeById(id, locale)` (the one locale-aware
   lookup, for the node page and the modal, where `enclosure`/`extra`/`townsNote`/`ponGroups.note`/an
   OLT's `note` actually change), `AREAS`, `HOST_ONLY`, and the helpers `ontCount`, `cardCount`,
-  `cardLabel`, `asset`, `galleryLabel(label, locale)` (the 5 plan-type captions), and
-  `actionDesc(locale)` (`ACTION_DESC` is its Spanish-only twin, kept for call sites that only need
-  the codes/hrefs). From `content.json`: `heroStats()`, `ontInstallBase()`, `architectureSteps()`,
-  `diagramInfo()`, `contractActions()`, `tourStops()`, `paoTransport()`, `xgsExplainer()`, all
+  `cardLabel(o, locale)`, `areaName(area, locale)` (the pliego's own descriptive geography —
+  "Occidental", "Cuenca del Nalón" — as opposed to a proper noun), `asset`, `galleryLabel(label,
+locale)` (the 5 plan-type captions), and `actionDesc(locale)` (`ACTION_DESC` is its Spanish-only
+  twin, kept for call sites that only need the codes/hrefs). From `content.json`: `heroStats()`,
+  `ontInstallBase()`, `architectureSteps()`, `diagramInfo()`, `contractActions()`, `tourStops()`,
+  `paoTransport()`, `xgsExplainer()`, all
   `(locale = 'es')`. Read data through here, not from the JSON directly.
 - `src/lib/graphics.ts` — pure SVG generators returning markup strings (`mkCWDM`, `mkSection`,
   `occRow`, `mkPAO`, `mkSpectrum`, `gantt`), plus the TIA-598 and CWDM colour tables. Every one of
@@ -166,9 +168,11 @@ thing the runtime always did.
   `*-planta.jpg`: `outline` polygon, `doors`, and `bays` (`kind` drives the mesh/colour; an `olt`
   bay renders that OLT's real cards and lit ports). Only the Red Asturcón room is modelled;
   adjoining third-party space is a blind wall. A room's own `note` (a modelling caveat, where one
-  exists) is nested `{es, en}` like every other free-text field; a bay's `label` is not — it is a
-  literal transcription of what the plan itself rotula on the cabinet, so it stays as printed in
-  both locales, the same way an OLT code or model name does.
+  exists) is nested `{es, en}` like every other free-text field. A bay's (or a PAO cage rack's)
+  `label` stays a plain Spanish string in the JSON — it repeats the same handful of equipment-type
+  words across many rooms ("Repartidor F.O.", "Bastidor 1", …), so `viewer3d.ts`'s own `BAY_LABELS`
+  lookup table translates it at render time instead of nesting `{es, en}` on all 193 instances;
+  vendor/model names, protocol acronyms and numbering pass through unmapped, unchanged.
 - `public/planos/` — 105 original-resolution JPEGs extracted from the pliego PDF.
 
 These are edited **by hand against the pliego**. The one-shot extractor that created them is gone
@@ -198,26 +202,32 @@ versioned.
   **What is translated**: everything the site itself says, end to end — every string hardcoded
   directly in a component's own template (headings, leads, buttons, aria-labels — via
   `src/i18n/ui.ts`), the node record's own labels (`node-render.ts`: OLT table headers,
-  migration-strip text, served-towns headings, action-link descriptions via `actionDesc()`), the
-  runtime toggle-state labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts`, `content.json`'s
-  pliego-derived prose (the architecture-layer summaries, the diagram's click-to-learn text, the
-  contract-action cards, the 9 guided-tour stops' own title/text, the ONT install-base notes, the
-  PAO transport warning, the GPON/XGS-PON explainer), `nodes.json`'s per-node free text
-  (`enclosure`, `extra`, `townsNote`, `ponGroups.note`, an OLT's own `note`, resolved through
-  `nodeById(id, locale)` rather than the Spanish-only `byId`), the plan gallery's 5 drawing-type
-  labels (`galleryLabel()`), `rooms.json`'s own modelling-caveat `note`, and the markup
-  `graphics.ts`/`details.ts` generate via `set:html` (the CWDM/spectrum diagrams, the tour's 9
-  cable-detail panels) plus what `map.ts` and `viewer3d.ts` build from it at runtime (the map's
-  trunk captions and tooltips, the 3D viewer's equipment legend). Every translatable string is
-  nested `{ "es": "…", "en": "…" }` right where the Spanish already was — in `content.json` and
-  `nodes.json` as on-disk JSON, in `graphics.ts`/`details.ts`/`map.ts`/`viewer3d.ts` as a `Bi`
-  literal (`src/lib/data.ts`'s `{es, en}` type and its `t(b, locale)` resolver) — never forked into
-  a parallel file, so a pliego correction can't land in one language and not the other; every
-  `src/lib/data.ts` getter resolves that down to a locale's plain strings (default Spanish), so a
-  consumer written before English existed sees the same flat shape and needs no change beyond
-  passing a locale. **What stays untranslated on purpose**: proper nouns, town and place names, OLT
-  codes and vendor/model names, `pliego CON 06/2025` itself, and a `rooms.json` bay's own `label` —
-  all pliego-literal data rather than the site's own prose, per the golden rule above.
+  migration-strip text, served-towns headings, action-link descriptions via `actionDesc()`, a card
+  set's own reading via `cardLabel(o, locale)`, a node's "ÁREA X" pill — both the "ÁREA" word and
+  the descriptive area name itself via `areaName()`, since "Occidental"/"Cuenca del Nalón" are the
+  pliego's own descriptive geography, not a proper noun like a town), the runtime toggle-state
+  labels in `map.ts`/`tour.ts`/`viewer3d.ts`/`walk.ts`, `content.json`'s pliego-derived prose (the
+  architecture-layer summaries, the diagram's click-to-learn text, the contract-action cards, the 9
+  guided-tour stops' own title/text, the ONT install-base notes, the PAO transport warning, the
+  GPON/XGS-PON explainer), `nodes.json`'s per-node free text (`enclosure`, `extra`, `townsNote`,
+  `ponGroups.note`, an OLT's own `note`, resolved through `nodeById(id, locale)` rather than the
+  Spanish-only `byId`), the plan gallery's 5 drawing-type labels (`galleryLabel()`), `rooms.json`'s
+  own modelling-caveat `note` and its bays'/racks' equipment labels (`viewer3d.ts`'s `BAY_LABELS`
+  lookup — "Repartidor F.O." is the site's own equipment-type wording, not a code, so it translates
+  the same way a gallery label does), and the markup `graphics.ts`/`details.ts` generate via
+  `set:html` (the CWDM/spectrum diagrams, the tour's 9 cable-detail panels) plus what `map.ts` and
+  `viewer3d.ts` build from it at runtime (the map's trunk captions and tooltips, the 3D viewer's
+  equipment legend). Every translatable string is nested `{ "es": "…", "en": "…" }` right where the
+  Spanish already was — in `content.json` and `nodes.json` as on-disk JSON, in
+  `graphics.ts`/`details.ts`/`map.ts`/`viewer3d.ts` as a `Bi` literal (`src/lib/data.ts`'s `{es,
+en}` type and its `t(b, locale)` resolver) — never forked into a parallel file, so a pliego
+  correction can't land in one language and not the other; every `src/lib/data.ts` getter resolves
+  that down to a locale's plain strings (default Spanish), so a consumer written before English
+  existed sees the same flat shape and needs no change beyond passing a locale. **What stays
+  untranslated on purpose**: proper nouns — town and place names, the river/valley name inside a
+  "Cuenca del X" area, OLT codes and vendor/model names, a bay label's own vendor/model/numbering,
+  and `pliego CON 06/2025` itself — pliego-literal data rather than the site's own prose, per the
+  golden rule above.
 
   The visitor's language follows their browser on first visit to `/` only: an inline pre-paint
   script in `Layout.astro` (mirroring the theme script below it, and gated to fire only there)

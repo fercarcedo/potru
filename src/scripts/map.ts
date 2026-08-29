@@ -9,7 +9,7 @@
  * in place of the legacy's window.__map and the "import map.ts before
  * tour.ts" ordering this used to rely on silently.
  */
-import { HOST_ONLY, NODES, byId, ontCount, t as resolveBi, type Bi } from '../lib/data';
+import { HOST_ONLY, NODES, areaName, byId, ontCount, t as resolveBi, type Bi } from '../lib/data';
 import type { Locale } from '../i18n/types';
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
@@ -534,7 +534,7 @@ export function initMap(openNode: (id: string) => void): {
           : '';
       showTip(
         ev,
-        `<b>${esc(n.name)}</b><br>${esc(L.nodeTooltip(n.olts.length, ont, n.weekFrom, n.weekTo))}${pl}${ho}<br><span style="color:${n.color}">${esc(L.area(n.area))}</span> · <u>${esc(L.clickForRecord)}</u>`,
+        `<b>${esc(n.name)}</b><br>${esc(L.nodeTooltip(n.olts.length, ont, n.weekFrom, n.weekTo))}${pl}${ho}<br><span style="color:${n.color}">${esc(L.area(areaName(n.area, locale)))}</span> · <u>${esc(L.clickForRecord)}</u>`,
       );
     });
     g.addEventListener('mouseleave', hideTip);
@@ -583,7 +583,7 @@ export function initMap(openNode: (id: string) => void): {
     seen.add(n.area);
     const s = document.createElement('span');
     s.style.cssText = 'display:flex;align-items:center;gap:6px';
-    s.innerHTML = `<span class="dot" style="background:${n.color}"></span>${esc(n.area)}`;
+    s.innerHTML = `<span class="dot" style="background:${n.color}"></span>${esc(areaName(n.area, locale))}`;
     leg.appendChild(s);
   });
   const s2 = document.createElement('span');

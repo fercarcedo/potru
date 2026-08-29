@@ -22,6 +22,7 @@ import {
 } from '../../src/lib/node-render';
 
 const blimea = byId['blimea']!;
+const muros = byId['muros']!;
 const HTML = renderOltTable(blimea);
 
 /** The OLTs the pliego is inconsistent about, straight from the data. */
@@ -121,11 +122,19 @@ describe('locale: every export defaults to Spanish and translates on demand', ()
     for (const town of llanes.towns) expect(en).toContain(town);
   });
 
-  it('renderAreaTag: only the "AREA" word translates, not the area name', () => {
+  it('renderAreaTag: both the "AREA" word and the descriptive area name translate', () => {
+    /* blimea's area is "Cuenca del Nalón" — descriptive Spanish, not a
+       proper noun, so unlike a town name it does translate */
     const en = renderAreaTag(blimea, 'en');
     const es = renderAreaTag(blimea);
-    expect(en).toContain(`AREA ${blimea.area.toUpperCase()}`);
-    expect(es).toContain(`ÁREA ${blimea.area.toUpperCase()}`);
+    expect(es).toContain('ÁREA CUENCA DEL NALÓN');
+    expect(en).toContain('AREA NALÓN BASIN');
+  });
+
+  it('renderAreaTag: a directional area (Occidental) translates to its English name', () => {
+    const en = renderAreaTag(muros, 'en');
+    expect(muros.area).toBe('Occidental');
+    expect(en).toContain('AREA WESTERN');
   });
 
   it('renderActionLinks: descriptions translate, codes and hrefs do not', () => {

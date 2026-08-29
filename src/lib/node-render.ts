@@ -11,7 +11,7 @@
  * this module needs them; the figures they wrap (weeks, ONT counts, area
  * names) are pliego data and stay as-is regardless of locale.
  */
-import { actionDesc, cardLabel, ontCount, type NetworkNode } from './data';
+import { actionDesc, areaName, cardLabel, ontCount, type NetworkNode } from './data';
 import { escapeHtml as esc } from './escape-html';
 import type { Locale } from '../i18n/ui';
 
@@ -132,7 +132,7 @@ export function renderOltTable(n: NetworkNode, locale: Locale = 'es'): string {
       const flag = o.note ? ' <span aria-hidden="true">⚠</span>' : '';
       return (
         `<tr><td class="mono">${esc(o.code)}</td><td>${esc(o.vendor)}</td>` +
-        `<td class="mono">${esc(cardLabel(o))}</td>` +
+        `<td class="mono">${esc(cardLabel(o, locale))}</td>` +
         `<td class="mono${odd}">${o.portsActive} / ${o.portsTotal}${flag}</td>` +
         `<td class="mono">${o.onts}</td></tr>`
       );
@@ -209,12 +209,13 @@ export function renderActionLinks(
     .join('');
 }
 
-/** The "ÁREA X" pill next to a node's name. `n.area` itself is the pliego's
- *  own geographic classification and stays as written regardless of locale;
- *  only the "ÁREA"/"AREA" word around it translates. */
+/** The "ÁREA X" pill next to a node's name. `n.area` is the pliego's own
+ *  geographic classification (Occidental, Suroriental…), descriptive Spanish
+ *  rather than a proper noun, so it translates via `areaName()` the same way
+ *  the "ÁREA"/"AREA" word around it does. */
 export function renderAreaTag(n: NetworkNode, locale: Locale = 'es'): string {
   return (
     `<span class="mtag" style="background:${n.color}22;color:${n.color};border:1px solid ${n.color}55">` +
-    `${esc(LABELS[locale].area(n.area.toUpperCase()))}</span>`
+    `${esc(LABELS[locale].area(areaName(n.area, locale).toUpperCase()))}</span>`
   );
 }

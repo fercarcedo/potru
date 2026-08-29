@@ -142,22 +142,26 @@ licitación en PLACSP.
   aspecto de los equipos son interpretación: el plano da huellas y rótulos, no fotografías.
 - **La traducción al inglés es de Potru, no del pliego.** El pliego CON 06/2025 solo existe en
   español; el inglés que se sirve en `/en/` es una traducción de este sitio propio resumen, no
-  una traducción oficial del expediente. Los nombres propios, los topónimos, los códigos de
-  recinto, los modelos y fabricantes de OLT, «pliego CON 06/2025» y el rótulo literal de cada
-  armario en `rooms.json` (`bays[].label`) se dejan sin traducir por ser transcripción literal del
-  plano, no prosa propia del sitio; el vocabulario de aviso («ilustrativo», «sin desglose en el
-  pliego», «recreación interpretada», el aviso `sv-warn` del visor 3D) lleva en cambio un
-  equivalente en inglés que reconoce exactamente lo mismo. La traducción cubre ya todo lo demás:
-  vive en `src/i18n/` (rótulos de interfaz) y anidada `{ "es": …, "en": … }` junto al español en
-  `src/data/content.json` y `src/data/nodes.json` (incluidos los campos de texto libre por nodo —
-  `enclosure`, `extra`, `townsNote`, `ponGroups.note`, la nota de una OLT — resueltos con
-  `nodeById(id, locale)`), en `src/data/rooms.json` (la nota de modelado de una sala), en las 5
-  etiquetas de la galería de planos (`galleryLabel()`), y como literales `Bi` resueltos con
-  `t(b, locale)` en `graphics.ts`/`details.ts` (los 9 paneles «ver los cables por dentro» del
-  paseo y el espectro CWDM) y en lo que construyen a partir de ahí los islands en tiempo de
-  ejecución (los tooltips y rótulos del mapa en `map.ts`, la leyenda de equipamiento del visor 3D
-  en `viewer3d.ts`). Nunca en un fichero paralelo, para que una corrección del dato no pueda
-  quedar en un idioma sin quedar en el otro.
+  una traducción oficial del expediente. Los nombres propios — topónimos, el río o valle dentro
+  de un área «Cuenca del X», los códigos de recinto, los modelos y fabricantes de OLT, el vendor/
+  modelo/numeración de un armario del visor 3D — y «pliego CON 06/2025» se dejan sin traducir por
+  ser dato literal del pliego, no prosa propia del sitio; el vocabulario de aviso («ilustrativo»,
+  «sin desglose en el pliego», «recreación interpretada», el aviso `sv-warn` del visor 3D) lleva en
+  cambio un equivalente en inglés que reconoce exactamente lo mismo. La traducción cubre ya todo lo
+  demás: vive en `src/i18n/` (rótulos de interfaz) y anidada `{ "es": …, "en": … }` junto al español
+  en `src/data/content.json` y `src/data/nodes.json` (incluidos los campos de texto libre por
+  nodo — `enclosure`, `extra`, `townsNote`, `ponGroups.note`, la nota de una OLT — resueltos con
+  `nodeById(id, locale)`; y la clasificación geográfica propia del pliego — «Occidental», «Cuenca
+  del Nalón» — que a diferencia de un topónimo sí se traduce, vía `areaName()`), en
+  `src/data/rooms.json` (la nota de modelado de una sala), en las 5 etiquetas de la galería de
+  planos (`galleryLabel()`), en cómo lee un juego de tarjetas (`cardLabel(o, locale)`), y como
+  literales `Bi` resueltos con `t(b, locale)` en `graphics.ts`/`details.ts` (los 9 paneles «ver los
+  cables por dentro» del paseo y el espectro CWDM) y en lo que construyen a partir de ahí los
+  islands en tiempo de ejecución (los tooltips y rótulos del mapa en `map.ts`, y en `viewer3d.ts`
+  tanto la leyenda de equipamiento como el rótulo de cada armario/bastidor — «Repartidor F.O.» es
+  la lectura propia del sitio de lo que dibuja el plano, no un código, así que se traduce igual que
+  una etiqueta de galería, vía la tabla `BAY_LABELS`). Nunca en un fichero paralelo, para que una
+  corrección del dato no pueda quedar en un idioma sin quedar en el otro.
 
 ## El build legado
 

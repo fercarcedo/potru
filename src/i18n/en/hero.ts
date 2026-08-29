@@ -1,8 +1,8 @@
 import type { HeroStrings } from '../types';
 
 export const hero: HeroStrings = {
-  titleLead: 'The Red Asturcón is changing',
-  titleWave: 'wavelength',
+  titleLead: 'The Red Asturcón is',
+  titleWave: 'on a new wavelength',
   sub: "Complete renewal of the Red Asturcón's FTTH electronics: the 20 primary nodes move from Alcatel 7342 and Ericsson BLM 1500 OLTs to a new dual GPON/XGS-PON generation, with new routers, a new management system and an orderly migration of every user.",
   disclaimerBold: 'Data, figures and drawings taken from the pliego',
   disclaimerRest:

@@ -24,6 +24,7 @@ import { cardCount, cardLabel, t, type Bi, type NetworkNode } from '../lib/data'
 import { DOM } from '../lib/dom-ids';
 import { escapeHtml as esc } from '../lib/escape-html';
 import { ui } from '../i18n/ui';
+import type { Locale } from '../i18n/types';
 import { initControls } from './viewer3d/controls';
 import { createEquipmentBuilders, type UnitBuilder } from './viewer3d/equipment';
 import { pointInPolygon } from './viewer3d/geometry';
@@ -109,6 +110,101 @@ interface Room {
 }
 
 const ROOMS = roomData as unknown as Record<string, Room>;
+
+/**
+ * English for every distinct `bays[].label`/`racks[].label` rooms.json
+ * carries. Unlike an OLT code or model name, a cabinet's label ("Repartidor
+ * F.O.", "Bastidor 1") is the site's own reading of what the plan draws, in
+ * plain Spanish equipment vocabulary — not a literal code — so it translates
+ * like any other UI string. A lookup table keyed by the exact Spanish text
+ * beats nesting `{es, en}` on every one of the 193 bay/rack entries in the
+ * JSON: the same handful of equipment types repeat across rooms, so this is
+ * one definition per distinct label instead of one per instance. Vendor and
+ * model names (Adamo, Cogent, Transmode, AEG, BLM 1500…), protocol/equipment
+ * acronyms (OLT, GPON, DWDM, WDM, UPS, VoLT, CGBT…) and numbering stay as
+ * printed in both locales.
+ */
+const BAY_LABELS: Record<string, string> = {
+  '2 semibastidores': '2 half-racks',
+  'A. acondicionado (suspendido en el techo)': 'A/C unit (suspended from the ceiling)',
+  'Aire acondicionado': 'Air conditioning',
+  'Alarma de incendios': 'Fire alarm',
+  'Alarmas PLC': 'PLC alarms',
+  'Alarmas entorno': 'Environmental alarms',
+  'Armario CATV R.F.': 'CATV R.F. cabinet',
+  'Armario de alarmas': 'Alarm cabinet',
+  'Armario de alarmas de entorno': 'Environmental alarm cabinet',
+  'Armario de alarmas y tierra': 'Alarm and earthing cabinet',
+  'Bancada 2ª rama de baterías': '2nd battery string stand',
+  Bastidor: 'Rack',
+  'Bastidor 1': 'Rack 1',
+  'Bastidor 3': 'Rack 3',
+  'Bastidor 4': 'Rack 4',
+  'Bastidor 5': 'Rack 5',
+  'Bastidor Adamo': 'Adamo rack',
+  'Bastidor Cogent': 'Cogent rack',
+  'Bastidor de fuerza y baterías': 'Power and battery rack',
+  'Bastidor vacío (antiguas baterías Gijón)': 'Empty rack (former Gijón batteries)',
+  'Bastidor vacío (antiguas baterías Tineo)': 'Empty rack (former Tineo batteries)',
+  Baterías: 'Batteries',
+  'C. GEN': 'Gen. board',
+  'C.A. Op.1': 'A/C Op.1',
+  'C.A. Op.2': 'A/C Op.2',
+  'C.A. Op.3': 'A/C Op.3',
+  'C.A. Op.4': 'A/C Op.4',
+  'C.A. Op.5': 'A/C Op.5',
+  'C.A. Op.6': 'A/C Op.6',
+  'Control A.A. (Free Cooling)': 'A/C control (Free Cooling)',
+  'Cuadro de fuerza': 'Power board',
+  'DWDM y splitter': 'DWDM and splitter',
+  'Dist. C.A.': 'A/C dist.',
+  'Escalera de bajada al sótano': 'Stairway down to the basement',
+  'GPON (2 pt) + vídeo': 'GPON (2 pt) + video',
+  'GPON y vídeo': 'GPON and video',
+  Gestión: 'Management',
+  'Jaula 1 · GIT (maqueta)': 'Cage 1 · GIT (mock-up)',
+  'Jaula 2 · Adamo': 'Cage 2 · Adamo',
+  'Jaula 3 · Conectastur': 'Cage 3 · Conectastur',
+  'Jaula 4 · disponible': 'Cage 4 · available',
+  'Jaula 5 · Telecable': 'Cage 5 · Telecable',
+  'Jaula 6 · Cogent': 'Cage 6 · Cogent',
+  'Maqueta GPON ALU': 'GPON mock-up ALU',
+  'Maqueta GPON ERC': 'GPON mock-up ERC',
+  'Máquina de aire acondicionado (en techo)': 'Air conditioning unit (on the ceiling)',
+  'OLT (2º bastidor)': 'OLT (2nd rack)',
+  'OLT + vídeo': 'OLT + video',
+  'PLC / alarmas': 'PLC / alarms',
+  Rectificadores: 'Rectifiers',
+  'Rectificadores + baterías': 'Rectifiers + batteries',
+  'Rectificadores AEG': 'AEG rectifiers',
+  'Rectificadores antiguos (reserva)': 'Old rectifiers (spare)',
+  'Rectificadores y baterías': 'Rectifiers and batteries',
+  'Rep. DWDM': 'DWDM distrib.',
+  'Rep. F.O.': 'F.O. distrib.',
+  Repartidor: 'Distributor',
+  'Repartidor F.O.': 'F.O. distributor',
+  'Repartidor F.O. + TX Cube': 'F.O. distributor + TX Cube',
+  'Repartidor F.O. · Transporte Cube': 'F.O. distributor · Transport Cube',
+  'Repartidor óptico': 'Optical distributor',
+  Repartidores: 'Distributors',
+  'Router + vídeo': 'Router + video',
+  'Seccionador · climatización · detección de inundación':
+    'Disconnector · air conditioning · flood detection',
+  'Splitter + vídeo': 'Splitter + video',
+  'Splitter + vídeo · CWDM Transmode': 'Splitter + video · CWDM Transmode',
+  'Splitter + vídeo · Transmode': 'Splitter + video · Transmode',
+  'Transporte DWDM': 'DWDM transport',
+  'Transporte DWDM / splitters': 'DWDM transport / splitters',
+  'Transporte Transmode': 'Transmode transport',
+  'WDM · Transporte Transmode': 'WDM · Transmode transport',
+};
+
+/** Resolves a `bays[].label`/`racks[].label` to English; unmapped labels
+ *  (a pure code/model/acronym like "OLT 1" or "Transmode 5800 + 8133") are
+ *  already the same in both locales, so they pass through unchanged. */
+function bayLabel(label: string, locale: Locale): string {
+  return locale === 'en' ? (BAY_LABELS[label] ?? label) : label;
+}
 
 let SV: { stop(): void } | null = null;
 
@@ -462,7 +558,8 @@ export function buildRoom(n: NetworkNode) {
     box(0.05, 0.2, 0.05, fin.steel, bay.w / 2 - 0.14, 1.02, gz * 1.12, g); /* latch */
 
     /* the name, big, on the gate and again over the top rail */
-    const name = bay.label.split('·').pop()!.trim();
+    const bl = bayLabel(bay.label, locale);
+    const name = bl.split('·').pop()!.trim();
     label(
       name.toUpperCase(),
       Math.min(bay.w * 0.78, 1.1),
@@ -472,15 +569,7 @@ export function buildRoom(n: NetworkNode) {
       gateOnMinusZ ? Math.PI : 0,
       '#0d1218',
     );
-    label(
-      bay.label,
-      Math.min(bay.w * 0.9, 1.35),
-      g.position.x,
-      gh + 0.14,
-      g.position.z,
-      0,
-      '#c8d4e2',
-    );
+    label(bl, Math.min(bay.w * 0.9, 1.35), g.position.x, gh + 0.14, g.position.z, 0, '#c8d4e2');
 
     /* what the plan draws inside */
     for (const rk of bay.racks ?? []) {
@@ -496,7 +585,7 @@ export function buildRoom(n: NetworkNode) {
       }
       if (rk.label) {
         label(
-          rk.label,
+          bayLabel(rk.label, locale),
           Math.min(rk.w * 0.95, 0.7),
           g.position.x + sub.position.x,
           rh + 0.09,
@@ -595,7 +684,7 @@ export function buildRoom(n: NetworkNode) {
       ] as const)
         box(0.045, bay.h, 0.045, fin.rail, px, bay.h / 2, pz, g);
       label(
-        bay.label,
+        bayLabel(bay.label, locale),
         Math.min(faceW * 0.95, 0.8),
         g.position.x,
         bay.h + 0.12,
@@ -684,7 +773,15 @@ export function buildRoom(n: NetworkNode) {
     const lo = new THREE.Vector3(0, base + bay.h + 0.07, fz + 0.02)
       .applyAxisAngle(new THREE.Vector3(0, 1, 0), rot)
       .add(g.position);
-    label(bay.label, Math.min(faceW * 0.95, 0.8), lo.x, lo.y, lo.z, rot, '#c8d4e2');
+    label(
+      bayLabel(bay.label, locale),
+      Math.min(faceW * 0.95, 0.8),
+      lo.x,
+      lo.y,
+      lo.z,
+      rot,
+      '#c8d4e2',
+    );
   }
 
   /* ---- rejiband ----
@@ -766,7 +863,7 @@ export function buildRoom(n: NetworkNode) {
         olts
           .map(
             (o) =>
-              `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o))}` +
+              `<span class="mono" style="color:#9db4d8">${esc(o.code)}</span> ${esc(cardLabel(o, locale))}` +
               T.legendOltLine(o.portsPerCard, o.portsActive, o.portsTotal),
           )
           .join('<br>')
