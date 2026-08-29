@@ -58,6 +58,34 @@ describe('cardLabel', () => {
     };
     expect(cardLabel(olt)).toBe('4 tarjetas de 8 puertos');
   });
+
+  it('translates the bare-count form with "each", since "N cards of M ports" alone reads as a total', () => {
+    const olt: Olt = {
+      code: 'X/1A',
+      vendor: 'v',
+      cards: 4,
+      cardModel: null,
+      portsPerCard: 8,
+      portsActive: 22,
+      portsTotal: 32,
+      onts: 339,
+    };
+    expect(cardLabel(olt, 'en')).toBe('4 cards of 8 ports each');
+  });
+
+  it('translates the named-model form without "each" — the "×" already implies per-unit', () => {
+    const olt: Olt = {
+      code: 'X/1A',
+      vendor: 'v',
+      cards: 16,
+      cardModel: 'GLT2A',
+      portsPerCard: 2,
+      portsActive: 10,
+      portsTotal: 32,
+      onts: 100,
+    };
+    expect(cardLabel(olt, 'en')).toBe('16 × GLT2A (2 ports)');
+  });
 });
 
 describe('AREAS', () => {
