@@ -251,13 +251,16 @@ export const ontCount = (n: Pick<NetworkNode, 'olts'>): number =>
 export const cardCount = (n: Pick<NetworkNode, 'olts'>): number =>
   n.olts.reduce((a, o) => a + o.cards, 0);
 
-/** "16 × GLT2A (2 puertos)" / "4 tarjetas de 8 puertos" — how a card set reads in the UI. */
+/** "16 × GLT2A (2 puertos)" / "4 tarjetas de 8 puertos" — how a card set reads in the UI.
+ *  The English no-model branch adds "each": "cards of N ports" on its own reads as a
+ *  total (all cards adding up to N ports), not N ports per card. The "×" in the other
+ *  branch already implies per-unit multiplication, so it doesn't need the same fix. */
 export function cardLabel(o: Olt, locale: Locale = 'es'): string {
   const ports = locale === 'en' ? 'ports' : 'puertos';
   return o.cardModel
     ? `${o.cards} × ${o.cardModel} (${o.portsPerCard} ${ports})`
     : locale === 'en'
-      ? `${o.cards} cards of ${o.portsPerCard} ports`
+      ? `${o.cards} cards of ${o.portsPerCard} ports each`
       : `${o.cards} tarjetas de ${o.portsPerCard} puertos`;
 }
 
